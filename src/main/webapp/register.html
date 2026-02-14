@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="/ScholarshipSystem/">
+  <meta charset="UTF-8">
+  <title>Register - Hiraya Foundation</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .left-section {
+      flex: 1;
+      background: url('images/laptop.jpg');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      padding: 40px;
+      position: relative;
+    }
+
+    .left-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .left-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      line-height: 1.05;
+    }
+
+    .foundation-title {
+      font-size: 3rem;
+      font-weight: 400;
+      color: white;
+      letter-spacing: -2px;
+      margin-bottom: 10px;
+    }
+
+    .year {
+      font-size: 13rem;
+      font-weight: 700;
+      color: #99c5ff;
+      letter-spacing: -1rem;
+      line-height: 0.9;
+      margin-bottom: 10px;
+    }
+
+    .scholarship-text {
+      font-size: 4rem;
+      font-weight: 600;
+      color: white;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .contact-info {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .contact-info div {
+      margin: 5px 0;
+    }
+
+    .right-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      background: #f5f5f5;
+    }
+
+    .register-container {
+      background: white;
+      padding: 60px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .register-title {
+      text-align: center;
+      font-size: 2.2rem;
+      color: #192064;
+      font-weight: bold;
+      margin-bottom: 40px;
+      letter-spacing: -1px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      flex: 1;
+      position: relative;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 15px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #fafafa;
+    }
+
+    .form-group input::placeholder {
+      color: #b0b0b0;
+      font-size: 1.1rem;
+      letter-spacing: 0.95px;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #192064;
+      background: white;
+    }
+
+    .form-group input.invalid {
+      border-color: #dc3545;
+    }
+
+    .form-group input.valid {
+      border-color: #28a745;
+    }
+
+    .error-message {
+      color: #dc3545;
+      font-size: 0.85rem;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .password-requirements {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 5px;
+      padding: 10px;
+      background: white;
+      display: none;
+    }
+
+    .password-requirements.show {
+      display: block;
+    }
+
+    .password-requirements div {
+      margin: 3px 0;
+    }
+
+    .requirement {
+      color: #dc3545;
+    }
+
+    .requirement.met {
+      color: #28a745;
+    }
+
+    .requirement::before {
+      content: '✗ ';
+      font-weight: bold;
+    }
+
+    .requirement.met::before {
+      content: '✓ ';
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Modal Box */
+    .modal-box {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-icon {
+      text-align: center;
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #192064;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .modal-message {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .modal-link {
+      display: block;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .modal-link a {
+      color: #192064;
+      font-weight: bold;
+      text-decoration: none;
+      font-size: 1.1rem;
+      padding: 10px 20px;
+      border: 2px solid #192064;
+      border-radius: 8px;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .modal-link a:hover {
+      background: #192064;
+      color: white;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 15px 35px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .modal-btn-cancel {
+      background: #e0e0e0;
+      color: #555;
+    }
+
+    .modal-btn-cancel:hover {
+      background: #d0d0d0;
+    }
+
+    .modal-btn-confirm {
+      background: #192064;
+      color: white;
+    }
+
+    .modal-btn-confirm:hover {
+      background: #0d1642;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+    }
+
+    .modal-btn-success {
+      background: #192064;
+      color: white;
+      padding: 15px 35px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .modal-btn-success:hover {
+      background: #0d1642;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .register-btn {
+      width: 30%;
+      padding: 18px;
+      background: #192064;
+      color: white;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 10px auto 0 auto;
+      display: block;
+    }
+
+    .register-btn:hover {
+      background: #0d1642;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+    }
+
+    .register-btn:active {
+      transform: translateY(0);
+    }
+
+    .register-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .switch-auth {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid #e0e0e0;
+      color: #666;
+    }
+
+    .switch-auth a {
+      color: #1a237e;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+
+    .switch-auth a:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      body {
+        flex-direction: column;
+      }
+
+      .left-section {
+        min-height: 40vh;
+      }
+
+      .year {
+        font-size: 8rem;
+        letter-spacing: -0.8rem;
+      }
+
+      .scholarship-text {
+        font-size: 3rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .register-container {
+        padding: 40px 30px;
+      }
+
+      .foundation-title {
+        font-size: 2rem;
+      }
+
+      .year {
+        font-size: 6rem;
+        letter-spacing: -0.6rem;
+      }
+
+      .scholarship-text {
+        font-size: 2.5rem;
+      }
+
+      .modal-box {
+        padding: 30px 20px;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+      }
+
+      .modal-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="left-section">
+    <div class="left-content">
+      <div class="foundation-title">Hiraya Foundation</div>
+      <div class="year">2026</div>
+      <div class="scholarship-text">
+        COLLEGE<br>
+        SCHOLARSHIP
+      </div>
+    </div>
+    <div class="contact-info">
+      <div>hirayafoundationph@gmail.com</div>
+      <div>123-456-7890</div>
+    </div>
+  </div>
+
+  <div class="right-section">
+    <div class="register-container">
+      <h2 class="register-title">REGISTER</h2>
+      
+      <form id="registerForm">
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" id="regFirstName" placeholder="First Name" required>
+            <div class="error-message" id="firstNameError"></div>
+          </div>
+          <div class="form-group">
+            <input type="text" id="regLastName" placeholder="Last Name" required>
+            <div class="error-message" id="lastNameError"></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <input type="email" id="regEmail" placeholder="Email" required>
+            <div class="error-message" id="emailError"></div>
+          </div>
+          <div class="form-group">
+            <input type="tel" id="regPhone" placeholder="Mobile Number" maxlength="11" required>
+            <div class="error-message" id="phoneError"></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <input type="password" id="regPassword" placeholder="Enter Password" required>
+            <div class="password-requirements" id="passwordRequirements">
+              <div class="requirement" id="req-length">At least 8 characters</div>
+              <div class="requirement" id="req-uppercase">One uppercase letter</div>
+              <div class="requirement" id="req-lowercase">One lowercase letter</div>
+              <div class="requirement" id="req-number">One number</div>
+              <div class="requirement" id="req-special">One special character (!@#$%^&*)</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="password" id="regConfirmPassword" placeholder="Confirm Password" required>
+            <div class="error-message" id="confirmPasswordError"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="register-btn" id="registerBtn">REGISTER</button>
+
+        <div class="switch-auth">
+          Already have an account? <a href="login.html">Log In</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Before You Continue Modal -->
+  <div class="modal-overlay" id="beforeContinueModal">
+    <div class="modal-box">
+      <div class="modal-icon">⚠️</div>
+      <div class="modal-title">Before You Continue</div>
+      <div class="modal-message">
+        Please ensure you have reviewed the scholarship program and confirmed your eligibility prior to creating an account.
+      </div>
+      <div class="modal-link">
+        <a href="scholarship.html" target="_blank" rel="noopener noreferrer">
+          📋 Read About the Program
+        </a>
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-cancel" id="beforeContinueCancel">Cancel</button>
+        <button class="modal-btn modal-btn-confirm" id="beforeContinueConfirm">I Understand</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Successful Registration Modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-box">
+      <div class="modal-icon">🎉</div>
+      <div class="modal-title">Registration Successful!</div>
+      <div class="modal-message">
+        Your account has been created successfully.<br>
+        Welcome to Hiraya Foundation Scholarship Program!
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-success" id="proceedToApplication">
+          Proceed to Application
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const registerForm = document.getElementById('registerForm');
+    const beforeContinueModal = document.getElementById('beforeContinueModal');
+    const successModal = document.getElementById('successModal');
+    const beforeContinueCancel = document.getElementById('beforeContinueCancel');
+    const beforeContinueConfirm = document.getElementById('beforeContinueConfirm');
+    const proceedToApplication = document.getElementById('proceedToApplication');
+
+    // Input fields
+    const firstNameInput = document.getElementById('regFirstName');
+    const lastNameInput = document.getElementById('regLastName');
+    const emailInput = document.getElementById('regEmail');
+    const phoneInput = document.getElementById('regPhone');
+    const passwordInput = document.getElementById('regPassword');
+    const confirmPasswordInput = document.getElementById('regConfirmPassword');
+
+    let warningConfirmed = false;
+    let registrationSuccess = false;
+
+    // Auto-capitalize first letter of first name and last name
+    function capitalizeFirstLetter(input) {
+      input.addEventListener('input', function(e) {
+        const words = this.value.split(' ');
+        const capitalizedWords = words.map(word => {
+          if (word.length > 0) {
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          }
+          return word;
+        });
+        this.value = capitalizedWords.join(' ');
+      });
+    }
+
+    capitalizeFirstLetter(firstNameInput);
+    capitalizeFirstLetter(lastNameInput);
+
+    // Only allow numbers in phone input
+    phoneInput.addEventListener('input', function(e) {
+      this.value = this.value.replace(/[^0-9]/g, '');
+      
+      // Validate phone number length
+      const phoneError = document.getElementById('phoneError');
+      if (this.value.length > 0 && this.value.length !== 11) {
+        this.classList.add('invalid');
+        this.classList.remove('valid');
+        phoneError.textContent = 'Mobile number must be exactly 11 digits';
+        phoneError.classList.add('show');
+      } else if (this.value.length === 11) {
+        this.classList.add('valid');
+        this.classList.remove('invalid');
+        phoneError.classList.remove('show');
+      } else {
+        this.classList.remove('invalid', 'valid');
+        phoneError.classList.remove('show');
+      }
+    });
+
+    // Password validation
+    const passwordRequirements = document.getElementById('passwordRequirements');
+
+    passwordInput.addEventListener('focus', function() {
+      passwordRequirements.classList.add('show');
+    });
+
+    passwordInput.addEventListener('blur', function() {
+      if (this.value.length === 0) {
+        passwordRequirements.classList.remove('show');
+      }
+    });
+
+    passwordInput.addEventListener('input', function() {
+      const password = this.value;
+      
+      // Check each requirement
+      const hasLength = password.length >= 8;
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasLowercase = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSpecial = /[!@#$%^&*]/.test(password);
+
+      // Update requirement indicators
+      document.getElementById('req-length').classList.toggle('met', hasLength);
+      document.getElementById('req-uppercase').classList.toggle('met', hasUppercase);
+      document.getElementById('req-lowercase').classList.toggle('met', hasLowercase);
+      document.getElementById('req-number').classList.toggle('met', hasNumber);
+      document.getElementById('req-special').classList.toggle('met', hasSpecial);
+
+      // Update input border
+      const allMet = hasLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
+      if (password.length > 0) {
+        this.classList.toggle('valid', allMet);
+        this.classList.toggle('invalid', !allMet);
+      }
+    });
+
+    // Confirm password validation
+    confirmPasswordInput.addEventListener('input', function() {
+      const confirmPasswordError = document.getElementById('confirmPasswordError');
+      const password = passwordInput.value;
+      
+      if (this.value.length > 0) {
+        if (this.value !== password) {
+          this.classList.add('invalid');
+          this.classList.remove('valid');
+          confirmPasswordError.textContent = 'Passwords do not match';
+          confirmPasswordError.classList.add('show');
+        } else {
+          this.classList.add('valid');
+          this.classList.remove('invalid');
+          confirmPasswordError.classList.remove('show');
+        }
+      } else {
+        this.classList.remove('invalid', 'valid');
+        confirmPasswordError.classList.remove('show');
+      }
+    });
+
+    // Email validation
+    emailInput.addEventListener('blur', function() {
+      const emailError = document.getElementById('emailError');
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (this.value.length > 0 && !emailPattern.test(this.value)) {
+        this.classList.add('invalid');
+        this.classList.remove('valid');
+        emailError.textContent = 'Please enter a valid email address';
+        emailError.classList.add('show');
+      } else if (this.value.length > 0) {
+        this.classList.add('valid');
+        this.classList.remove('invalid');
+        emailError.classList.remove('show');
+      }
+    });
+
+    // Show Before You Continue modal on form submit
+    registerForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // If warning not confirmed, show Before You Continue modal
+      if (!warningConfirmed) {
+        beforeContinueModal.classList.add('show');
+        return;
+      }
+
+      // Proceed with registration
+      processRegistration();
+    });
+
+    // Cancel button - close Before You Continue modal
+    beforeContinueCancel.addEventListener('click', function() {
+      beforeContinueModal.classList.remove('show');
+    });
+
+    // Confirm button - close Before You Continue modal and submit form
+    beforeContinueConfirm.addEventListener('click', function() {
+      warningConfirmed = true;
+      beforeContinueModal.classList.remove('show');
+      processRegistration();
+    });
+
+    // Proceed to Application button
+    proceedToApplication.addEventListener('click', function() {
+      // Redirect to application form
+      window.location.href = 'application.html';
+    });
+
+    // Close modals when clicking outside the box
+    beforeContinueModal.addEventListener('click', function(e) {
+      if (e.target === beforeContinueModal) {
+        beforeContinueModal.classList.remove('show');
+      }
+    });
+
+    successModal.addEventListener('click', function(e) {
+      if (e.target === successModal) {
+        // Don't close - user must click the button
+        return;
+      }
+    });
+
+    // Function to validate password strength
+    function isPasswordValid(password) {
+      const hasLength = password.length >= 8;
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasLowercase = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSpecial = /[!@#$%^&*]/.test(password);
+      
+      return hasLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
+    }
+
+    // Function to process registration
+    function processRegistration() {
+      const firstName = firstNameInput.value.trim();
+      const lastName = lastNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      // Validate all fields
+      if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
+        alert('Please fill in all fields!');
+        warningConfirmed = false;
+        return;
+      }
+
+      // Validate email format
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        alert('Please enter a valid email address!');
+        warningConfirmed = false;
+        return;
+      }
+
+      // Validate phone number
+      if (phone.length !== 11) {
+        alert('Mobile number must be exactly 11 digits!');
+        warningConfirmed = false;
+        return;
+      }
+
+      // Validate password strength
+      if (!isPasswordValid(password)) {
+        alert('Password must meet all requirements:\n- At least 8 characters\n- One uppercase letter\n- One lowercase letter\n- One number\n- One special character (!@#$%^&*)');
+        warningConfirmed = false;
+        return;
+      }
+
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        warningConfirmed = false;
+        return;
+      }
+
+      // Store user data
+      const userData = {
+        firstName,
+        lastName,
+        email,
+        phone,
+        password
+      };
+
+      console.log('User registered:', userData);
+      
+      // Store in sessionStorage to pre-fill application form
+      sessionStorage.setItem('userData', JSON.stringify(userData));
+      
+      // Show success modal
+      successModal.classList.add('show');
+      
+      // Reset warning confirmed for next registration
+      warningConfirmed = false;
+      
+      // Clear form
+      registerForm.reset();
+      
+      // Remove validation classes
+      const inputs = registerForm.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.classList.remove('valid', 'invalid');
+      });
+      
+      // Hide password requirements
+      passwordRequirements.classList.remove('show');
+    }
+    
+    // Keep your existing fetch implementation commented out or modify it
+    
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Validate all fields first...
+        
+        // Prepare user data
+        const userData = {
+            firstName: firstNameInput.value.trim(),
+            lastName: lastNameInput.value.trim(),
+            email: emailInput.value.trim(),
+            phone: phoneInput.value.trim(),
+            password: passwordInput.value
+        };
+        
+        try {
+            const response = await fetch(`${window.location.origin}/ScholarshipSystem/api/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                sessionStorage.setItem('userData', JSON.stringify({
+                    userId: data.userId,
+                    userName: data.userName,
+                    email: data.email
+                }));
+                
+                // Show success modal instead of alert
+                successModal.classList.add('show');
+            } else {
+                alert('Registration failed: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred during registration. Please try again.');
+        }
+    });
+   
+  </script>
+</body>
+</html>

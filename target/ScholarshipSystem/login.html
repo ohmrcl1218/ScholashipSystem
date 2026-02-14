@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="/ScholarshipSystem/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In - Hiraya Foundation</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .left-section {
+      flex: 1;
+      background: url('images/laptop.jpg');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      padding: 40px;
+      position: relative;
+    }
+
+    .left-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .left-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      line-height: 1.05;
+    }
+
+    .foundation-title {
+      font-size: 3rem;
+      font-weight: 400;
+      color: white;
+      letter-spacing: -2px;
+      margin-bottom: 10px;
+    }
+
+    .year {
+      font-size: 13rem;
+      font-weight: 700;
+      color: #99c5ff;
+      letter-spacing: -1rem;
+      line-height: 0.9;
+      margin-bottom: 10px;
+    }
+
+    .scholarship-text {
+      font-size: 4rem;
+      font-weight: 600;
+      color: white;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .contact-info {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .contact-info div {
+      margin: 5px 0;
+    }
+
+    .right-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      background: #f5f5f5;
+    }
+
+    .login-container {
+      background: white;
+      padding: 60px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .login-title {
+      text-align: center;
+      font-size: 2.2rem;
+      color: #192064;
+      font-weight: bold;
+      margin-bottom: 40px;
+      letter-spacing: -1px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 15px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #fafafa;
+    }
+
+    .form-group input::placeholder {
+      color: #b0b0b0;
+      font-size: 1.1rem;
+      letter-spacing: 0.95px;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #192064;
+      background: white;
+    }
+
+    .form-group.input-error input {
+      border-color: #d32f2f;
+      background: #ffebee;
+    }
+
+    .error-message {
+      color: #d32f2f;
+      font-size: 0.85rem;
+      margin-top: 8px;
+      display: none;
+      font-weight: 500;
+      padding-left: 5px;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .login-btn {
+      width: 30%;
+      padding: 18px;
+      background: #192064;
+      color: white;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 10px auto 0 auto;
+      display: block;
+    }
+
+    .login-btn:hover {
+      background: #0d1642;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    .login-btn:disabled {
+      background: #b0b0b0;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .forgot-password {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .forgot-password a {
+      color: #192064;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+
+    .switch-auth {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid #e0e0e0;
+      color: #666;
+    }
+
+    .switch-auth a {
+      color: #192064;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+
+    .switch-auth a:hover {
+      text-decoration: underline;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      body {
+        flex-direction: column;
+      }
+
+      .left-section {
+        min-height: 40vh;
+      }
+
+      .year {
+        font-size: 8rem;
+        letter-spacing: -0.8rem;
+      }
+
+      .scholarship-text {
+        font-size: 3rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .login-container {
+        padding: 40px 30px;
+      }
+
+      .foundation-title {
+        font-size: 2rem;
+      }
+
+      .year {
+        font-size: 6rem;
+        letter-spacing: -0.6rem;
+      }
+
+      .scholarship-text {
+        font-size: 2.5rem;
+      }
+      
+      .login-btn {
+        width: 50%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="left-section">
+    <div class="left-content">
+      <div class="foundation-title">Hiraya Foundation</div>
+      <div class="year">2026</div>
+      <div class="scholarship-text">
+        COLLEGE<br>
+        SCHOLARSHIP
+      </div>
+    </div>
+    <div class="contact-info">
+      <div>hirayafoundationph@gmail.com</div>
+      <div>123-456-7890</div>
+    </div>
+  </div>
+
+  <div class="right-section">
+    <div class="login-container">
+      <h2 class="login-title">LOG IN</h2>
+      
+      <form id="loginForm">
+        <div class="form-group" id="emailGroup">
+          <input type="email" id="loginEmail" placeholder="Email" required>
+        </div>
+
+        <div class="form-group" id="passwordGroup">
+          <input type="password" id="loginPassword" placeholder="Password" required>
+        </div>
+
+        <!-- Global Error Message (Shown for invalid credentials) -->
+        <div id="loginError" class="error-message" style="text-align: center; margin-bottom: 20px;">
+          Unable to log in. Your email or password are incorrect.
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          <span id="btnText">LOG IN</span>
+          <span id="btnSpinner" style="display: none;"><span class="spinner"></span> Logging in...</span>
+        </button>
+
+        <div class="forgot-password">
+          <a href="#">Forgot Password?</a>
+        </div>
+
+        <div class="switch-auth">
+          Don't have an account? <a href="register.html">Register</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const loginError = document.getElementById('loginError');
+    const emailGroup = document.getElementById('emailGroup');
+    const passwordGroup = document.getElementById('passwordGroup');
+    const emailInput = document.getElementById('loginEmail');
+    const passwordInput = document.getElementById('loginPassword');
+
+    // Hide error message initially
+    loginError.classList.remove('show');
+
+    // Clear error state when user starts typing
+    emailInput.addEventListener('input', function() {
+      emailGroup.classList.remove('input-error');
+      loginError.classList.remove('show');
+    });
+
+    passwordInput.addEventListener('input', function() {
+      passwordGroup.classList.remove('input-error');
+      loginError.classList.remove('show');
+    });
+
+    // Handle login form submission - NO POPUPS, just inline error messages
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      // Validate inputs
+      if (!email || !password) {
+        if (!email) emailGroup.classList.add('input-error');
+        if (!password) passwordGroup.classList.add('input-error');
+        return;
+      }
+
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline';
+      loginBtn.disabled = true;
+
+      try {
+        const response = await fetch(`${window.location.origin}/ScholarshipSystem/api/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Store user data in session storage
+          sessionStorage.setItem('userData', JSON.stringify({
+            userId: data.userId,
+            userName: data.userName,
+            email: data.email,
+            userType: data.userType,
+            hasApplication: data.hasApplication,
+            isSubmitted: data.isSubmitted
+          }));
+          
+          // Store user ID in session for backward compatibility
+          sessionStorage.setItem('userId', data.userId);
+          
+          // NO ALERT - Immediate redirect to dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          // Show error message in red - NO POPUP
+          loginError.classList.add('show');
+          emailGroup.classList.add('input-error');
+          passwordGroup.classList.add('input-error');
+          
+          // Reset button state
+          btnText.style.display = 'inline';
+          btnSpinner.style.display = 'none';
+          loginBtn.disabled = false;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        
+        // Show network error message
+        loginError.textContent = 'Unable to log you in. Incorrect email or password.';
+        loginError.classList.add('show');
+        
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+        loginBtn.disabled = false;
+      }
+    });
+
+    // Check if user is already logged in
+    async function checkAuthStatus() {
+      try {
+        const response = await fetch(`${window.location.origin}/ScholarshipSystem/api/login`, {
+          credentials: 'include'
+        });
+        const data = await response.json();
+        
+        if (data.authenticated) {
+          // Already logged in - redirect to dashboard
+          window.location.href = 'dashboard.html';
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      }
+    }
+
+    // Check authentication status when page loads
+    checkAuthStatus();
+  </script>
+</body>
+</html>

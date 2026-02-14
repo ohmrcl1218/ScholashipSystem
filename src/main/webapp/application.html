@@ -1,0 +1,2980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="/ScholarshipSystem/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholarship Application Form - Hiraya Foundation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      background: #192064;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 5px;
+      letter-spacing: 1px;
+    }
+
+    .header p {
+      font-size: 1rem;
+      opacity: 0.95;
+    }
+
+    /* Progress Stepper */
+    .stepper {
+      display: flex;
+      justify-content: space-between;
+      padding: 30px 50px;
+      background: #fafafa;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: #e0e0e0;
+      z-index: 0;
+    }
+
+    .step.active:not(:last-child)::after {
+      background: #1a237e;
+    }
+
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      color: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      font-weight: bold;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-circle,
+    .step.completed .step-circle {
+      background: #192064;
+      color: white;
+    }
+
+    .step-label {
+      font-size: 1.1rem;
+      color: #666;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .step.active .step-label {
+      color: #192064;
+      font-weight: 600;
+    }
+
+    /* Form Content */
+    .form-content {
+      padding: 30px 50px 20px;
+    }
+
+    .form-section {
+      display: none;
+    }
+
+    .form-section.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2 {
+      color: #192064;
+      font-size: 1.6rem;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .section-subtitle {
+      color: #192064;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #192064;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #333;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    label .required {
+      color: #d32f2f;
+    }
+
+    label .helper-text {
+      color: #666;
+      font-weight: 400;
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    input[type="number"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #fafafa;
+      font-family: 'Arial', sans-serif;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #192064;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+    }
+
+    /* GWA validation styles */
+    input.invalid-gwa {
+      border-color: #d32f2f !important;
+      background: #ffebee !important;
+    }
+
+    input.invalid-gwa:focus {
+      box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1) !important;
+    }
+
+    .gwa-error {
+      color: #d32f2f;
+      font-size: 0.85rem;
+      margin-top: 5px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .gwa-error.show {
+      display: block;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      min-height: 400px;
+      resize: vertical;
+      margin-top: 10px;
+    }
+
+    .file-upload-group {
+      margin-bottom: 20px;
+      padding: 20px;
+      background: #fafafa;
+      border: 2px dashed #e0e0e0;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .file-upload-group:hover {
+      border-color: #192064;
+      background: #f0f4ff;
+    }
+
+    .file-upload-label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 300;
+      font-size: 1rem;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    input[type="file"]::file-selector-button {
+      background: #192064;
+      color: white;
+      padding: 8px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background 0.3s ease;
+      font-size: 1rem;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: #192064;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background: #e3f2fd;
+      border-radius: 6px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: #192064;
+    }
+
+    /* Buttons */
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px solid #e0e0e0;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      width: 20%;
+      padding: 15px 40px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-back {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-back:hover {
+      background: #bdbdbd;
+      transform: translateY(-2px);
+    }
+
+    .btn-next,
+    .btn-submit {
+      background: #192064;
+      color: white;
+    }
+
+    .btn-next:hover,
+    .btn-submit:hover {
+      background: #0d1642;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+    }
+
+    .subsection {
+      margin-top: 30px;
+      padding-top: 25px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .subsection h3 {
+      color: #192064;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #1a237e;
+    }
+
+    .subsection-description {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      font-style: italic;
+    }
+
+    .word-count {
+      text-align: right;
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
+    /* Confirmation Screen Styles */
+    #confirmationScreen {
+      padding: 80px 40px;
+      text-align: center;
+    }
+
+    .confirmation-content {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .success-icon {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 40px;
+      background: #4caf50;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: scaleIn 0.5s ease;
+      box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+      position: relative;
+    }
+
+    .success-icon::before {
+      content: '';
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(76, 175, 80, 0.2);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes scaleIn {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    .checkmark {
+      width: 60px;
+      height: 60px;
+      stroke: white;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      animation: checkmark 0.6s ease 0.3s forwards;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes checkmark {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .confirmation-title {
+      color: #192064;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      animation: fadeInUp 0.6s ease 0.5s both;
+    }
+
+    .confirmation-subtitle {
+      color: #666;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      animation: fadeInUp 0.6s ease 0.7s both;
+    }
+
+    .reference-box {
+      background: #e3f2fd;
+      border: 2px dashed #1a237e;
+      border-radius: 10px;
+      padding: 25px;
+      margin: 40px auto 0;
+      max-width: 400px;
+      animation: fadeInUp 0.6s ease 0.9s both;
+    }
+
+    .reference-box strong {
+      display: block;
+      color: #1a237e;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .reference-number {
+      font-size: 1.6rem;
+      color: #192064;
+      font-weight: bold;
+      letter-spacing: 3px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .confirmation-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 60px;
+      animation: fadeInUp 0.6s ease 1.1s both;
+      flex-wrap: wrap;
+    }
+
+    .confirmation-btn {
+      padding: 15px 40px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 0;
+    }
+
+    .btn-home {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-home:hover {
+      background: #bdbdbd;
+      transform: translateY(-2px);
+    }
+
+    .btn-dashboard {
+      background: #192064;
+      color: white;
+    }
+
+    .btn-dashboard:hover {
+      background: #0d1642;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-container {
+      background: white;
+      border-radius: 8px;
+      max-width: 650px;
+      width: 90%;
+      max-height: 85vh;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      background: #192064;
+      color: white;
+      padding: 18px 25px;
+      text-align: center;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.6rem;
+      color: white;
+      letter-spacing: 1px;
+    }
+
+    .modal-body {
+      padding: 30px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-content {
+      color: #333;
+      line-height: 1.8;
+      margin-bottom: 25px;
+    }
+
+    .modal-content p {
+      margin-bottom: 15px;
+      text-align: justify;
+    }
+
+    .modal-content ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    .modal-content li {
+      margin-bottom: 15px;
+      padding-left: 5px;
+    }
+
+    .modal-content strong {
+      color: #192064;
+      font-weight: 600;
+    }
+
+    .modal-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 20px;
+      background: #e3f2fd;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      border: 2px solid #192064;
+    }
+
+    .modal-checkbox input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .modal-checkbox label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 600;
+      color: #192064;
+      font-size: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 15px 40px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-btn-cancel {
+      background: #e0e0e0;
+      color: #555;
+    }
+
+    .modal-btn-cancel:hover {
+      background: #bdbdbd;
+      transform: translateY(-2px);
+    }
+
+    .modal-btn-confirm {
+      background: #192064;
+      color: white;
+    }
+
+    .modal-btn-confirm:hover:not(:disabled) {
+      background: #0d1642;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+    }
+
+    .modal-btn-confirm:disabled {
+      background: #bdbdbd;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 0;
+        border-radius: 0;
+      }
+
+      .header {
+        padding: 30px 20px;
+      }
+
+      .header h1 {
+        font-size: 1.6rem;
+      }
+
+      .header p {
+        font-size: 1rem;
+      }
+
+      .stepper {
+        padding: 20px 10px;
+        overflow-x: auto;
+      }
+
+      .step-label {
+        font-size: 1rem;
+      }
+
+      .step-circle {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+      }
+
+      .form-content {
+        padding: 30px 20px;
+      }
+
+      .form-row,
+      .form-row-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .confirmation-buttons {
+        flex-direction: column;
+      }
+
+      .confirmation-btn {
+        width: 100%;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+      }
+
+      .modal-btn {
+        width: 100%;
+      }
+    }
+  </style>
+  <style>
+    /* Save indicator - simplified */
+    .save-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #192064;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+      display: none;
+    }
+
+    .save-indicator.saving { background: #ff9800; }
+    .save-indicator.saved { background: #4caf50; }
+    .save-indicator.error { background: #f44336; }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Draft modal */
+    .draft-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .draft-modal.active {
+      display: flex;
+    }
+
+    .draft-modal-content {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    .draft-modal-content h3 {
+      color: #192064;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    .draft-modal-content p {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .draft-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .draft-btn {
+      padding: 12px 30px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 25px;
+    }
+
+    .draft-btn-restore {
+      background: #192064;
+      color: white;
+    }
+
+    .draft-btn-restore:hover {
+      background: #0d1642;
+      transform: translateY(-2px);
+    }
+
+    .draft-btn-discard {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .draft-btn-discard:hover {
+      background: #bdbdbd;
+    }
+
+    .upload-status {
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    .manual-save-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #192064;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .manual-save-btn:hover {
+      background: #0d1642;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>HIRAYA FOUNDATION</h1>
+      <p>College Scholarship Application Form</p>
+    </div>
+
+    <!-- Progress Stepper -->
+    <div class="stepper">
+      <div class="step active" data-step="1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Personal Details</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Academic Details</div>
+      </div>
+      <div class="step" data-step="3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Upload Documents</div>
+      </div>
+      <div class="step" data-step="4">
+        <div class="step-circle">4</div>
+        <div class="step-label">Essay</div>
+      </div>
+    </div>
+
+    <!-- Manual Save Button -->
+    <button class="manual-save-btn" id="manualSaveBtn">💾 SAVE DRAFT</button>
+
+    <!-- Save Indicator -->
+    <div id="saveIndicator" class="save-indicator">
+      <span id="saveIcon">💾</span>
+      <span id="saveMessage">Saving...</span>
+    </div>
+
+    <!-- Restore Draft Modal -->
+    <div id="restoreDraftModal" class="draft-modal">
+      <div class="draft-modal-content">
+        <h3>📝 Resume Your Application</h3>
+        <p>We found an incomplete application from your last session.<br>Would you like to continue where you left off?</p>
+        <div class="draft-buttons">
+          <button class="draft-btn draft-btn-restore" id="restoreDraftBtn">Restore Draft</button>
+          <button class="draft-btn draft-btn-discard" id="discardDraftBtn">Start Fresh</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form id="scholarshipForm">
+      <input type="hidden" id="applicationId" name="applicationId" value="">
+      <div class="form-content" id="formContent">
+        <!-- SECTION 1: Personal Details -->
+        <div class="form-section active" data-section="1">
+          <h2>Personal Details</h2>
+          <p class="section-subtitle">Basic Information</p>
+
+          <div class="form-row-3">
+            <div class="form-group">
+              <label>First Name <span class="required">*</span></label>
+              <input type="text" id="firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+              <label>Middle Name <span class="required">*</span></label>
+              <input type="text" id="middleName" name="middleName" required>
+              <small style="color:#666;font-size:0.85rem;">Put "N/A" if not applicable</small>
+            </div>
+            <div class="form-group">
+              <label>Last Name <span class="required">*</span></label>
+              <input type="text" id="lastName" name="lastName" required>
+            </div>
+          </div>
+
+          <div class="form-row-3">
+            <div class="form-group">
+              <label>Sex <span class="required">*</span></label>
+              <select id="sex" name="sex" required>
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date of Birth <span class="required">*</span></label>
+              <input type="date" id="birthdate" name="birthdate" required>
+            </div>
+            <div class="form-group">
+              <label>Age <span class="required">*</span></label>
+              <input type="number" id="age" name="age" readonly>
+            </div>
+          </div>
+
+          <div class="form-row-3">
+            <div class="form-group">
+              <label>Place of Birth <span class="required">*</span></label>
+              <input type="text" id="placeOfBirth" name="placeOfBirth" required>
+            </div>
+            <div class="form-group">
+              <label>Height (in cm) <span class="required">*</span></label>
+              <input type="number" id="height" name="height" required>
+            </div>
+            <div class="form-group">
+              <label>Weight (in kg) <span class="required">*</span></label>
+              <input type="number" id="weight" name="weight" required>
+            </div>
+          </div>
+
+          <div class="form-row-3">
+            <div class="form-group">
+              <label>Mobile Number <span class="required">*</span></label>
+              <input type="tel" id="mobileNumber" name="mobileNumber" required>
+            </div>
+			<div class="form-group">
+			  <label>Email Address <span class="required">*</span></label>
+			  <input type="email" id="email" name="email" required>
+			</div>
+            <div class="form-group">
+              <label>Facebook URL <span class="required">*</span></label>
+              <input type="text" id="facebookUrl" name="facebookUrl" required>
+            </div>
+          </div>
+
+          <!-- Present Address -->
+          <div class="subsection">
+            <h3>Present Address</h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Region <span class="required">*</span></label>
+                <select id="region" name="presentRegion" required>
+                  <option value="">Loading regions...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Province <span class="required">*</span></label>
+                <select id="province" name="presentProvince" required>
+                  <option value="">Select Region First</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Municipality / City <span class="required">*</span></label>
+                <select id="municipality" name="presentMunicipality" required>
+                  <option value="">Select Province First</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Barangay <span class="required">*</span></label>
+                <select id="barangay" name="presentBarangay" required>
+                  <option value="">Select Municipality First</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label>House Number <span class="required">*</span></label>
+                <input type="text" id="houseNumber" name="presentHouseNumber" required>
+              </div>
+              <div class="form-group">
+                <label>Street <span class="required">*</span></label>
+                <input type="text" id="street" name="presentStreet" required>
+              </div>
+              <div class="form-group">
+                <label>ZIP Code <span class="required">*</span></label>
+                <input type="text" id="zipCode" name="presentZipCode" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Permanent Address -->
+          <div class="subsection">
+            <h3>Permanent Address</h3>
+            
+            <div class="checkbox-group">
+              <input type="checkbox" id="sameAsPresent" name="sameAsPresent">
+              <label for="sameAsPresent">Same as Present Address</label>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Region <span class="required">*</span></label>
+                <select id="permRegion" name="permanentRegion" required>
+                  <option value="">Loading regions...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Province <span class="required">*</span></label>
+                <select id="permProvince" name="permanentProvince" required>
+                  <option value="">Select Region First</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Municipality / City <span class="required">*</span></label>
+                <select id="permMunicipality" name="permanentMunicipality" required>
+                  <option value="">Select Province First</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Barangay <span class="required">*</span></label>
+                <select id="permBarangay" name="permanentBarangay" required>
+                  <option value="">Select Municipality First</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label>House Number <span class="required">*</span></label>
+                <input type="text" id="permHouseNumber" name="permanentHouseNumber" required>
+              </div>
+              <div class="form-group">
+                <label>Street <span class="required">*</span></label>
+                <input type="text" id="permStreet" name="permanentStreet" required>
+              </div>
+              <div class="form-group">
+                <label>ZIP Code <span class="required">*</span></label>
+                <input type="text" id="permZipCode" name="permanentZipCode" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Academic Details -->
+        <div class="form-section" data-section="2">
+          <h2>Academic Details</h2>
+          <p class="section-subtitle">Junior High School</p>
+
+          <div class="form-group">
+            <label>Junior High School Name <span class="required">*</span></label>
+            <input type="text" id="jhsName" name="jhsName" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>School ID <span class="required">*</span></label>
+              <input type="text" id="jhsSchoolId" name="jhsSchoolId" required>
+            </div>
+            <div class="form-group">
+              <label>Junior High School Type <span class="required">*</span></label>
+              <select id="jhsType" name="jhsType" required>
+                <option value="">Select Type</option>
+                <option value="Public">Public</option>
+                <option value="Private">Private</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3>Senior High School</h3>
+
+            <div class="checkbox-group">
+              <input type="checkbox" id="sameAsJHS" name="sameAsJHS">
+              <label for="sameAsJHS">Same as Junior High School</label>
+            </div>
+
+            <div class="form-group">
+              <label>Senior High School Name <span class="required">*</span></label>
+              <input type="text" id="shsName" name="shsName" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>School ID <span class="required">*</span></label>
+                <input type="text" id="shsSchoolId" name="shsSchoolId" required>
+              </div>
+              <div class="form-group">
+                <label>Senior High School Type <span class="required">*</span></label>
+                <select id="shsType" name="shsType" required>
+                  <option value="">Select Type</option>
+                  <option value="Public">Public</option>
+                  <option value="Private">Private</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Track <span class="required">*</span></label>
+                <select id="track" name="track" required>
+                  <option value="">Select Track</option>
+                  <option value="Academic Track">Academic Track</option>
+                  <option value="Technical-Vocational-Livelihood Track">Technical-Vocational-Livelihood Track</option>
+                  <option value="Sports Track">Sports Track</option>
+                  <option value="Arts and Design Track">Arts and Design Track</option>
+                </select>
+              </div>
+				<div class="form-group">
+				  <label>Strand <span class="required">*</span></label>
+				  <select id="strand" name="strand" required>
+				    <option value="">Select Strand</option>
+				    <option value="STEM">Science, Technology, Engineering, and Mathematics (STEM)</option>
+				    <option value="HUMSS">Humanities and Social Sciences (HUMSS)</option>
+				    <option value="ABM">Accountancy, Business and Management (ABM)</option>
+				  </select>
+				</div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Grade 12 – First Semester GWA <span class="required">*</span></label>
+                <input type="number" step="0.01" id="grade12GWA" name="grade12Gwa" min="0" max="100" required>
+                <div class="gwa-error" id="gwaError">GWA must be at least 90% to be eligible.</div>
+              </div>
+              <div class="form-group">
+                <label>Honors Received <span class="required">*</span></label>
+                <input type="text" id="honorsReceived" name="honorsReceived" readonly required>
+              </div>
+            </div>
+          </div>
+
+          <!-- College / University -->
+          <div class="subsection">
+            <h3>College / University</h3>
+            
+            <div class="form-group">
+              <label>First Choice <span class="required">*</span></label>
+              <select id="college1" name="collegeFirst" required>
+                <option value="">Select College / University</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Second Choice</label>
+              <select id="college2" name="collegeSecond">
+                <option value="">Select College / University</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Third Choice</label>
+              <select id="college3" name="collegeThird">
+                <option value="">Select College / University</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Program -->
+          <div class="subsection">
+            <h3>Program</h3>
+
+            <div class="form-group">
+              <label>First Choice <span class="required">*</span></label>
+              <select id="course1" name="programFirst" required>
+                <option value="">Select Program</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Second Choice</label>
+              <select id="course2" name="programSecond">
+                <option value="">Select Program</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Third Choice</label>
+              <select id="course3" name="programThird">
+                <option value="">Select Program</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: Upload Documents -->
+        <div class="form-section" data-section="3">
+          <h2>Upload Documents</h2>
+          <p class="section-subtitle">Required Documents</p>
+          <div id="documentUploadStatus"></div>
+
+          <div class="file-upload-group" data-doc-type="proof_enrollment">
+            <label class="file-upload-label">Proof of Enrollment (Certificate of Registration / COR) <span class="required">*</span></label>
+            <input type="file" id="proofEnrollment" accept=".pdf,.jpg,.jpeg,.png" required>
+            <div class="upload-status" id="status_proofEnrollment"></div>
+          </div>
+
+          <div class="file-upload-group" data-doc-type="picture">
+            <label class="file-upload-label">2×2 Picture <span class="required">*</span></label>
+            <input type="file" id="picture" accept=".jpg,.jpeg,.png" required>
+            <div class="upload-status" id="status_picture"></div>
+          </div>
+
+          <div class="file-upload-group" data-doc-type="valid_id">
+            <label class="file-upload-label">Valid ID or School ID <span class="required">*</span></label>
+            <input type="file" id="validId" accept=".pdf,.jpg,.jpeg,.png" required>
+            <div class="upload-status" id="status_validId"></div>
+          </div>
+
+          <div class="file-upload-group" data-doc-type="report_card">
+            <label class="file-upload-label">Grade 12 Report Card <span class="required">*</span></label>
+            <input type="file" id="reportCard" accept=".pdf" required>
+            <div class="upload-status" id="status_reportCard"></div>
+          </div>
+
+          <div class="file-upload-group" data-doc-type="birth_cert">
+            <label class="file-upload-label">PSA Birth Certificate <span class="required">*</span></label>
+            <input type="file" id="birthCert" accept=".pdf" required>
+            <div class="upload-status" id="status_birthCert"></div>
+          </div>
+
+          <div class="file-upload-group" data-doc-type="moral_cert">
+            <label class="file-upload-label">Certificate of Good Moral Character <span class="required">*</span></label>
+            <input type="file" id="moralCert" accept=".pdf" required>
+            <div class="upload-status" id="status_moralCert"></div>
+          </div>
+
+          <div class="file-upload-group" data-doc-type="health_cert">
+            <label class="file-upload-label">Certificate of Good Health <span class="required">*</span></label>
+            <input type="file" id="healthCert" accept=".pdf" required>
+            <div class="upload-status" id="status_healthCert"></div>
+          </div>
+
+          <div class="file-upload-group" data-doc-type="indigency_cert">
+            <label class="file-upload-label">Certificate of Indigency <span class="required">*</span></label>
+            <input type="file" id="indigencyCert" accept=".pdf" required>
+            <div class="upload-status" id="status_indigencyCert"></div>
+          </div>
+
+          <div class="file-upload-group" data-doc-type="income_cert">
+            <label class="file-upload-label">Certificate of Income / Income Tax Return (ITR) <span class="required">*</span></label>
+            <input type="file" id="incomeCert" accept=".pdf" required>
+            <div class="upload-status" id="status_incomeCert"></div>
+          </div>
+
+          <div class="file-upload-group" data-doc-type="reco_letter">
+            <label class="file-upload-label">Recommendation Letter(s) <span class="required">*</span></label>
+            <input type="file" id="recoLetter" accept=".pdf" required>
+            <div class="upload-status" id="status_recoLetter"></div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: Essay -->
+        <div class="form-section" data-section="4">
+          <h2>Essay</h2>
+          <p class="section-subtitle">Personal Statement</p>
+
+          <div class="form-group">
+            <label>Write one paragraph explaining your need for this scholarship and the reasons you should be considered as a recipient (approximately 150–200 words) <span class="required">*</span></label>
+            <textarea id="essay" name="essay" required></textarea>
+            <div class="word-count" id="wordCount">Word count: 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="form-content">
+        <div class="button-group">
+          <button type="button" class="btn btn-back" id="backBtn">BACK</button>
+          <button type="button" class="btn btn-next" id="nextBtn">NEXT</button>
+          <button type="button" class="btn btn-submit" id="submitBtn" style="display: none;">SUBMIT</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Confirmation Screen (Hidden by default) -->
+    <div id="confirmationScreen" style="display: none;">
+      <div class="confirmation-content">
+        <div class="success-icon">
+          <svg class="checkmark" viewBox="0 0 52 52">
+            <path d="M14 27l7.5 7.5L38 18"/>
+          </svg>
+        </div>
+        <h1 class="confirmation-title">YOU HAVE SUCCESSFULLY SUBMITTED YOUR APPLICATION!</h1>
+        <p class="confirmation-subtitle">Please wait for the results to be sent on your email soon.</p>
+        <div class="reference-box">
+          <strong>Application Reference Number</strong>
+          <div class="reference-number" id="referenceNumber">HF-2026-00000</div>
+        </div>
+        <div class="confirmation-buttons">
+          <a href="dashboard.html" class="confirmation-btn btn-dashboard">VIEW APPLICATION STATUS</a>
+          <a href="index.html" class="confirmation-btn btn-home">BACK TO HOME</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terms and Conditions Modal -->
+  <div class="modal-overlay" id="termsModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Terms and Conditions</h2>
+      </div>
+      <div class="modal-body">
+        <div class="modal-content">
+          <p>By creating an account and submitting an application, the applicant agrees to the following:</p>
+          <ol>
+            <li><strong>Accuracy of Information</strong> – All information and documents submitted are true, correct, and complete...</li>
+            <li><strong>Document Verification</strong> – Submitted documents may be reviewed and verified...</li>
+            <li><strong>Eligibility Compliance</strong> – The applicant confirms that all eligibility requirements...</li>
+            <li><strong>Use of Personal Information</strong> – Personal information collected shall be processed, stored, and protected...</li>
+            <li><strong>Confidentiality</strong> – All personal information and documents will be treated with confidentiality...</li>
+            <li><strong>Application Review Process</strong> – Submission of an application does not guarantee approval...</li>
+            <li><strong>Consent to Communication</strong> – The applicant agrees to receive official notifications...</li>
+          </ol>
+        </div>
+        <div class="modal-checkbox">
+          <input type="checkbox" id="agreeTerms">
+          <label for="agreeTerms">I agree to the Terms and Conditions and consent to the use of my information for scholarship evaluation purposes.</label>
+        </div>
+        <div class="modal-buttons">
+          <button type="button" class="modal-btn modal-btn-cancel" id="cancelBtn">CANCEL</button>
+          <button type="button" class="modal-btn modal-btn-confirm" id="confirmBtn" disabled>CONFIRM</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    // ========== CONFIGURATION ==========
+    const API_BASE = '/ScholarshipSystem/api';
+    const PSGC_API = 'https://psgc.gitlab.io/api';
+    let currentStep = 1;
+    let applicationId = null;
+    let userId = null;
+
+// ========== SINGLE DOM CONTENT LOADED - UPDATED ==========
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Application form initializing...');
+    
+    // 1. Check authentication
+    const isAuthenticated = await checkAuthStatus();
+    if (!isAuthenticated) {
+        console.log('Not authenticated, redirecting to login');
+        window.location.href = '/ScholarshipSystem/login.html';
+        return;
+    }
+    
+    console.log('Authentication confirmed, user ID:', userId);
+    
+    // 2. RESTORE APPLICATION ID FROM SESSION STORAGE
+    const savedAppId = sessionStorage.getItem('currentApplicationId');
+    if (savedAppId) {
+        applicationId = parseInt(savedAppId);
+        document.getElementById('applicationId').value = savedAppId;
+        console.log('📂 Restored application ID from sessionStorage:', applicationId);
+    }
+    
+    // 3. Load all form data
+    await Promise.all([
+        loadRegions(),
+        loadCollegeOptions(),
+        loadProgramOptions()
+    ]);
+    
+    // 4. Initialize event listeners
+    initializeEventListeners();
+    
+    // 5. Check for existing draft and sync application ID
+    await checkForExistingDraft();
+    
+    // 6. If we have an application ID but no draft loaded, load it
+    if (applicationId && !document.querySelector('.form-section.active')) {
+        await loadApplicationById(applicationId);
+    }
+    
+    // 7. Show first step
+    showStep(1);
+    
+    // 8. Auto-check application status after 1 second
+    setTimeout(checkApplicationStatus, 1000);
+    
+    console.log('Application form initialized successfully');
+});
+    
+    // ========== AUTHENTICATION CHECK ==========
+    async function checkAuthStatus() {
+        try {
+            const response = await fetch(`${API_BASE}/dashboard`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
+            });
+            
+            if (!response.ok) return false;
+            
+            const data = await response.json();
+            
+            if (data.authenticated && data.user) {
+                userId = data.user.id;
+                return true;
+            }
+            
+            return false;
+        } catch (error) {
+            console.error('Auth check error:', error);
+            return false;
+        }
+    }
+
+ // ========== CHECK FOR EXISTING DRAFT - ENHANCED ==========
+    async function checkForExistingDraft() {
+        try {
+            console.log('Checking for existing draft...');
+            
+            const response = await fetch(`${API_BASE}/application`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.success && data.application) {
+                    const app = data.application;
+                    console.log('Found application in database:', app);
+                    
+                    // Always set the application ID if found
+                    if (app.id) {
+                        applicationId = app.id;
+                        document.getElementById('applicationId').value = app.id;
+                        sessionStorage.setItem('currentApplicationId', app.id);
+                        console.log('✅ Application ID set to:', app.id);
+                    }
+                    
+                    // Show restore modal for drafts
+                    if (app.applicationStatus === 'draft') {
+                        console.log('Found draft application, showing restore modal');
+                        showRestoreDraftModal(app, app.id);
+                    } else if (app.applicationStatus === 'submitted') {
+                        console.log('Application already submitted, redirecting to dashboard');
+                        window.location.href = 'dashboard.html';
+                    }
+                } else {
+                    console.log('No existing application found');
+                }
+            } else {
+                console.error('Failed to check for existing draft:', response.status);
+            }
+        } catch (error) {
+            console.error('Error checking for existing draft:', error);
+        }
+    }
+
+// ========== RESTORE DRAFT MODAL - FIXED ==========
+function showRestoreDraftModal(application, appId) {
+    const modal = document.getElementById('restoreDraftModal');
+    if (!modal) return;
+    
+    console.log('Showing restore modal for application:', application);
+    console.log('Application ID:', appId);
+    
+    modal.classList.add('active');
+    
+    // Remove any existing event listeners by replacing buttons
+    const restoreBtn = document.getElementById('restoreDraftBtn');
+    const discardBtn = document.getElementById('discardDraftBtn');
+    
+    // Create new buttons to replace old ones (to remove previous listeners)
+    const restoreBtnNew = restoreBtn.cloneNode(true);
+    const discardBtnNew = discardBtn.cloneNode(true);
+    
+    restoreBtn.parentNode.replaceChild(restoreBtnNew, restoreBtn);
+    discardBtn.parentNode.replaceChild(discardBtnNew, discardBtn);
+    
+    // Add new event listeners
+    restoreBtnNew.onclick = function() {
+        console.log('Restore button clicked');
+        // Pass both application and appId to ensure we have the ID
+        restoreFromDraft(application, appId);
+        modal.classList.remove('active');
+    };
+    
+    discardBtnNew.onclick = function() {
+        console.log('Discard button clicked');
+        if (appId) {
+            fetch(`${API_BASE}/application/draft/${appId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Draft deleted successfully');
+                }
+            }).catch(console.error);
+        }
+        modal.classList.remove('active');
+    };
+}
+
+// ========== RESTORE FROM DRAFT - FIXED ==========
+function restoreFromDraft(application, appId) {
+    // Make sure we have the application data and ID
+    if (!application && appId) {
+        console.log('No application data provided, loading from server...');
+        loadApplicationById(appId);
+        return;
+    }
+    
+    if (!application) {
+        console.error('No application data to restore');
+        return;
+    }
+    
+    // Set application ID from either source
+    applicationId = application.id || appId;
+    document.getElementById('applicationId').value = applicationId;
+    sessionStorage.setItem('currentApplicationId', applicationId);
+    
+    console.log('Restoring draft:', application);
+    console.log('Application ID set to:', applicationId);
+    
+    // Map database fields to form field IDs
+    const fieldMapping = {
+        'firstName': 'firstName',
+        'middleName': 'middleName',
+        'lastName': 'lastName',
+        'sex': 'sex',
+        'birthdate': 'birthdate',
+        'age': 'age',
+        'placeOfBirth': 'placeOfBirth',
+        'height': 'height',
+        'weight': 'weight',
+        'mobileNumber': 'mobileNumber',
+        'email': 'email',
+        'facebookUrl': 'facebookUrl',
+        'presentRegion': 'region',
+        'presentProvince': 'province',
+        'presentMunicipality': 'municipality',
+        'presentBarangay': 'barangay',
+        'presentHouseNumber': 'houseNumber',
+        'presentStreet': 'street',
+        'presentZipCode': 'zipCode',
+        'permanentRegion': 'permRegion',
+        'permanentProvince': 'permProvince',
+        'permanentMunicipality': 'permMunicipality',
+        'permanentBarangay': 'permBarangay',
+        'permanentHouseNumber': 'permHouseNumber',
+        'permanentStreet': 'permStreet',
+        'permanentZipCode': 'permZipCode',
+        'jhsName': 'jhsName',
+        'jhsSchoolId': 'jhsSchoolId',
+        'jhsType': 'jhsType',
+        'shsName': 'shsName',
+        'shsSchoolId': 'shsSchoolId',
+        'shsType': 'shsType',
+        'track': 'track',
+        'strand': 'strand',
+        'grade12Gwa': 'grade12GWA',
+        'honorsReceived': 'honorsReceived',
+        'collegeFirst': 'college1',
+        'collegeSecond': 'college2',
+        'collegeThird': 'college3',
+        'programFirst': 'course1',
+        'programSecond': 'course2',
+        'programThird': 'course3',
+        'essay': 'essay'
+    };
+    
+    // Restore each field
+    Object.keys(fieldMapping).forEach(dbField => {
+        const formFieldId = fieldMapping[dbField];
+        const element = document.getElementById(formFieldId);
+        const value = application[dbField];
+        
+        if (element && value !== null && value !== undefined && value !== '') {
+            element.value = value;
+            console.log(`Restored ${dbField} -> ${formFieldId}: ${value}`);
+        }
+    });
+    
+    // Trigger change events for cascading dropdowns
+    setTimeout(() => {
+        // Trigger birthdate change to calculate age
+        if (application.birthdate) {
+            const birthdateEl = document.getElementById('birthdate');
+            if (birthdateEl) {
+                birthdateEl.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+        
+        // Trigger region changes to load provinces
+        if (application.presentRegion) {
+            const regionEl = document.getElementById('region');
+            if (regionEl) {
+                regionEl.dispatchEvent(new Event('change', { bubbles: true }));
+                
+                // After provinces load, set province
+                setTimeout(() => {
+                    if (application.presentProvince) {
+                        const provinceEl = document.getElementById('province');
+                        if (provinceEl) {
+                            provinceEl.value = application.presentProvince;
+                            provinceEl.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                    }
+                }, 500);
+            }
+        }
+        
+        // Trigger permanent region changes
+        if (application.permanentRegion) {
+            const permRegionEl = document.getElementById('permRegion');
+            if (permRegionEl) {
+                permRegionEl.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+        
+        // Trigger track change to load strands
+        if (application.track) {
+            const trackEl = document.getElementById('track');
+            if (trackEl) {
+                trackEl.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+    }, 200);
+    
+    // Validate GWA after restore
+    setTimeout(() => {
+        const gwaInput = document.getElementById('grade12GWA');
+        if (gwaInput && application.grade12Gwa) {
+            gwaInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }, 300);
+    
+    showSaveMessage('Draft restored successfully', 'saved');
+}
+
+// ========== LOAD APPLICATION BY ID - FIXED ==========
+async function loadApplicationById(id) {
+    if (!id) return;
+    
+    try {
+        console.log('Loading application by ID:', id);
+        
+        const response = await fetch(`${API_BASE}/application`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.application) {
+            console.log('Application loaded:', data.application);
+            restoreFromDraft(data.application, data.application.id);
+        } else {
+            console.error('No application found with ID:', id);
+        }
+    } catch (error) {
+        console.error('Error loading application:', error);
+        showSaveMessage('Failed to load application', 'error');
+    }
+}
+    
+// ========== COLLECT FORM DATA - ENHANCED ==========
+function collectFormData() {
+    const formData = {};
+    
+    // Get all input fields except file inputs
+    const inputs = document.querySelectorAll('input:not([type="file"]):not([type="checkbox"]), select, textarea');
+    
+    inputs.forEach(input => {
+        if (input.id && input.value !== undefined && input.value !== '') {
+            // EXACT MAPPING to match your database columns
+            switch(input.id) {
+                // Personal Information
+                case 'firstName': formData['firstName'] = input.value; break;
+                case 'middleName': formData['middleName'] = input.value || ''; break;
+                case 'lastName': formData['lastName'] = input.value; break;
+                case 'sex': formData['sex'] = input.value; break;
+                case 'birthdate': formData['birthdate'] = input.value; break;
+                case 'age': formData['age'] = input.value ? parseInt(input.value) : null; break;
+                case 'placeOfBirth': formData['placeOfBirth'] = input.value; break;
+                case 'height': formData['height'] = input.value ? parseFloat(input.value) : null; break;
+                case 'weight': formData['weight'] = input.value ? parseFloat(input.value) : null; break;
+                case 'mobileNumber': formData['mobileNumber'] = input.value; break;
+                case 'email': formData['email'] = input.value; break;
+                case 'facebookUrl': formData['facebookUrl'] = input.value; break;
+                
+                // Present Address
+                case 'region': formData['presentRegion'] = input.value; break;
+                case 'province': formData['presentProvince'] = input.value; break;
+                case 'municipality': formData['presentMunicipality'] = input.value; break;
+                case 'barangay': formData['presentBarangay'] = input.value; break;
+                case 'houseNumber': formData['presentHouseNumber'] = input.value; break;
+                case 'street': formData['presentStreet'] = input.value; break;
+                case 'zipCode': formData['presentZipCode'] = input.value; break;
+                
+                // Permanent Address
+                case 'permRegion': formData['permanentRegion'] = input.value; break;
+                case 'permProvince': formData['permanentProvince'] = input.value; break;
+                case 'permMunicipality': formData['permanentMunicipality'] = input.value; break;
+                case 'permBarangay': formData['permanentBarangay'] = input.value; break;
+                case 'permHouseNumber': formData['permanentHouseNumber'] = input.value; break;
+                case 'permStreet': formData['permanentStreet'] = input.value; break;
+                case 'permZipCode': formData['permanentZipCode'] = input.value; break;
+                
+                // Academic - Junior High
+                case 'jhsName': formData['jhsName'] = input.value; break;
+                case 'jhsSchoolId': formData['jhsSchoolId'] = input.value; break;
+                case 'jhsType': formData['jhsType'] = input.value; break;
+                
+                // Academic - Senior High
+                case 'shsName': formData['shsName'] = input.value; break;
+                case 'shsSchoolId': formData['shsSchoolId'] = input.value; break;
+                case 'shsType': formData['shsType'] = input.value; break;
+                case 'track': formData['track'] = input.value; break;
+                case 'strand': formData['strand'] = input.value; break;
+                case 'grade12GWA': formData['grade12Gwa'] = input.value ? parseFloat(input.value) : null; break;
+                case 'honorsReceived': formData['honorsReceived'] = input.value; break;
+                
+                // College Choices
+                case 'college1': formData['collegeFirst'] = input.value; break;
+                case 'college2': formData['collegeSecond'] = input.value; break;
+                case 'college3': formData['collegeThird'] = input.value; break;
+                case 'course1': formData['programFirst'] = input.value; break;
+                case 'course2': formData['programSecond'] = input.value; break;
+                case 'course3': formData['programThird'] = input.value; break;
+                
+                // Essay
+                case 'essay': formData['essay'] = input.value; break;
+                
+                default: break;
+            }
+        }
+    });
+    
+    // Handle checkboxes
+    const sameAsPresent = document.getElementById('sameAsPresent');
+    if (sameAsPresent && sameAsPresent.checked) {
+        formData['sameAsPresent'] = true;
+        // Copy present address to permanent
+        formData['permanentRegion'] = document.getElementById('region')?.value || '';
+        formData['permanentProvince'] = document.getElementById('province')?.value || '';
+        formData['permanentMunicipality'] = document.getElementById('municipality')?.value || '';
+        formData['permanentBarangay'] = document.getElementById('barangay')?.value || '';
+        formData['permanentHouseNumber'] = document.getElementById('houseNumber')?.value || '';
+        formData['permanentStreet'] = document.getElementById('street')?.value || '';
+        formData['permanentZipCode'] = document.getElementById('zipCode')?.value || '';
+    }
+    
+    const sameAsJHS = document.getElementById('sameAsJHS');
+    if (sameAsJHS && sameAsJHS.checked) {
+        formData['sameAsJHS'] = true;
+        // Copy JHS to SHS
+        formData['shsName'] = document.getElementById('jhsName')?.value || '';
+        formData['shsSchoolId'] = document.getElementById('jhsSchoolId')?.value || '';
+        formData['shsType'] = document.getElementById('jhsType')?.value || '';
+    }
+    
+    // Add application ID
+    if (applicationId) {
+        formData['id'] = applicationId;
+        formData['applicationId'] = applicationId;
+    }
+    
+    console.log('📋 COLLECTED FORM DATA (' + Object.keys(formData).length + ' fields):', formData);
+    return formData;
+}
+
+    // ========== VALIDATE REQUIRED FIELDS - FIXED ==========
+    function validateRequiredFields() {
+        const formData = collectFormData();
+        const missingFields = [];
+        
+        // Personal Information
+        if (!formData.firstName || formData.firstName.trim() === '') missingFields.push('First Name');
+        if (!formData.lastName || formData.lastName.trim() === '') missingFields.push('Last Name');
+        if (!formData.email || formData.email.trim() === '') missingFields.push('Email');
+        if (!formData.mobileNumber || formData.mobileNumber.trim() === '') missingFields.push('Mobile Number');
+        if (!formData.sex || formData.sex.trim() === '') missingFields.push('Sex');
+        if (!formData.birthdate || formData.birthdate.trim() === '') missingFields.push('Date of Birth');
+        if (!formData.placeOfBirth || formData.placeOfBirth.trim() === '') missingFields.push('Place of Birth');
+        if (!formData.height) missingFields.push('Height');
+        if (!formData.weight) missingFields.push('Weight');
+        if (!formData.facebookUrl || formData.facebookUrl.trim() === '') missingFields.push('Facebook URL');
+        
+        // Present Address
+        if (!formData.presentRegion || formData.presentRegion.trim() === '') missingFields.push('Present Region');
+        if (!formData.presentProvince || formData.presentProvince.trim() === '') missingFields.push('Present Province');
+        if (!formData.presentMunicipality || formData.presentMunicipality.trim() === '') missingFields.push('Present Municipality');
+        if (!formData.presentBarangay || formData.presentBarangay.trim() === '') missingFields.push('Present Barangay');
+        if (!formData.presentHouseNumber || formData.presentHouseNumber.trim() === '') missingFields.push('Present House Number');
+        if (!formData.presentStreet || formData.presentStreet.trim() === '') missingFields.push('Present Street');
+        if (!formData.presentZipCode || formData.presentZipCode.trim() === '') missingFields.push('Present ZIP Code');
+        
+        // Permanent Address (if not same as present)
+        const sameAsPresent = document.getElementById('sameAsPresent');
+        if (!sameAsPresent || !sameAsPresent.checked) {
+            if (!formData.permanentRegion || formData.permanentRegion.trim() === '') missingFields.push('Permanent Region');
+            if (!formData.permanentProvince || formData.permanentProvince.trim() === '') missingFields.push('Permanent Province');
+            if (!formData.permanentMunicipality || formData.permanentMunicipality.trim() === '') missingFields.push('Permanent Municipality');
+            if (!formData.permanentBarangay || formData.permanentBarangay.trim() === '') missingFields.push('Permanent Barangay');
+            if (!formData.permanentHouseNumber || formData.permanentHouseNumber.trim() === '') missingFields.push('Permanent House Number');
+            if (!formData.permanentStreet || formData.permanentStreet.trim() === '') missingFields.push('Permanent Street');
+            if (!formData.permanentZipCode || formData.permanentZipCode.trim() === '') missingFields.push('Permanent ZIP Code');
+        }
+        
+        // Academic Information
+        if (!formData.jhsName || formData.jhsName.trim() === '') missingFields.push('Junior High School Name');
+        if (!formData.jhsSchoolId || formData.jhsSchoolId.trim() === '') missingFields.push('Junior High School ID');
+        if (!formData.jhsType || formData.jhsType.trim() === '') missingFields.push('Junior High School Type');
+        
+        if (!formData.shsName || formData.shsName.trim() === '') missingFields.push('Senior High School Name');
+        if (!formData.shsSchoolId || formData.shsSchoolId.trim() === '') missingFields.push('Senior High School ID');
+        if (!formData.shsType || formData.shsType.trim() === '') missingFields.push('Senior High School Type');
+        if (!formData.track || formData.track.trim() === '') missingFields.push('Track');
+        if (!formData.strand || formData.strand.trim() === '') missingFields.push('Strand');
+        if (!formData.grade12Gwa) missingFields.push('Grade 12 GWA');
+        
+        // College Choices
+        if (!formData.collegeFirst || formData.collegeFirst.trim() === '') missingFields.push('First College Choice');
+        if (!formData.programFirst || formData.programFirst.trim() === '') missingFields.push('First Program Choice');
+        
+        // Essay
+        if (!formData.essay || formData.essay.trim() === '') missingFields.push('Essay');
+        
+        if (missingFields.length > 0) {
+            console.log('❌ MISSING FIELDS:', missingFields);
+        } else {
+            console.log('✅ ALL REQUIRED FIELDS VALID');
+        }
+        
+        return missingFields;
+    }
+
+// ========== SAVE DRAFT - FIXED WITH PERSISTENCE ==========
+async function saveDraft() {
+    console.log('\n' + '='.repeat(60));
+    console.log('📝 DRAFT SAVE ATTEMPT');
+    console.log('='.repeat(60));
+    console.log('User ID:', userId);
+    console.log('Current Application ID from memory:', applicationId);
+    console.log('Current Application ID from field:', document.getElementById('applicationId')?.value);
+    
+    const formData = collectFormData();
+    
+    // Validate required fields
+    const missingFields = validateRequiredFields();
+    
+    if (missingFields.length > 0) {
+        console.error('❌ Missing fields:', missingFields);
+        showSaveMessage('Please fill in required fields: ' + missingFields.join(', '), 'error');
+        console.log('='.repeat(60) + '\n');
+        return false;
+    }
+    
+    showSaveMessage('Saving...', 'saving');
+    
+    try {
+        console.log('📤 Sending to:', `${API_BASE}/application/draft`);
+        console.log('📤 Payload:', JSON.stringify(formData, null, 2));
+        
+        const response = await fetch(`${API_BASE}/application/draft`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            },
+            body: JSON.stringify(formData),
+            credentials: 'include'
+        });
+        
+        console.log('📥 Response Status:', response.status, response.statusText);
+        
+        const responseText = await response.text();
+        console.log('📥 Raw Response:', responseText);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+            console.log('📥 Parsed Response:', data);
+        } catch (e) {
+            console.error('❌ JSON Parse Error:', e);
+            throw new Error('Invalid JSON response from server');
+        }
+        
+        if (data.success) {
+            // CRITICAL: Save the application ID in THREE places
+            applicationId = data.applicationId;
+            document.getElementById('applicationId').value = data.applicationId;
+            sessionStorage.setItem('currentApplicationId', data.applicationId);
+            
+            console.log('\n✅✅✅ DRAFT SAVE SUCCESSFUL! ✅✅✅');
+            console.log('   Application ID:', applicationId);
+            console.log('   Saved to memory: ✅');
+            console.log('   Saved to hidden field: ✅');
+            console.log('   Saved to sessionStorage: ✅');
+            console.log('   Last Saved:', data.lastSaved);
+            console.log('='.repeat(60) + '\n');
+            
+            showSaveMessage('Draft saved successfully!', 'saved');
+            return true;
+        } else {
+            console.error('\n❌❌❌ DRAFT SAVE FAILED! ❌❌❌');
+            console.error('   Message:', data.message);
+            if (data.debug) console.error('   Debug:', data.debug);
+            console.log('='.repeat(60) + '\n');
+            
+            showSaveMessage('Save failed: ' + (data.message || 'Unknown error'), 'error');
+            return false;
+        }
+    } catch (error) {
+        console.error('\n❌❌❌ DRAFT SAVE ERROR! ❌❌❌');
+        console.error('   Error:', error.message);
+        console.error('   Stack:', error.stack);
+        console.log('='.repeat(60) + '\n');
+        
+        showSaveMessage('Save failed: ' + error.message, 'error');
+        return false;
+    }
+}
+
+    // ========== SHOW SAVE MESSAGE ==========
+    function showSaveMessage(message, type) {
+        const indicator = document.getElementById('saveIndicator');
+        const icon = document.getElementById('saveIcon');
+        const messageEl = document.getElementById('saveMessage');
+        
+        if (!indicator) return;
+        
+        indicator.classList.remove('saving', 'saved', 'error');
+        indicator.classList.add(type);
+        
+        if (type === 'saving') {
+            icon.textContent = '⏳';
+        } else if (type === 'saved') {
+            icon.textContent = '✓';
+        } else if (type === 'error') {
+            icon.textContent = '✗';
+        }
+        
+        messageEl.textContent = message;
+        indicator.style.display = 'flex';
+        
+        if (type === 'saved') {
+            setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 3000);
+        }
+    }
+
+ 
+    // ========== FILE UPLOAD HANDLING ==========
+    function initializeFileUploads() {
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', async function(e) {
+                if (!applicationId) {
+                    const saved = await saveDraft();
+                    if (!saved) {
+                        alert('Please save your draft first before uploading files.');
+                        return;
+                    }
+                }
+                
+                if (this.files.length > 0) {
+                    await uploadFile(this, this.closest('.file-upload-group').dataset.docType);
+                }
+            });
+        });
+    }
+
+ // ========== UPLOAD FILE - FIXED ==========
+    async function uploadFile(input, documentType) {
+        if (!applicationId) {
+            alert('Application ID not found. Please save your draft first.');
+            return;
+        }
+        
+        const file = input.files[0];
+        const statusDiv = document.getElementById(`status_${input.id}`);
+        if (!statusDiv) return;
+        
+        // Show uploading status
+        statusDiv.innerHTML = '⏳ Uploading...';
+        statusDiv.style.color = '#ff9800';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('applicationId', applicationId);
+        formData.append('documentType', documentType);
+        
+        console.log('\n===== FILE UPLOAD =====');
+        console.log('Application ID:', applicationId);
+        console.log('Document Type:', documentType);
+        console.log('File Name:', file.name);
+        console.log('File Size:', file.size, 'bytes');
+        console.log('File Type:', file.type);
+        
+        try {
+            const response = await fetch(`${API_BASE}/application/upload`, {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            });
+            
+            console.log('Response Status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Response Data:', data);
+            
+            if (data.success) {
+                statusDiv.innerHTML = `✓ ${file.name} uploaded successfully`;
+                statusDiv.style.color = '#4caf50';
+                
+                // Update the file input to show it's been uploaded
+                input.setAttribute('data-uploaded', 'true');
+                
+                console.log('✅ File uploaded successfully');
+            } else {
+                statusDiv.innerHTML = `✗ Upload failed: ${data.message}`;
+                statusDiv.style.color = '#f44336';
+                console.error('❌ Upload failed:', data.message);
+                
+                // Show more detailed error
+                if (data.exception) {
+                    console.error('Exception:', data.exception);
+                }
+            }
+        } catch (error) {
+            console.error('❌ Upload error:', error);
+            statusDiv.innerHTML = `✗ Upload failed: ${error.message}`;
+            statusDiv.style.color = '#f44336';
+        }
+        
+        console.log('===== END UPLOAD =====\n');
+    }
+
+ // ========== DEBUG: CHECK DOCUMENTS ==========
+    async function checkDocuments() {
+        if (!applicationId) {
+            console.log('No application ID');
+            return;
+        }
+        
+        console.log('\n===== CHECKING DOCUMENTS =====');
+        console.log('Application ID:', applicationId);
+        
+        try {
+            const response = await fetch(`${API_BASE}/application`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            
+            if (data.success && data.documents) {
+                console.log('Uploaded documents:', data.documents.length);
+                data.documents.forEach(doc => {
+                    console.log(`  - ${doc.documentType}: ${doc.fileName} (${doc.uploadStatus})`);
+                });
+            } else {
+                console.log('No documents found');
+            }
+        } catch (error) {
+            console.error('Error checking documents:', error);
+        }
+        
+        console.log('===== END CHECK =====\n');
+    }
+
+    // Add a debug button for checking documents
+    function addDocumentDebugButton() {
+        const debugBtn = document.createElement('button');
+        debugBtn.textContent = '📄 CHECK DOCS';
+        debugBtn.style.cssText = `
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 9999;
+        `;
+        debugBtn.onclick = checkDocuments;
+        document.body.appendChild(debugBtn);
+    }
+
+    // Call this after DOM loads
+    setTimeout(addDocumentDebugButton, 2500);
+    
+    // ========== PSGC API FUNCTIONS ==========
+    async function loadRegions() {
+        try {
+            const response = await fetch(`${PSGC_API}/regions/`);
+            const regions = await response.json();
+            
+            const regionSelect = document.getElementById('region');
+            const permRegionSelect = document.getElementById('permRegion');
+            
+            if (regionSelect) {
+                regionSelect.innerHTML = '<option value="">Select Region</option>';
+                regions.forEach(region => {
+                    const option = document.createElement('option');
+                    option.value = region.code;
+                    option.textContent = region.name;
+                    regionSelect.appendChild(option);
+                });
+            }
+            
+            if (permRegionSelect) {
+                permRegionSelect.innerHTML = '<option value="">Select Region</option>';
+                regions.forEach(region => {
+                    const option = document.createElement('option');
+                    option.value = region.code;
+                    option.textContent = region.name;
+                    permRegionSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading regions:', error);
+        }
+    }
+
+    async function loadProvinces(regionCode, provinceSelectId) {
+        try {
+            const response = await fetch(`${PSGC_API}/regions/${regionCode}/provinces/`);
+            const provinces = await response.json();
+            
+            const provinceSelect = document.getElementById(provinceSelectId);
+            if (!provinceSelect) return;
+            
+            provinceSelect.innerHTML = '<option value="">Select Province</option>';
+            
+            if (provinces.length === 0) {
+                const option = document.createElement('option');
+                option.value = regionCode;
+                option.textContent = 'Metro Manila';
+                option.dataset.isRegion = 'true';
+                provinceSelect.appendChild(option);
+            } else {
+                provinces.forEach(province => {
+                    const option = document.createElement('option');
+                    option.value = province.code;
+                    option.textContent = province.name;
+                    provinceSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading provinces:', error);
+        }
+    }
+
+    async function loadMunicipalities(code, municipalitySelectId, isRegion = false) {
+        try {
+            let url;
+            if (isRegion) {
+                url = `${PSGC_API}/regions/${code}/cities-municipalities/`;
+            } else {
+                url = `${PSGC_API}/provinces/${code}/cities-municipalities/`;
+            }
+            
+            const response = await fetch(url);
+            const municipalities = await response.json();
+            
+            const municipalitySelect = document.getElementById(municipalitySelectId);
+            if (!municipalitySelect) return;
+            
+            municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+            
+            municipalities.forEach(municipality => {
+                const option = document.createElement('option');
+                option.value = municipality.code;
+                option.textContent = municipality.name;
+                municipalitySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading municipalities:', error);
+        }
+    }
+
+    async function loadBarangays(municipalityCode, barangaySelectId) {
+        try {
+            const response = await fetch(`${PSGC_API}/cities-municipalities/${municipalityCode}/barangays/`);
+            const barangays = await response.json();
+            
+            const barangaySelect = document.getElementById(barangaySelectId);
+            if (!barangaySelect) return;
+            
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            
+            barangays.forEach(barangay => {
+                const option = document.createElement('option');
+                option.value = barangay.code;
+                option.textContent = barangay.name;
+                barangaySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading barangays:', error);
+        }
+    }
+
+    // ========== FORM OPTIONS ==========
+    function loadCollegeOptions() {
+        const colleges = [
+            'University of the Philippines – Diliman',
+            'University of the Philippines – Manila',
+            'University of the Philippines – Los Baños',
+            'Ateneo de Manila University',
+            'De La Salle University – Manila',
+            'University of Santo Tomas – Manila',
+            'National University – Manila',
+            'Polytechnic University of the Philippines – Manila',
+            'Technological University of the Philippines – Manila',
+            'Mapúa University',
+            'Far Eastern University – Manila',
+            'Adamson University',
+            'San Beda University – Manila',
+            'University of the East – Manila',
+            'Philippine Normal University – Manila',
+            'Pamantasan ng Lungsod ng Maynila',
+            'Centro Escolar University – Manila',
+            'University of Makati',
+            'Lyceum of the Philippines University – Manila',
+            'Rizal Technological University – Mandaluyong'
+        ];
+        
+        ['college1', 'college2', 'college3'].forEach(id => {
+            const select = document.getElementById(id);
+            if (select) {
+                select.innerHTML = '<option value="">Select College / University</option>';
+                colleges.forEach(college => {
+                    const option = document.createElement('option');
+                    option.value = college;
+                    option.textContent = college;
+                    select.appendChild(option);
+                });
+            }
+        });
+    }
+
+    function loadProgramOptions() {
+        const programs = [
+            'BS in Computer Science',
+            'BS in Information Technology',
+            'BS in Civil Engineering',
+            'BS in Computer Engineering',
+            'BS in Electronics Engineering',
+            'BS in Mechanical Engineering',
+            'BS in Architecture',
+            'BS in Psychology',
+            'BS in Elementary Education',
+            'BS in Secondary Education',
+            'BS in Business Administration',
+            'BS in Accountancy',
+            'BS in Entrepreneurship'
+        ];
+        
+        ['course1', 'course2', 'course3'].forEach(id => {
+            const select = document.getElementById(id);
+            if (select) {
+                select.innerHTML = '<option value="">Select Program</option>';
+                programs.forEach(program => {
+                    const option = document.createElement('option');
+                    option.value = program;
+                    option.textContent = program;
+                    select.appendChild(option);
+                });
+            }
+        });
+    }
+
+    // ========== STRAND MAPPING - UPDATED FOR STEM, HUMSS, ABM ==========
+    const strandsByTrack = {
+        'Academic Track': ['STEM', 'HUMSS', 'ABM'],
+        'Technical-Vocational-Livelihood Track': [],
+        'Sports Track': [],
+        'Arts and Design Track': []
+    };
+
+    function updateStrandOptions() {
+        const trackSelect = document.getElementById('track');
+        const strandSelect = document.getElementById('strand');
+        
+        if (!trackSelect || !strandSelect) return;
+        
+        const selectedTrack = trackSelect.value;
+        strandSelect.innerHTML = '<option value="">Select Strand</option>';
+        
+        if (selectedTrack === 'Academic Track') {
+            const strands = ['STEM', 'HUMSS', 'ABM'];
+            strands.forEach(strand => {
+                const option = document.createElement('option');
+                option.value = strand;
+                
+                let displayText = strand;
+                if (strand === 'STEM') displayText = 'Science, Technology, Engineering, and Mathematics (STEM)';
+                else if (strand === 'HUMSS') displayText = 'Humanities and Social Sciences (HUMSS)';
+                else if (strand === 'ABM') displayText = 'Accountancy, Business and Management (ABM)';
+                
+                option.textContent = displayText;
+                strandSelect.appendChild(option);
+            });
+        }
+    }
+
+    // ========== EVENT LISTENERS INITIALIZATION ==========
+    function initializeEventListeners() {
+    	// Debug button
+    	const debugBtn = document.getElementById('debugBtn');
+    	if (debugBtn) {
+    	    debugBtn.addEventListener('click', checkApplicationStatus);
+    	    console.log('✓ Debug button listener attached');
+    	}
+    	
+    	// Manual Save Button
+        const manualSaveBtn = document.getElementById('manualSaveBtn');
+        if (manualSaveBtn) {
+            manualSaveBtn.addEventListener('click', saveDraft);
+            console.log('✓ Manual save button listener attached');
+        }
+        
+        // File upload initialization
+        initializeFileUploads();
+        
+        // Age calculation
+        const birthdate = document.getElementById('birthdate');
+        if (birthdate) birthdate.addEventListener('change', calculateAge);
+        
+        // GWA validation
+        const gwaInput = document.getElementById('grade12GWA');
+        if (gwaInput) {
+            gwaInput.addEventListener('input', validateGWA);
+            gwaInput.addEventListener('blur', validateGWA);
+        }
+        
+        // Same as present address
+        const sameAsPresent = document.getElementById('sameAsPresent');
+        if (sameAsPresent) sameAsPresent.addEventListener('change', copyPresentToPermanent);
+        
+        // Same as JHS
+        const sameAsJHS = document.getElementById('sameAsJHS');
+        if (sameAsJHS) sameAsJHS.addEventListener('change', copyJHSToSHS);
+        
+        // Track to strand cascade
+        const track = document.getElementById('track');
+        if (track) track.addEventListener('change', updateStrandOptions);
+        
+        // Word count for essay
+        const essay = document.getElementById('essay');
+        if (essay) essay.addEventListener('input', updateWordCount);
+        
+        // Navigation buttons
+        const nextBtn = document.getElementById('nextBtn');
+        const backBtn = document.getElementById('backBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (nextBtn) nextBtn.addEventListener('click', nextStep);
+        if (backBtn) backBtn.addEventListener('click', previousStep);
+        if (submitBtn) submitBtn.addEventListener('click', showTermsModal);
+        
+        // Modal buttons
+        const cancelBtn = document.getElementById('cancelBtn');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const agreeTerms = document.getElementById('agreeTerms');
+        
+        if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+        if (confirmBtn) confirmBtn.addEventListener('click', submitApplication);
+        if (agreeTerms) agreeTerms.addEventListener('change', toggleConfirmButton);
+        
+        // Step navigation
+        document.querySelectorAll('.step').forEach((step, index) => {
+            step.addEventListener('click', () => navigateToStep(index + 1));
+        });
+        
+        // PSGC Event Listeners
+        const region = document.getElementById('region');
+        const province = document.getElementById('province');
+        const municipality = document.getElementById('municipality');
+        const permRegion = document.getElementById('permRegion');
+        const permProvince = document.getElementById('permProvince');
+        const permMunicipality = document.getElementById('permMunicipality');
+        
+        if (region) region.addEventListener('change', handleRegionChange);
+        if (province) province.addEventListener('change', handleProvinceChange);
+        if (municipality) municipality.addEventListener('change', handleMunicipalityChange);
+        if (permRegion) permRegion.addEventListener('change', handlePermRegionChange);
+        if (permProvince) permProvince.addEventListener('change', handlePermProvinceChange);
+        if (permMunicipality) permMunicipality.addEventListener('change', handlePermMunicipalityChange);
+        
+        console.log('✓ All event listeners initialized');
+    }
+
+    // ========== FORM HELPER FUNCTIONS ==========
+    function calculateAge() {
+        const birthDate = new Date(this.value);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        
+        const ageField = document.getElementById('age');
+        if (ageField) {
+            ageField.value = age;
+        }
+    }
+
+    function validateGWA() {
+        const gwa = parseFloat(this.value);
+        const gwaError = document.getElementById('gwaError');
+        const honorsField = document.getElementById('honorsReceived');
+        
+        if (isNaN(gwa) || gwa === '') {
+            this.classList.remove('invalid-gwa');
+            if (gwaError) gwaError.classList.remove('show');
+            if (honorsField) honorsField.value = '';
+            return;
+        }
+        
+        if (gwa < 90 || gwa > 100) {
+            this.classList.add('invalid-gwa');
+            if (gwaError) gwaError.classList.add('show');
+            if (honorsField) honorsField.value = '';
+        } else {
+            this.classList.remove('invalid-gwa');
+            if (gwaError) gwaError.classList.remove('show');
+            
+            if (honorsField) {
+                if (gwa >= 98) {
+                    honorsField.value = 'With Highest Honors';
+                } else if (gwa >= 95) {
+                    honorsField.value = 'With High Honors';
+                } else if (gwa >= 90) {
+                    honorsField.value = 'With Honors';
+                }
+            }
+        }
+    }
+
+    async function copyPresentToPermanent() {
+        if (!this.checked) return;
+        
+        const region = document.getElementById('region');
+        const province = document.getElementById('province');
+        const municipality = document.getElementById('municipality');
+        const barangay = document.getElementById('barangay');
+        const permRegion = document.getElementById('permRegion');
+        const permProvince = document.getElementById('permProvince');
+        const permMunicipality = document.getElementById('permMunicipality');
+        const permBarangay = document.getElementById('permBarangay');
+        const permHouseNumber = document.getElementById('permHouseNumber');
+        const permStreet = document.getElementById('permStreet');
+        const permZipCode = document.getElementById('permZipCode');
+        
+        if (permRegion) permRegion.value = region?.value || '';
+        
+        if (region?.value) {
+            await loadProvinces(region.value, 'permProvince');
+            if (permProvince) permProvince.value = province?.value || '';
+            
+            if (province?.value) {
+                const selectedOption = province.options[province.selectedIndex];
+                const isRegion = selectedOption?.dataset.isRegion === 'true';
+                
+                await loadMunicipalities(province.value, 'permMunicipality', isRegion);
+                if (permMunicipality) permMunicipality.value = municipality?.value || '';
+                
+                if (municipality?.value) {
+                    await loadBarangays(municipality.value, 'permBarangay');
+                    if (permBarangay) permBarangay.value = barangay?.value || '';
+                }
+            }
+        }
+        
+        if (permHouseNumber) permHouseNumber.value = document.getElementById('houseNumber')?.value || '';
+        if (permStreet) permStreet.value = document.getElementById('street')?.value || '';
+        if (permZipCode) permZipCode.value = document.getElementById('zipCode')?.value || '';
+    }
+
+    function copyJHSToSHS() {
+        if (!this.checked) return;
+        
+        const shsName = document.getElementById('shsName');
+        const shsSchoolId = document.getElementById('shsSchoolId');
+        const shsType = document.getElementById('shsType');
+        const jhsName = document.getElementById('jhsName');
+        const jhsSchoolId = document.getElementById('jhsSchoolId');
+        const jhsType = document.getElementById('jhsType');
+        
+        if (shsName) shsName.value = jhsName?.value || '';
+        if (shsSchoolId) shsSchoolId.value = jhsSchoolId?.value || '';
+        if (shsType) shsType.value = jhsType?.value || '';
+    }
+
+    function updateWordCount() {
+        const text = this.value.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        const wordCount = document.getElementById('wordCount');
+        if (wordCount) wordCount.textContent = `Word count: ${words}`;
+    }
+
+    // ========== PSGC EVENT HANDLERS ==========
+    function handleRegionChange() {
+        if (this.value) {
+            loadProvinces(this.value, 'province');
+            const province = document.getElementById('province');
+            const municipality = document.getElementById('municipality');
+            const barangay = document.getElementById('barangay');
+            
+            if (province) province.innerHTML = '<option value="">Loading...</option>';
+            if (municipality) municipality.innerHTML = '<option value="">Select Municipality</option>';
+            if (barangay) barangay.innerHTML = '<option value="">Select Barangay</option>';
+        }
+    }
+
+    function handleProvinceChange() {
+        if (this.value) {
+            const selectedOption = this.options[this.selectedIndex];
+            const isRegion = selectedOption?.dataset.isRegion === 'true';
+            loadMunicipalities(this.value, 'municipality', isRegion);
+            
+            const municipality = document.getElementById('municipality');
+            const barangay = document.getElementById('barangay');
+            
+            if (municipality) municipality.innerHTML = '<option value="">Loading...</option>';
+            if (barangay) barangay.innerHTML = '<option value="">Select Barangay</option>';
+        }
+    }
+
+    function handleMunicipalityChange() {
+        if (this.value) {
+            loadBarangays(this.value, 'barangay');
+            const barangay = document.getElementById('barangay');
+            if (barangay) barangay.innerHTML = '<option value="">Loading...</option>';
+        }
+    }
+
+    function handlePermRegionChange() {
+        if (this.value) {
+            loadProvinces(this.value, 'permProvince');
+            const permProvince = document.getElementById('permProvince');
+            const permMunicipality = document.getElementById('permMunicipality');
+            const permBarangay = document.getElementById('permBarangay');
+            
+            if (permProvince) permProvince.innerHTML = '<option value="">Loading...</option>';
+            if (permMunicipality) permMunicipality.innerHTML = '<option value="">Select Municipality</option>';
+            if (permBarangay) permBarangay.innerHTML = '<option value="">Select Barangay</option>';
+        }
+    }
+
+    function handlePermProvinceChange() {
+        if (this.value) {
+            const selectedOption = this.options[this.selectedIndex];
+            const isRegion = selectedOption?.dataset.isRegion === 'true';
+            loadMunicipalities(this.value, 'permMunicipality', isRegion);
+            
+            const permMunicipality = document.getElementById('permMunicipality');
+            const permBarangay = document.getElementById('permBarangay');
+            
+            if (permMunicipality) permMunicipality.innerHTML = '<option value="">Loading...</option>';
+            if (permBarangay) permBarangay.innerHTML = '<option value="">Select Barangay</option>';
+        }
+    }
+
+    function handlePermMunicipalityChange() {
+        if (this.value) {
+            loadBarangays(this.value, 'permBarangay');
+            const permBarangay = document.getElementById('permBarangay');
+            if (permBarangay) permBarangay.innerHTML = '<option value="">Loading...</option>';
+        }
+    }
+
+    // ========== NAVIGATION ==========
+    function showStep(step) {
+        document.querySelectorAll('.form-section').forEach((section, index) => {
+            section.classList.toggle('active', index + 1 === step);
+        });
+
+        document.querySelectorAll('.step').forEach((stepEl, index) => {
+            stepEl.classList.toggle('active', index + 1 === step);
+            stepEl.classList.toggle('completed', index + 1 < step);
+        });
+
+        const backBtn = document.getElementById('backBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (backBtn) backBtn.style.display = step === 1 ? 'none' : 'block';
+        if (nextBtn) nextBtn.style.display = step === 4 ? 'none' : 'block';
+        if (submitBtn) submitBtn.style.display = step === 4 ? 'block' : 'none';
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function validateSection(sectionNumber) {
+        const section = document.querySelector(`.form-section[data-section="${sectionNumber}"]`);
+        if (!section) return false;
+        
+        const requiredInputs = section.querySelectorAll('input[required], select[required], textarea[required]');
+        
+        let isValid = true;
+        let firstInvalidField = null;
+
+        requiredInputs.forEach(input => {
+            if (input.type !== 'file' && !input.value.trim()) {
+                isValid = false;
+                input.style.borderColor = '#d32f2f';
+                input.style.background = '#ffebee';
+                
+                if (!firstInvalidField) {
+                    firstInvalidField = input;
+                }
+            } else {
+                input.style.borderColor = '';
+                input.style.background = '';
+            }
+        });
+
+        if (sectionNumber === 2) {
+            const gwaInput = document.getElementById('grade12GWA');
+            if (gwaInput) {
+                const gwa = parseFloat(gwaInput.value);
+                if (isNaN(gwa) || gwa < 90 || gwa > 100) {
+                    isValid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = gwaInput;
+                    }
+                }
+            }
+        }
+
+        if (!isValid && firstInvalidField) {
+            firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstInvalidField.focus();
+            alert('Please fill in all required fields correctly before proceeding.');
+        }
+
+        return isValid;
+    }
+
+    async function nextStep() {
+        if (validateSection(currentStep)) {
+            if (currentStep < 4) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+    }
+
+    function previousStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            showStep(currentStep);
+        }
+    }
+
+    function navigateToStep(step) {
+        if (step <= currentStep) {
+            currentStep = step;
+            showStep(currentStep);
+        }
+    }
+
+    // ========== SUBMISSION ==========
+    function showTermsModal() {
+        if (validateSection(currentStep)) {
+            const modal = document.getElementById('termsModal');
+            if (modal) modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('termsModal');
+        if (modal) modal.classList.remove('active');
+        
+        const agreeTerms = document.getElementById('agreeTerms');
+        const confirmBtn = document.getElementById('confirmBtn');
+        
+        if (agreeTerms) agreeTerms.checked = false;
+        if (confirmBtn) confirmBtn.disabled = true;
+        
+        document.body.style.overflow = 'auto';
+    }
+
+    function toggleConfirmButton() {
+        const confirmBtn = document.getElementById('confirmBtn');
+        if (confirmBtn) confirmBtn.disabled = !this.checked;
+    }
+
+ // ========== DEBUG: CHECK APPLICATION STATUS ==========
+    async function checkApplicationStatus() {
+        console.log('\n' + '='.repeat(60));
+        console.log('🔍 CHECKING APPLICATION STATUS');
+        console.log('='.repeat(60));
+        
+        try {
+            const response = await fetch(`${API_BASE}/application`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
+            });
+            
+            const data = await response.json();
+            console.log('📊 Server Response:', data);
+            
+            if (data.success && data.application) {
+                console.log('✅ Application Found!');
+                console.log('   ID:', data.application.id);
+                console.log('   Status:', data.application.applicationStatus);
+                console.log('   Last Saved:', data.application.lastSaved);
+                console.log('   Name:', data.application.firstName, data.application.lastName);
+                console.log('   Email:', data.application.email);
+                
+                // Update the application ID
+                applicationId = data.application.id;
+                document.getElementById('applicationId').value = data.application.id;
+                sessionStorage.setItem('currentApplicationId', data.application.id);
+                
+                showSaveMessage('Application loaded', 'saved');
+            } else {
+                console.log('❌ No application found for this user');
+            }
+        } catch (error) {
+            console.error('❌ Error checking application:', error);
+        }
+        console.log('='.repeat(60) + '\n');
+    }
+ 
+ // ========== SUBMISSION - FIXED ==========
+// ========== SUBMIT APPLICATION - FIXED ==========
+async function submitApplication() {
+    closeModal();
+    
+    console.log('\n' + '='.repeat(60));
+    console.log('📤 SUBMITTING APPLICATION');
+    console.log('='.repeat(60));
+    
+    showSaveMessage('Submitting application...', 'saving');
+    
+    // CRITICAL: Check if we have an application ID
+    if (!applicationId) {
+        console.log('⚠️ No application ID found, attempting to load from server...');
+        await checkApplicationStatus();
+    }
+    
+    if (!applicationId) {
+        console.error('❌ No application ID available');
+        alert('Error: No application found to submit. Please save a draft first.');
+        showSaveMessage('No application to submit', 'error');
+        console.log('='.repeat(60) + '\n');
+        return;
+    }
+    
+    // Save draft before submitting
+    console.log('📝 Step 1: Saving draft before submission...');
+    const saved = await saveDraft();
+    
+    if (!saved) {
+        console.error('❌ Failed to save draft');
+        showSaveMessage('Failed to save draft', 'error');
+        console.log('='.repeat(60) + '\n');
+        return;
+    }
+    
+    console.log('📝 Step 2: Submitting application ID:', applicationId);
+    
+    try {
+        const response = await fetch(`${API_BASE}/application/submit`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            },
+            body: JSON.stringify({ id: applicationId }),
+            credentials: 'include'
+        });
+        
+        console.log('📥 Submit Response Status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('📥 Submit Response Data:', data);
+        
+        if (data.success) {
+            console.log('\n✅✅✅ APPLICATION SUBMITTED SUCCESSFULLY! ✅✅✅');
+            console.log('   Reference Number:', data.referenceNumber);
+            console.log('   Application ID:', data.applicationId);
+            console.log('   Submission Date:', data.submissionDate);
+            console.log('='.repeat(60) + '\n');
+            
+            // Update reference number display
+            const referenceNumber = document.getElementById('referenceNumber');
+            if (referenceNumber) referenceNumber.textContent = data.referenceNumber;
+            
+            // Clear session storage
+            sessionStorage.removeItem('currentApplicationId');
+            
+            // Hide form elements
+            const stepper = document.querySelector('.stepper');
+            const formContent = document.getElementById('formContent');
+            const buttonGroup = document.querySelector('.button-group')?.parentElement;
+            const manualSaveBtn = document.getElementById('manualSaveBtn');
+            const debugBtn = document.getElementById('debugBtn');
+            const saveIndicator = document.getElementById('saveIndicator');
+            const confirmationScreen = document.getElementById('confirmationScreen');
+            
+            if (stepper) stepper.style.display = 'none';
+            if (formContent) formContent.style.display = 'none';
+            if (buttonGroup) buttonGroup.style.display = 'none';
+            if (manualSaveBtn) manualSaveBtn.style.display = 'none';
+            if (debugBtn) debugBtn.style.display = 'none';
+            if (saveIndicator) saveIndicator.style.display = 'none';
+            if (confirmationScreen) confirmationScreen.style.display = 'block';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            console.error('❌ Submission failed:', data.message);
+            alert(data.message || 'Failed to submit application. Please try again.');
+            showSaveMessage('Submission failed', 'error');
+        }
+    } catch (error) {
+        console.error('❌ Submission error:', error);
+        alert('An error occurred while submitting your application.');
+        showSaveMessage('Submission error', 'error');
+    }
+}
+</script>
+</body>
+</html>

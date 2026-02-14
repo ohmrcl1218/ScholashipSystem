@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<base href="/ScholarshipSystem/">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Hiraya Foundation</title>
+	<link rel="stylesheet" href="style.css">
+  <style>
+    /* ===== Rise / Fade-up effect ===== */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease-out;
+    }
+
+    .fade-up.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Stagger effect for multiple children */
+    .fade-up.stagger-1 { transition-delay: 0.2s; }
+    .fade-up.stagger-2 { transition-delay: 0.4s; }
+    .fade-up.stagger-3 { transition-delay: 0.6s; }
+    .fade-up.stagger-4 { transition-delay: 0.8s; }
+
+    body.no-scroll {
+      overflow: hidden;
+    }
+    
+	    /* Admin Modal Styles */
+	.admin-modal {
+	    display: none;
+	    position: fixed;
+	    top: 0;
+	    left: 0;
+	    width: 100%;
+	    height: 100%;
+	    background: rgba(0, 0, 0, 0.7);
+	    z-index: 10000;
+	    align-items: center;
+	    justify-content: center;
+	    animation: adminModalFadeIn 0.3s ease;
+	}
+	
+	@keyframes adminModalFadeIn {
+	    from {
+	        opacity: 0;
+	    }
+	    to {
+	        opacity: 1;
+	    }
+	}
+	
+	.admin-modal-content {
+	    background: white;
+	    border-radius: 12px;
+	    width: 90%;
+	    max-width: 450px;
+	    max-height: 90vh;
+	    overflow-y: auto;
+	    animation: adminModalSlideIn 0.3s ease;
+	    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+	}
+	
+	@keyframes adminModalSlideIn {
+	    from {
+	        opacity: 0;
+	        transform: translateY(-50px);
+	    }
+	    to {
+	        opacity: 1;
+	        transform: translateY(0);
+	    }
+	}
+	
+	.admin-modal-header {
+	    background: #192064;
+	    color: white;
+	    padding: 20px 30px;
+	    border-radius: 12px 12px 0 0;
+	    display: flex;
+	    justify-content: space-between;
+	    align-items: center;
+	}
+	
+	.admin-modal-header h2 {
+	    margin: 0;
+	    font-size: 1.5rem;
+	    font-weight: 600;
+	}
+	
+	.admin-modal-close {
+	    background: none;
+	    border: none;
+	    color: white;
+	    font-size: 2rem;
+	    cursor: pointer;
+	    line-height: 1;
+	    padding: 0;
+	    width: 30px;
+	    height: 30px;
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    border-radius: 50%;
+	    transition: background 0.3s ease;
+	}
+	
+	.admin-modal-close:hover {
+	    background: rgba(255, 255, 255, 0.2);
+	}
+	
+	.admin-modal-body {
+	    padding: 30px;
+	}
+	
+	.admin-form-group {
+	    margin-bottom: 20px;
+	}
+	
+	.admin-form-group label {
+	    display: block;
+	    margin-bottom: 8px;
+	    color: #333;
+	    font-weight: 500;
+	    font-size: 0.95rem;
+	}
+	
+	.admin-form-group input {
+	    width: 100%;
+	    padding: 12px 15px;
+	    border: 2px solid #e0e0e0;
+	    border-radius: 8px;
+	    font-size: 1rem;
+	    transition: all 0.3s ease;
+	    background: #fafafa;
+	    box-sizing: border-box;
+	}
+	
+	.admin-form-group input:focus {
+	    outline: none;
+	    border-color: #192064;
+	    background: white;
+	    box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+	}
+	
+	.admin-login-btn {
+	    width: 100%;
+	    padding: 15px;
+	    background: #192064;
+	    color: white;
+	    border: none;
+	    border-radius: 8px;
+	    font-size: 1.1rem;
+	    font-weight: 600;
+	    cursor: pointer;
+	    transition: all 0.3s ease;
+	    margin-top: 10px;
+	}
+	
+	.admin-login-btn:hover:not(:disabled) {
+	    background: #0d1642;
+	    transform: translateY(-2px);
+	    box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+	}
+	
+	.admin-login-btn:disabled {
+	    background: #bdbdbd;
+	    cursor: not-allowed;
+	    opacity: 0.7;
+	}
+	
+	.admin-error-message {
+	    background: #fee;
+	    color: #c33;
+	    padding: 10px;
+	    border-radius: 5px;
+	    margin-bottom: 20px;
+	    display: none;
+	}
+	
+	.admin-demo-credentials {
+	    margin-top: 25px;
+	    padding: 15px;
+	    background: #e3f2fd;
+	    border-radius: 8px;
+	    font-size: 0.9rem;
+	    color: #333;
+	}
+	
+	.admin-demo-credentials p {
+	    margin: 5px 0;
+	}
+	
+	.admin-demo-credentials strong {
+	    color: #192064;
+	}
+	
+	/* Responsive */
+	@media (max-width: 768px) {
+	    .admin-modal-content {
+	        width: 95%;
+	        margin: 20px;
+	    }
+	    
+	    .admin-modal-header {
+	        padding: 15px 20px;
+	    }
+	    
+	    .admin-modal-header h2 {
+	        font-size: 1.3rem;
+	    }
+	    
+	    .admin-modal-body {
+	        padding: 20px;
+	    }
+	}
+  </style>
+</head>
+<body>
+  <header class="hero" id="hero">
+    <div class="hero-top fade-up stagger-1">
+      <h1 class="brand" id="brand">HIRAYA FOUNDATION</h1>
+      <button class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <div class="hero-content fade-up stagger-2">
+      <div class="hero-left">
+        <h2>
+          HIRAYA<br>
+          FOUNDATION<br>
+          COLLEGE<br>
+          SCHOLARSHIP
+        </h2>
+      </div>
+
+      <div class="hero-right">
+        <p class="tagline">
+          Opening doors for students to grow, <br> learn, and succeed by providing the <br> scholarship they need to thrive.
+        </p>
+
+        <div class="buttons">
+          <a href="register.html" class="btn apply">APPLY ➜</a>
+          <a href="login.html" class="btn login">LOG IN ➜</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav id="navMenu" class="nav-menu">
+
+    <!-- Top links -->
+    <div class="menu-links">
+      <a href="#hero">HOME</a>
+      <a href="#who-we-are">ABOUT THE FOUNDATION</a>
+      <a href="#offers">SCHOLARSHIP BENEFITS</a>
+      <a href="#partner-schools">PARTNER SCHOOLS</a>
+	  <a href="scholarship.html" class="scholarship-link" target="_blank" rel="noopener">
+	    SCHOLARSHIP
+	  </a>
+    </div>
+
+	<!-- Bottom link -->
+	<div class="menu-bottom">
+	  <a href="mailto:hirayafoundationph@gmail.com" class="menu-email">
+	    hirayafoundationph@gmail.com
+	  </a>
+	</div>
+  </nav>
+
+  <section class="who-we-are fade-up" id="who-we-are">
+    <h2 class="fade-up stagger-1">ABOUT THE FOUNDATION</h2>
+    <div class="who-content">
+      <div class="who-image fade-up stagger-2">
+        <img src="images/logo.png" alt="Hiraya Foundation">
+      </div>
+	  
+	  <div class="who-text">
+	    <div class="fade-up stagger-1">
+			<p>
+			  <strong>Hiraya Foundation</strong> is a Filipino non-profit organization dedicated to nurturing dreams and empowering the next generation. 
+			  We strive to create opportunities that help young Filipinos reach their full potential and make a positive impact on society.<br><br>
+			</p>
+			<p>
+			  At the heart of our work is the <strong>Hiraya Foundation College Scholarship Program</strong>, which provides deserving students with financial support, mentorship, and resources to excel academically. 
+			  Our scholarships recognize talent, perseverance, and potential, helping scholars turn their dreams into reality.
+			</p>
+	    </div>
+
+		<a href="scholarship.html"
+		   target="_blank"
+		   rel="noopener noreferrer"
+		   class="scholarship-link learn-more-box stagger-4">
+		  Learn More about<br>
+		  Hiraya Foundation<br>
+		  College Scholarship<br>
+		  Program
+		</a>
+	  </div>
+
+    </div>
+  </section>
+
+  <section class="offers" id="offers">
+    <h2 class="fade-up stagger-1">SCHOLARSHIP BENEFITS</h2>
+    <div class="offers-grid">
+      <div class="offer">
+        <div class="star-symbol fade-up stagger-2">✽</div>
+        <p class="fade-up stagger-2">
+          <strong>MONTHLY STIPEND</strong><br>
+          Scholars receive a monthly allowance to help cover school and living expenses.
+        </p>
+      </div>
+
+      <div class="offer-line fade-up stagger-2"></div>
+
+      <div class="offer">
+        <div class="star-symbol fade-up stagger-3">✽</div>
+        <p class="fade-up stagger-3">
+          <strong>INTERNSHIP OPPORTUNITIES</strong><br>
+          Scholars gain hands-on experience to build skills and explore career paths.
+        </p>
+      </div>
+
+      <div class="offer-line fade-up stagger-3"></div>
+
+      <div class="offer">
+        <div class="star-symbol fade-up stagger-4">✽</div>
+        <p class="fade-up stagger-4">
+          <strong>CONFERENCES & SEMINARS</strong><br>
+          Scholars get opportunities to attend conferences and seminars to expand knowledge and connections.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="partner-schools fade-up" id="partner-schools">
+    <h2 class="fade-up stagger-1">PARTNER SCHOOLS</h2>
+    <p class="fade-up stagger-2">
+      The scholarship program currently collaborates with selected colleges and universities in the NCR and CALABARZON regions, including both state and private institutions. The foundation is actively working to expand its network to include additional partner schools.
+    </p>
+
+    <ul class="schools-grid fade-up stagger-3">
+      <li>University of the Philippines System (Manila, Diliman, Los Baños)</li>
+      <li>Ateneo de Manila University</li>
+      <li>De La Salle University (Manila)</li>
+      <li>University of Santo Tomas (Manila)</li>
+      <li>National University (Manila, MOA, Fairview, East Ortigas, Laguna)</li>
+      <li>Polytechnic University of the Philippines (Manila, Parañaque, Taguig)</li>
+      <li>Technological University of the Philippines (Manila, Taguig)</li>
+      <li>Mapúa University</li>
+      <li>Far Eastern University (Manila)</li>
+      <li>Adamson University</li>
+      <li>San Beda University (Manila)</li>
+      <li>University of the East (Manila)</li>
+      <li>Philippine Normal University (Manila)</li>
+      <li>Pamantasan ng Lungsod ng Maynila</li>
+	  <li>Pamantasan ng Lungsod ng Marikina</li>
+	  <li>Pamantasan ng Lungsod ng Pasig</li>
+	  <li>Pamantasan ng Lungsod ng Muntinlupa</li>
+	  <li>Pamantasan ng Lungsod ng Valenzuela</li>
+      <li>Centro Escolar University (Manila)</li>
+      <li>University of Makati</li>
+      <li>Lyceum of the Philippines University (Manila)</li>
+	  <li>Rizal Technological University (Mandaluyong, Pasig)</li>
+	  <li>University of Rizal System (Antipolo, Tanay)</li>
+      <li>Cavite State University (Manila, Cavite)</li>
+	  <li>University of Perpetual Help System DALTA (Calamba, Molino)</li>
+	  <li>Laguna State Polytechnic University (Los Baños)</li>
+      <li>Batangas State Universitys (Lipa, Pablo Borbon)</li>
+	  <li>Southern Luzon State University (Lucban, Lucena)</li>
+    </ul>
+  </section>
+
+  <section class="contact-section fade-up" id="contact-section">  
+    <div class="contact-left">
+      <h2 class="fade-up stagger-1">CONTACT US</h2>
+      <p class="fade-up stagger-2">
+        Hiraya Foundation<br>
+        551 F Jhocson St,<br>
+        Sampaloc, Manila,<br>
+        1008 Metro Manila
+      </p>
+      <p class="fade-up stagger-3">
+        123-456-7890<br>
+        hirayafoundationph@gmail.com
+      </p>
+    </div>
+    
+    <div class="contact-right">
+      <p class="big-quote-text fade-up stagger-4">
+        ❝<br>
+        An investment<br>
+        in knowledge<br>
+        pays the<br>
+        best interest
+        <span class="author">— Benjamin Franklin</span>
+      </p>
+    </div>
+  </section>
+
+  <script>
+    // ===== Admin shortcut =====
+    document.addEventListener('keydown', function(event) {
+        // Check for F2 key (keyCode 113)
+        if (event.key === 'F2' || event.keyCode === 113) {
+            event.preventDefault(); // Prevent default F2 behavior (rename in some browsers)
+            
+            // Create and show admin login modal
+            showAdminLoginModal();
+        }
+    });
+
+    // Admin Login Modal
+    function showAdminLoginModal() {
+        // Check if modal already exists
+        let modal = document.getElementById('adminLoginModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            return;
+        }
+
+        // Create modal
+        modal = document.createElement('div');
+        modal.id = 'adminLoginModal';
+        modal.className = 'admin-modal';
+        modal.innerHTML = `
+            <div class="admin-modal-content">
+                <div class="admin-modal-header">
+                    <h2>Admin Login</h2>
+                    <button class="admin-modal-close" onclick="closeAdminModal()">&times;</button>
+                </div>
+                <div class="admin-modal-body">
+                    <div id="adminLoginError" class="admin-error-message"></div>
+                    <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                        <div class="admin-form-group">
+                            <label for="adminEmail">Email Address</label>
+                            <input type="email" id="adminEmail" placeholder="Enter your admin email" required>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="adminPassword">Password</label>
+                            <input type="password" id="adminPassword" placeholder="Enter your password" required>
+                        </div>
+                        <button type="submit" class="admin-login-btn" id="adminLoginBtn">Login</button>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        document.body.classList.add('no-scroll');
+        
+        // Focus on email input
+        setTimeout(() => document.getElementById('adminEmail').focus(), 100);
+    }
+
+    function closeAdminModal() {
+        const modal = document.getElementById('adminLoginModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.classList.remove('no-scroll');
+        }
+    }
+
+    async function handleAdminLogin(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('adminEmail').value;
+        const password = document.getElementById('adminPassword').value;
+        const errorDiv = document.getElementById('adminLoginError');
+        const loginBtn = document.getElementById('adminLoginBtn');
+        
+        errorDiv.style.display = 'none';
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Logging in...';
+        
+        try {
+            const response = await fetch('/ScholarshipSystem/api/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password }),
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Store admin info
+                sessionStorage.setItem('adminInfo', JSON.stringify({
+                    id: data.adminId,
+                    name: data.adminName,
+                    email: data.adminEmail,
+                    role: data.adminRole
+                }));
+                
+                // Close modal and redirect
+                closeAdminModal();
+                window.location.href = '/ScholarshipSystem/admin-dashboard.html';
+            } else {
+                errorDiv.textContent = data.message || 'Invalid credentials';
+                errorDiv.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            errorDiv.textContent = 'Connection error. Please try again.';
+            errorDiv.style.display = 'block';
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Login';
+        }
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('adminLoginModal');
+        if (modal && event.target === modal) {
+            closeAdminModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeAdminModal();
+        }
+    });
+
+
+    // ===== Elements =====
+    const navMenu = document.getElementById('navMenu');
+    const hamburger = document.querySelector('.hamburger');
+
+    // ===== Toggle Sidebar Menu =====
+	function toggleMenu() {
+	  navMenu.classList.toggle('active');
+	  hamburger.classList.toggle('active');
+	}
+
+    function closeMenu() {
+      navMenu.classList.remove('active');
+      hamburger.classList.remove('active');
+    }
+
+    // ===== Close menu on link click =====
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // ===== Close menu when clicking outside =====
+    document.addEventListener('click', function(e) {
+      if (navMenu.classList.contains('active') &&
+          !navMenu.contains(e.target) &&
+          !hamburger.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    // ===== Scroll-triggered Rise Effect =====
+    function revealOnScroll() {
+      const elements = document.querySelectorAll('.fade-up');
+      const windowHeight = window.innerHeight;
+
+      elements.forEach(el => {
+        const elementTop = el.getBoundingClientRect().top;
+        if (elementTop < windowHeight - 100) el.classList.add('show');
+      });
+    }
+
+    window.addEventListener('scroll', revealOnScroll);
+    window.addEventListener('load', revealOnScroll);
+
+    // ===== Scrollspy: Highlight nav link for current section =====
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-menu a');
+
+    function highlightNav() {
+      const scrollY = window.scrollY;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 150;
+        const sectionHeight = section.offsetHeight;
+        const sectionId = section.getAttribute('id');
+
+        if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${sectionId}`) {
+              link.classList.add('active');
+            }
+          });
+        }
+      });
+    }
+
+    window.addEventListener('scroll', highlightNav);
+    window.addEventListener('load', highlightNav);
+  </script>
+
+</body>
+</html>

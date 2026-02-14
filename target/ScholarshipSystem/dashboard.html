@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="/ScholarshipSystem/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - Hiraya Foundation</title>
+    <style>
+        /* ALL STYLES REMAIN THE SAME AS YOUR PROVIDED CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f9ff;
+            color: #333;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, #192064 0%, #0d1642 100%);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .dashboard-logo span {
+            color: #99c5ff;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #99c5ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #192064;
+        }
+
+        .user-details h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Dashboard Content */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .dashboard-title {
+            color: #192064;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: -1px;
+        }
+
+        /* Status Cards */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+            border-left: 5px solid #192064;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #192064;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Status Colors */
+        .status-draft { border-left-color: #ff9800; }
+        .status-submitted { border-left-color: #2196f3; }
+        .status-under_review { border-left-color: #9c27b0; }
+        .status-interview { border-left-color: #00bcd4; }
+        .status-approved { border-left-color: #4caf50; }
+        .status-declined { border-left-color: #f44336; }
+        
+        .badge-draft { background: #fff3e0; color: #ef6c00; }
+        .badge-submitted { background: #e3f2fd; color: #1565c0; }
+        .badge-under_review { background: #f3e5f5; color: #7b1fa2; }
+        .badge-interview { background: #e0f7fa; color: #0097a7; }
+        .badge-approved { background: #e8f5e9; color: #2e7d32; }
+        .badge-declined { background: #ffebee; color: #c62828; }
+
+        .status-content p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .reference-number {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #192064;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            background: #f0f4ff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        /* Application Section */
+        .application-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            color: #192064;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f4ff;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #333;
+            padding: 8px 0;
+        }
+
+        /* Documents Grid */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .document-item {
+            background: #f8faff;
+            border: 2px solid #e0e7ff;
+            border-radius: 10px;
+            padding: 20px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .document-item:hover {
+            border-color: #192064;
+            background: #f0f7ff;
+            transform: translateY(-3px);
+        }
+
+        .document-icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            color: #192064;
+        }
+
+        .document-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .document-status {
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .document-verified {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .document-pending {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffcc80;
+        }
+
+        .document-missing {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .document-filename {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 8px;
+            word-break: break-all;
+        }
+
+        /* Interview Card */
+        .interview-card {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border-left: 5px solid #1976d2;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+        }
+
+        .interview-title {
+            color: #0d47a1;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .interview-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .interview-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1565c0;
+            font-size: 1.1rem;
+        }
+
+        .interview-icon {
+            font-size: 1.3rem;
+        }
+
+        .interview-notes {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            color: #0d47a1;
+            font-style: italic;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            width: 50%;
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            padding-right: 50px;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            padding-left: 50px;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: #192064;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .timeline-desc {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .timeline-status {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #e0e0e0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            right: -10px;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: #192064;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -10px;
+            right: auto;
+        }
+
+        /* Actions Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(25, 32, 100, 0.15);
+            border-color: #192064;
+        }
+
+        .action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #192064;
+        }
+
+        .action-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #192064;
+            margin-bottom: 10px;
+        }
+
+        .action-desc {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            background: #192064;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #0d1642;
+            transform: scale(1.05);
+        }
+
+        /* Empty State - NO APPLICATION */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin: 20px 0 60px;
+            border: 2px dashed #99c5ff;
+        }
+
+        .empty-icon {
+            font-size: 6rem;
+            margin-bottom: 25px;
+            color: #99c5ff;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .empty-title {
+            font-size: 2.5rem;
+            color: #192064;
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .empty-text {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .start-application-btn {
+            background: #192064;
+            color: white;
+            border: none;
+            padding: 18px 60px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(25, 32, 100, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .start-application-btn:hover {
+            background: #0d1642;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(25, 32, 100, 0.4);
+        }
+
+        .start-application-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 16px;
+            max-width: 900px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: #192064;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: white;
+            font-size: 1.6rem;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-radius: 0 0 16px 16px;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #e3f2fd;
+            border-top: 5px solid #192064;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #192064;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            background: #192064;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            margin-top: 15px;
+        }
+
+        .footer-links a {
+            color: #99c5ff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .user-info {
+                flex-direction: column;
+            }
+
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                left: 0 !important;
+                padding-left: 60px !important;
+                padding-right: 20px !important;
+            }
+
+            .timeline-item:nth-child(even) .timeline-dot {
+                left: 20px;
+            }
+
+            .timeline-dot {
+                left: 20px !important;
+                right: auto !important;
+            }
+
+            .modal-container {
+                width: 100%;
+                height: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .modal-header {
+                border-radius: 0;
+            }
+            
+            .empty-title {
+                font-size: 1.8rem;
+            }
+            
+            .empty-icon {
+                font-size: 4rem;
+            }
+            
+            .start-application-btn {
+                padding: 15px 40px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="dashboard-logo">Hiraya <span>Foundation</span></div>
+        <div class="user-info">
+            <div class="user-avatar" id="userInitials">--</div>
+            <div class="user-details">
+                <h3 id="userName">Loading...</h3>
+                <p id="userEmail">Loading...</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">Log Out</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-container">
+        <h1 class="dashboard-title">My Application Dashboard</h1>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-spinner">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading your dashboard...</div>
+        </div>
+
+        <!-- Dashboard Content (Initially Hidden) -->
+        <div id="dashboardContent" style="display: none;">
+            <!-- NO APPLICATION STATE - Shows when user has no application -->
+            <div id="noApplicationState" style="display: none;" class="empty-state">
+                <div class="empty-icon">📝</div>
+                <h2 class="empty-title">Start Your Application</h2>
+                <p class="empty-text">
+                    You haven't started your scholarship application yet.<br>
+                    Begin your journey with Hiraya Foundation today!
+                </p>
+                <button class="start-application-btn" onclick="safeStartNewApplication()">
+                    Start Application
+                </button>
+            </div>
+
+            <!-- APPLICATION DETAILS - Only shows when user HAS an application -->
+            <div id="applicationDetails" style="display: none;">
+                <!-- Status Overview - Dynamically populated with REAL data -->
+                <div id="statusGrid" class="status-grid"></div>
+
+                <!-- Interview Details - Only shown when status is 'interview' -->
+                <div id="interviewDetails" style="display: none;"></div>
+
+                <!-- Personal Information - REAL data from database -->
+                <section class="application-section">
+                    <h2 class="section-title">Personal Information</h2>
+                    <div class="info-grid" id="personalInfoGrid"></div>
+                </section>
+
+                <!-- Academic Information - REAL data from database -->
+                <section class="application-section">
+                    <h2 class="section-title">Academic Information</h2>
+                    <div class="info-grid" id="academicInfoGrid"></div>
+                </section>
+
+                <!-- Documents Status - REAL document verification status -->
+                <section class="application-section">
+                    <h2 class="section-title">Documents Status</h2>
+                    <div id="documentProgressBar"></div>
+                    <div class="documents-grid" id="documentsGrid"></div>
+                </section>
+
+                <!-- Application Timeline - REAL timeline entries -->
+                <section class="application-section">
+                    <h2 class="section-title">Application Timeline</h2>
+                    <div class="timeline" id="timeline"></div>
+                </section>
+
+                <!-- Quick Actions - Dynamic based on application status -->
+                <section class="application-section">
+                    <h2 class="section-title">Quick Actions</h2>
+                    <div class="actions-grid" id="actionsGrid"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Application View Modal -->
+    <div id="applicationModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 id="modalTitle">Application Details</h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-back" onclick="closeModal()">Close</button>
+                <button id="modalActionBtn" class="btn btn-next" style="display: none;" onclick="handleModalAction()">Continue Application</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <p>Hiraya Foundation College Scholarship Program</p>
+        <div class="footer-links">
+            <a href="index.html">Back to Home</a> |
+            <a href="scholarship.html">Scholarship Details</a> |
+            <a href="mailto:hirayafoundationph@gmail.com">Email Support</a>
+        </div>
+        <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.8;">
+            © 2026 Hiraya Foundation. All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+        const API_BASE = '/ScholarshipSystem/api';
+        let currentApplication = null;
+        let currentDocuments = [];
+
+        // Load dashboard data - SHOW ONLY REAL DATA, NO SAMPLES
+        async function loadDashboardData() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                console.log('Dashboard data received:', data);
+                
+                if (!data.authenticated) {
+                    window.location.href = '/ScholarshipSystem/login.html';
+                    return;
+                }
+                
+                // Hide loading spinner
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+                
+                // Update user info with REAL user data
+                updateUserInfo(data.user);
+                
+                // Check if user has an application
+                if (data.application) {
+                    // User HAS an application - store data and show application details
+                    currentApplication = data.application;
+                    currentDocuments = data.documents || [];
+                    
+                    // Store application ID in sessionStorage for continued access
+                    sessionStorage.setItem('currentApplicationId', currentApplication.id);
+                    
+                    // Hide the "Start Application" button, show real application data
+                    document.getElementById('noApplicationState').style.display = 'none';
+                    document.getElementById('applicationDetails').style.display = 'block';
+                    
+                    // Update ALL sections with REAL data from database
+                    updateStatusCards(data.application, data.documentStatus);
+                    updatePersonalInfo(data.application);
+                    updateAcademicInfo(data.application);
+                    updateDocumentStatus(data.documentStatus);
+                    updateTimeline(data.timeline || []);
+                    updateActionButtons(data.application, data.canEdit || false);
+                    
+                    // Show interview details ONLY if status is interview
+                    if (data.application.applicationStatus === 'interview' && data.interviewDetails) {
+                        showInterviewDetails(data.interviewDetails);
+                    }
+                } else {
+                    // User has NO application - show "Start Application" button, hide everything else
+                    document.getElementById('noApplicationState').style.display = 'block';
+                    document.getElementById('applicationDetails').style.display = 'none';
+                    
+                    // Clear any stored application ID
+                    sessionStorage.removeItem('currentApplicationId');
+                    sessionStorage.removeItem('continueApplication');
+                    sessionStorage.removeItem('uploadDocuments');
+                    sessionStorage.removeItem('newApplication');
+                }
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.getElementById('loadingState').innerHTML = `
+                    <div style="text-align: center;">
+                        <div class="spinner"></div>
+                        <p style="color: #f44336; margin-top: 20px; font-size: 1.1rem;">Failed to load dashboard data</p>
+                        <button onclick="loadDashboardData()" style="margin-top: 20px; padding: 12px 30px; background: #192064; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 1rem;">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Update user info with REAL data from database
+        function updateUserInfo(user) {
+            if (!user) return;
+            
+            // Set user initials from REAL first/last name
+            const firstName = user.firstName || '';
+            const lastName = user.lastName || '';
+            const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+            document.getElementById('userInitials').textContent = initials || 'U';
+            
+            // Set user name and email from REAL data
+            document.getElementById('userName').textContent = `${firstName} ${lastName}`.trim() || 'User';
+            document.getElementById('userEmail').textContent = user.email || 'No email';
+        }
+
+        // Update status cards with REAL application data - NO SAMPLE DATA
+        function updateStatusCards(application, documentStatus) {
+            const statusGrid = document.getElementById('statusGrid');
+            const status = application.applicationStatus || 'draft';
+            
+            // Format status for display
+            const statusDisplay = status.replace('_', ' ').toUpperCase();
+            const statusClass = `status-${status}`;
+            const badgeClass = `badge-${status}`;
+            
+            // Format dates from REAL data
+            const lastUpdated = application.updatedAt ? formatDate(application.updatedAt) : 'Not available';
+            const submissionDate = application.submissionDate ? formatDate(application.submissionDate) : null;
+            
+            // Document status - CALCULATE FROM REAL DOCUMENTS
+            let docStatusMessage = 'No documents';
+            let docStatusClass = 'badge-draft';
+            let docStatusText = '0/10 Verified';
+            let docStatusDescription = 'No documents uploaded yet.';
+            
+            if (documentStatus) {
+                const verified = documentStatus.verified || 0;
+                const pending = documentStatus.pending || 0;
+                const missing = documentStatus.missing || 0;
+                const total = documentStatus.total || 10;
+                
+                docStatusText = `${verified}/${total} Verified`;
+                
+                if (missing > 0) {
+                    docStatusMessage = `${missing} Missing`;
+                    docStatusClass = 'badge-declined';
+                    docStatusDescription = `${missing} required document${missing > 1 ? 's are' : ' is'} missing.`;
+                } else if (pending > 0) {
+                    docStatusMessage = `${pending} Pending`;
+                    docStatusClass = 'badge-under_review';
+                    docStatusDescription = `${pending} document${pending > 1 ? 's are' : ' is'} pending verification.`;
+                } else if (verified === total) {
+                    docStatusMessage = 'All Verified';
+                    docStatusClass = 'badge-approved';
+                    docStatusDescription = 'All documents have been verified.';
+                }
+            }
+            
+            // Interview status - BASED ON REAL APPLICATION STATUS
+            let interviewStatus = 'Not Scheduled';
+            let interviewClass = 'badge-draft';
+            let interviewDescription = 'No interview scheduled yet.';
+            
+            if (status === 'interview') {
+                interviewStatus = 'Scheduled';
+                interviewClass = 'badge-interview';
+                interviewDescription = 'Your interview has been scheduled.';
+            } else if (status === 'approved') {
+                interviewStatus = 'Completed';
+                interviewClass = 'badge-approved';
+                interviewDescription = 'Interview completed.';
+            } else if (status === 'declined') {
+                interviewStatus = 'N/A';
+                interviewClass = 'badge-declined';
+                interviewDescription = 'Application process completed.';
+            }
+            
+            // Build status cards with REAL data - NO SAMPLE TEXT
+            statusGrid.innerHTML = `
+                <div class="status-card ${statusClass}">
+                    <div class="status-header">
+                        <div class="status-title">Application Status</div>
+                        <div class="status-badge ${badgeClass}">${statusDisplay}</div>
+                    </div>
+                    <div class="status-content">
+                        <p>${getStatusDescription(status)}</p>
+                        <div class="reference-number">
+                            Ref: ${application.referenceNumber || 'Not assigned'}
+                        </div>
+                        <p style="margin-top: 15px; font-size: 0.9rem;">
+                            <strong>Last Updated:</strong> ${lastUpdated}
+                            ${submissionDate ? `<br><strong>Submitted:</strong> ${submissionDate}` : ''}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="status-card">
+                    <div class="status-header">
+                        <div class="status-title">Documents Status</div>
+                        <div class="status-badge ${docStatusClass}">${docStatusMessage}</div>
+                    </div>
+                    <div class="status-content">
+                        <p>${docStatusDescription}</p>
+                        <p style="margin-top: 10px;">
+                            <strong>Progress:</strong> ${docStatusText}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="status-card ${status === 'interview' ? 'status-interview' : ''}">
+                    <div class="status-header">
+                        <div class="status-title">Interview Status</div>
+                        <div class="status-badge ${interviewClass}">${interviewStatus}</div>
+                    </div>
+                    <div class="status-content">
+                        <p>${interviewDescription}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Get status description - BASED ON REAL STATUS
+        function getStatusDescription(status) {
+            const descriptions = {
+                'draft': 'Your application is saved as a draft. Complete all required fields and submit to proceed.',
+                'submitted': 'Your application has been submitted successfully and is queued for screening.',
+                'under_review': 'Your application is currently being reviewed by the scholarship committee.',
+                'interview': 'Congratulations! You have been shortlisted for an interview.',
+                'approved': 'Congratulations! Your scholarship application has been approved.',
+                'declined': 'Thank you for your interest. Your application was not selected.'
+            };
+            return descriptions[status] || 'Application status is being updated.';
+        }
+
+        // Show interview details - ONLY when status is 'interview'
+        function showInterviewDetails(details) {
+            const interviewSection = document.getElementById('interviewDetails');
+            interviewSection.style.display = 'block';
+            interviewSection.innerHTML = `
+                <div class="interview-card">
+                    <div class="interview-title">
+                        <span>📅 Scheduled Interview</span>
+                    </div>
+                    <div class="interview-details">
+                        <div class="interview-detail-item">
+                            <span class="interview-icon">📆</span>
+                            <span><strong>Date:</strong> ${details.date || 'TBD'}</span>
+                        </div>
+                        <div class="interview-detail-item">
+                            <span class="interview-icon">⏰</span>
+                            <span><strong>Time:</strong> ${details.time || 'TBD'}</span>
+                        </div>
+                        <div class="interview-detail-item">
+                            <span class="interview-icon">📍</span>
+                            <span><strong>Location:</strong> ${details.location || 'TBD'}</span>
+                        </div>
+                        <div class="interview-detail-item">
+                            <span class="interview-icon">🎥</span>
+                            <span><strong>Mode:</strong> ${details.mode || 'TBD'}</span>
+                        </div>
+                    </div>
+                    ${details.notes ? `
+                        <div class="interview-notes">
+                            <strong>📝 Notes:</strong> ${details.notes}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Update personal information with REAL data from database
+        function updatePersonalInfo(application) {
+            const grid = document.getElementById('personalInfoGrid');
+            
+            if (!application) return;
+            
+            const fullName = [application.firstName, application.middleName, application.lastName]
+                .filter(Boolean)
+                .join(' ')
+                .trim() || 'Not provided';
+            
+            const birthdate = application.birthdate ? formatDate(application.birthdate) : 'Not provided';
+            
+            const presentAddress = [
+                application.presentHouseNumber,
+                application.presentStreet,
+                application.presentBarangay,
+                application.presentMunicipality,
+                application.presentProvince
+            ].filter(Boolean).join(', ') || 'Not provided';
+            
+            grid.innerHTML = `
+                <div class="info-item">
+                    <span class="info-label">Full Name</span>
+                    <div class="info-value">${fullName}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Email Address</span>
+                    <div class="info-value">${application.email || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Mobile Number</span>
+                    <div class="info-value">${formatPhoneNumber(application.mobileNumber) || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Date of Birth</span>
+                    <div class="info-value">${birthdate}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Place of Birth</span>
+                    <div class="info-value">${application.placeOfBirth || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Sex</span>
+                    <div class="info-value">${application.sex || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Present Address</span>
+                    <div class="info-value">${presentAddress}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Facebook URL</span>
+                    <div class="info-value">${application.facebookUrl || 'Not provided'}</div>
+                </div>
+            `;
+        }
+
+        // Update academic information with REAL data from database
+        function updateAcademicInfo(application) {
+            const grid = document.getElementById('academicInfoGrid');
+            
+            if (!application) return;
+            
+            grid.innerHTML = `
+                <div class="info-item">
+                    <span class="info-label">Junior High School</span>
+                    <div class="info-value">${application.jhsName || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">JHS School ID</span>
+                    <div class="info-value">${application.jhsSchoolId || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">JHS Type</span>
+                    <div class="info-value">${application.jhsType || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Senior High School</span>
+                    <div class="info-value">${application.shsName || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">SHS School ID</span>
+                    <div class="info-value">${application.shsSchoolId || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">SHS Type</span>
+                    <div class="info-value">${application.shsType || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Track</span>
+                    <div class="info-value">${application.track || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Strand</span>
+                    <div class="info-value">${application.strand || 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Grade 12 GWA</span>
+                    <div class="info-value">${application.grade12Gwa ? application.grade12Gwa + '%' : 'Not provided'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Honors Received</span>
+                    <div class="info-value">${application.honorsReceived || 'None'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">First Choice College</span>
+                    <div class="info-value">${application.collegeFirst || 'Not selected'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Second Choice College</span>
+                    <div class="info-value">${application.collegeSecond || 'Not selected'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Third Choice College</span>
+                    <div class="info-value">${application.collegeThird || 'Not selected'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">First Choice Program</span>
+                    <div class="info-value">${application.programFirst || 'Not selected'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Second Choice Program</span>
+                    <div class="info-value">${application.programSecond || 'Not selected'}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Third Choice Program</span>
+                    <div class="info-value">${application.programThird || 'Not selected'}</div>
+                </div>
+            `;
+        }
+
+        // Update document status with REAL document data
+        function updateDocumentStatus(documentStatus) {
+            if (!documentStatus || !documentStatus.documents) return;
+            
+            const progressBar = document.getElementById('documentProgressBar');
+            const grid = document.getElementById('documentsGrid');
+            
+            const verified = documentStatus.verified || 0;
+            const total = documentStatus.total || 10;
+            const percentage = documentStatus.completionPercentage || 0;
+            
+            // Update progress bar with REAL data
+            progressBar.innerHTML = `
+                <div style="margin-bottom: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-weight: 600; color: #192064;">Document Completion Progress</span>
+                        <span style="color: #192064; font-weight: 700; font-size: 1.2rem;">${verified}/${total}</span>
+                    </div>
+                    <div style="width: 100%; height: 12px; background: #e0e0e0; border-radius: 6px; overflow: hidden;">
+                        <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #4caf50, #8bc34a); border-radius: 6px; transition: width 0.5s ease;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 8px; color: #666; font-size: 0.9rem;">
+                        <span>${verified} Verified</span>
+                        <span>${documentStatus.pending || 0} Pending</span>
+                        <span>${documentStatus.missing || 0} Missing</span>
+                    </div>
+                </div>
+            `;
+            
+            // Update documents grid with REAL document status
+            let documentsHtml = '';
+            
+            documentStatus.documents.forEach(doc => {
+                const statusClass = `document-${doc.status}`;
+                documentsHtml += `
+                    <div class="document-item">
+                        <div class="document-icon">${doc.icon}</div>
+                        <div class="document-name">${doc.name}</div>
+                        <div class="document-status ${statusClass}">${doc.statusText}</div>
+                        ${doc.fileName ? `
+                            <div class="document-filename" title="${doc.fileName}">
+                                ${doc.fileName.length > 20 ? doc.fileName.substring(0, 20) + '...' : doc.fileName}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = documentsHtml;
+        }
+
+        // Update timeline with REAL timeline entries
+        function updateTimeline(timelineEntries) {
+            const timeline = document.getElementById('timeline');
+            
+            if (!timelineEntries || timelineEntries.length === 0) {
+                timeline.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; background: #f8faff; border-radius: 12px; color: #666;">
+                        <span style="font-size: 3rem; display: block; margin-bottom: 15px;">📅</span>
+                        <p style="font-size: 1.1rem;">No timeline entries yet.</p>
+                        <p style="margin-top: 10px; font-size: 0.95rem;">Your application activity will appear here.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let timelineHtml = '';
+            timelineEntries.forEach((entry, index) => {
+                const date = formatDate(entry.createdAt, true);
+                let description = entry.description || entry.action;
+                
+                timelineHtml += `
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-date">${date}</div>
+                            <div class="timeline-desc">${description}</div>
+                            ${entry.statusBefore && entry.statusAfter ? `
+                                <div class="timeline-status">
+                                    Status: ${entry.statusBefore.replace('_', ' ')} → ${entry.statusAfter.replace('_', ' ')}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+                `;
+            });
+            
+            timeline.innerHTML = timelineHtml;
+        }
+
+        // Update action buttons based on REAL application status
+        function updateActionButtons(application, canEdit) {
+            const actionsGrid = document.getElementById('actionsGrid');
+            const status = application.applicationStatus;
+            
+            let actions = [];
+            
+            // View Application - Always show for existing applications
+            actions.push({
+                icon: '📋',
+                title: 'View Application',
+                desc: 'Review your complete application details.',
+                action: 'viewApplication()',
+                buttonText: 'View Details'
+            });
+            
+            // Continue/Edit - Only for drafts
+            if (canEdit && status === 'draft') {
+                actions.push({
+                    icon: '✏️',
+                    title: 'Continue Application',
+                    desc: 'Your application is in draft mode. Complete and submit it.',
+                    action: 'safeContinueApplication()',
+                    buttonText: 'Continue Editing'
+                });
+            }
+            
+            // Upload Documents - Show for draft, submitted, under_review
+            if (status === 'draft' || status === 'submitted' || status === 'under_review') {
+                actions.push({
+                    icon: '📤',
+                    title: 'Upload Documents',
+                    desc: 'Submit additional or missing documents.',
+                    action: 'safeUploadDocuments()',
+                    buttonText: 'Upload Now'
+                });
+            }
+            
+            // Contact Support - Always show
+            actions.push({
+                icon: '💬',
+                title: 'Contact Support',
+                desc: 'Get help with your application.',
+                action: 'contactSupport()',
+                buttonText: 'Contact Us'
+            });
+            
+            // Print Application - Show for submitted applications
+            if (status !== 'draft') {
+                actions.push({
+                    icon: '🖨️',
+                    title: 'Print Application',
+                    desc: 'Generate a PDF copy of your application.',
+                    action: 'printApplication()',
+                    buttonText: 'Print PDF'
+                });
+            }
+            
+            let actionsHtml = '';
+            actions.forEach(action => {
+                actionsHtml += `
+                    <div class="action-card" onclick="${action.action}">
+                        <div class="action-icon">${action.icon}</div>
+                        <div class="action-title">${action.title}</div>
+                        <div class="action-desc">${action.desc}</div>
+                        <button class="action-btn">${action.buttonText}</button>
+                    </div>
+                `;
+            });
+            
+            actionsGrid.innerHTML = actionsHtml;
+        }
+
+        // View full application modal with REAL data
+        async function viewApplication() {
+            if (!currentApplication) return;
+            
+            const modal = document.getElementById('applicationModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const actionBtn = document.getElementById('modalActionBtn');
+            
+            modalTitle.textContent = 'Application Details';
+            
+            const fullName = [currentApplication.firstName, currentApplication.middleName, currentApplication.lastName]
+                .filter(Boolean)
+                .join(' ') || 'Not provided';
+            
+            const birthdate = currentApplication.birthdate ? formatDate(currentApplication.birthdate) : 'Not provided';
+            const essay = currentApplication.essay || 'No essay provided.';
+            
+            modalBody.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div>
+                        <h3 style="color: #192064; margin-bottom: 20px; font-size: 1.2rem;">Personal Information</h3>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #555; font-size: 0.85rem; text-transform: uppercase;">Full Name</strong>
+                            <p style="margin-top: 5px; font-size: 1rem;">${fullName}</p>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #555; font-size: 0.85rem; text-transform: uppercase;">Date of Birth</strong>
+                            <p style="margin-top: 5px;">${birthdate}</p>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #555; font-size: 0.85rem; text-transform: uppercase;">Contact Number</strong>
+                            <p style="margin-top: 5px;">${formatPhoneNumber(currentApplication.mobileNumber) || 'Not provided'}</p>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #555; font-size: 0.85rem; text-transform: uppercase;">Email</strong>
+                            <p style="margin-top: 5px;">${currentApplication.email || 'Not provided'}</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="color: #192064; margin-bottom: 20px; font-size: 1.2rem;">Academic Information</h3>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #555; font-size: 0.85rem; text-transform: uppercase;">Senior High School</strong>
+                            <p style="margin-top: 5px;">${currentApplication.shsName || 'Not provided'}</p>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #555; font-size: 0.85rem; text-transform: uppercase;">Track/Strand</strong>
+                            <p style="margin-top: 5px;">${currentApplication.track || ''} ${currentApplication.strand ? '- ' + currentApplication.strand : ''}</p>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #555; font-size: 0.85rem; text-transform: uppercase;">Grade 12 GWA</strong>
+                            <p style="margin-top: 5px;">${currentApplication.grade12Gwa ? currentApplication.grade12Gwa + '%' : 'Not provided'}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3 style="color: #192064; margin-bottom: 20px; font-size: 1.2rem;">Application Essay</h3>
+                    <div style="background: #f8faff; padding: 25px; border-radius: 12px; border-left: 4px solid #192064;">
+                        <p style="line-height: 1.8; color: #333; white-space: pre-wrap;">${essay}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Show continue button only for drafts
+            if (currentApplication.applicationStatus === 'draft') {
+                actionBtn.style.display = 'block';
+                actionBtn.textContent = 'Continue Application';
+                actionBtn.onclick = function() {
+                    safeContinueApplication();
+                    closeModal();
+                };
+            } else {
+                actionBtn.style.display = 'none';
+            }
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'draft': '#ff9800',
+                'submitted': '#2196f3',
+                'under_review': '#9c27b0',
+                'interview': '#00bcd4',
+                'approved': '#4caf50',
+                'declined': '#f44336'
+            };
+            return colors[status] || '#757575';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('applicationModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function handleModalAction() {
+            if (currentApplication?.applicationStatus === 'draft') {
+                safeContinueApplication();
+            }
+            closeModal();
+        }
+
+     // ============ FIXED ACTION FUNCTIONS WITH PROPER REDIRECTS ============
+        function startNewApplication() {
+            // Clear any existing flags
+            sessionStorage.removeItem('continueApplication');
+            sessionStorage.removeItem('uploadDocuments');
+            sessionStorage.removeItem('currentApplicationId');
+            
+            // Set flag for new application
+            sessionStorage.setItem('newApplication', 'true');
+            sessionStorage.setItem('redirectFromDashboard', 'true');
+            
+            // Use window.location.href with absolute path
+            window.location.href = '/ScholarshipSystem/application.html';
+        }
+
+        function continueApplication() {
+            if (currentApplication) {
+                // Clear any conflicting flags
+                sessionStorage.removeItem('newApplication');
+                sessionStorage.removeItem('uploadDocuments');
+                
+                // Set flags for continuing application
+                sessionStorage.setItem('currentApplicationId', currentApplication.id);
+                sessionStorage.setItem('continueApplication', 'true');
+                sessionStorage.setItem('redirectFromDashboard', 'true');
+                
+                // Also store the full application data in sessionStorage as backup
+                sessionStorage.setItem('backupApplication', JSON.stringify(currentApplication));
+                
+                // Redirect to application form
+                window.location.href = '/ScholarshipSystem/application.html';
+            } else {
+                console.error('No current application to continue');
+                // Fallback to new application
+                startNewApplication();
+            }
+        }
+
+        function uploadDocuments() {
+            if (currentApplication) {
+                // Clear any conflicting flags
+                sessionStorage.removeItem('newApplication');
+                sessionStorage.removeItem('continueApplication');
+                
+                // Set flags for document upload
+                sessionStorage.setItem('currentApplicationId', currentApplication.id);
+                sessionStorage.setItem('uploadDocuments', 'true');
+                sessionStorage.setItem('redirectFromDashboard', 'true');
+                
+                // Redirect to application form with document section parameter
+                window.location.href = `/ScholarshipSystem/application.html?section=3&appId=${currentApplication.id}`;
+            } else {
+                console.error('No current application for document upload');
+                window.location.href = '/ScholarshipSystem/application.html';
+            }
+        }
+
+        // Simplified authentication check - don't block redirect
+        async function safeStartNewApplication() {
+            // Don't check auth here - let the application form handle it
+            startNewApplication();
+        }
+
+        async function safeContinueApplication() {
+            // Don't check auth here - let the application form handle it
+            continueApplication();
+        }
+
+        async function safeUploadDocuments() {
+            // Don't check auth here - let the application form handle it
+            uploadDocuments();
+        }
+        
+        function contactSupport() {
+            window.location.href = 'mailto:hirayafoundationph@gmail.com?subject=Scholarship Application Inquiry';
+        }
+
+        function printApplication() {
+            window.print();
+        }
+
+        // Utility Functions
+        function formatDate(dateString, includeTime = false) {
+            if (!dateString) return 'Not available';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                
+                const options = {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                
+                if (includeTime) {
+                    options.hour = '2-digit';
+                    options.minute = '2-digit';
+                }
+                
+                return date.toLocaleDateString('en-US', options);
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        function formatPhoneNumber(phone) {
+            if (!phone) return null;
+            const cleaned = phone.replace(/\D/g, '');
+            if (cleaned.length === 11) {
+                return cleaned.replace(/(\d{4})(\d{3})(\d{4})/, '$1-$2-$3');
+            }
+            return phone;
+        }
+
+        // Logout function
+        async function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                try {
+                    await fetch(`${API_BASE}/auth/logout`, {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+                } catch (error) {
+                    console.error('Logout error:', error);
+                } finally {
+                    // Clear all session storage
+                    sessionStorage.clear();
+                    // Clear any local storage
+                    localStorage.removeItem('userData');
+                    // Redirect to login
+                    window.location.href = '/ScholarshipSystem/login.html';
+                }
+            }
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
+    </script>
+</body>
+</html>

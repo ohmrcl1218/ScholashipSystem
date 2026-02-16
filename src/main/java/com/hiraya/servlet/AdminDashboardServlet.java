@@ -110,8 +110,7 @@ public class AdminDashboardServlet extends HttpServlet {
                 result.put("admin", getAdminInfo(admin));
                 
             // Applications list with pagination
-            } // In doGet method, look for this section:
-            else if (pathInfo.equals("/applications")) {
+            } else if (pathInfo.equals("/applications")) {
                 String status = request.getParameter("status");
                 String search = request.getParameter("search");
                 int page = parseIntParam(request.getParameter("page"), 1);
@@ -136,17 +135,16 @@ public class AdminDashboardServlet extends HttpServlet {
                 result.put("limit", limit);
                 result.put("totalCount", totalCount);
                 result.put("totalPages", totalPages);
-            } // Add this temporary debug endpoint by adding this case in your doGet method
-         // Place it right after the /applications endpoint
-            else if (pathInfo.equals("/debug/applications")) {
+                
+            // Debug endpoint to check applications
+            } else if (pathInfo.equals("/debug/applications")) {
                 System.out.println("=== DEBUG: Checking applications directly ===");
                 
                 // Direct SQL query to check what's in the database
-                String debugSql = "SELECT a.id, a.reference_number, a.application_status, " +
-                                  "u.first_name, u.last_name, u.email, " +
-                                  "a.program_first_choice, a.college_first_choice, a.gwa " +
-                                  "FROM applications a " +
-                                  "JOIN users u ON a.user_id = u.id";
+                String debugSql = "SELECT id, reference_number, application_status, " +
+                                  "first_name, last_name, email, " +
+                                  "program_first, college_first, grade_12_gwa " +
+                                  "FROM applications LIMIT 20";
                 
                 List<Map<String, Object>> debugApps = new ArrayList<>();
                 
@@ -158,10 +156,14 @@ public class AdminDashboardServlet extends HttpServlet {
                         Map<String, Object> app = new HashMap<>();
                         app.put("id", rs.getInt("id"));
                         app.put("reference_number", rs.getString("reference_number"));
-                        app.put("applicant", rs.getString("first_name") + " " + rs.getString("last_name"));
-                        app.put("program_first_choice", rs.getString("program_first_choice"));
-                        app.put("college_first_choice", rs.getString("college_first_choice"));
-                        app.put("gwa", rs.getDouble("gwa"));
+                        app.put("applicant_name", rs.getString("first_name") + " " + rs.getString("last_name"));
+                        app.put("first_name", rs.getString("first_name"));
+                        app.put("last_name", rs.getString("last_name"));
+                        app.put("email", rs.getString("email"));
+                        app.put("program_first", rs.getString("program_first"));
+                        app.put("college_first", rs.getString("college_first"));
+                        app.put("grade_12_gwa", rs.getDouble("grade_12_gwa"));
+                        app.put("application_status", rs.getString("application_status"));
                         debugApps.add(app);
                     }
                 } catch (SQLException e) {
@@ -171,7 +173,8 @@ public class AdminDashboardServlet extends HttpServlet {
                 result.put("success", true);
                 result.put("debug_applications", debugApps);
                 result.put("count", debugApps.size());
-            }else if (pathInfo.startsWith("/application/")) {
+                
+            } else if (pathInfo.startsWith("/application/")) {
                 String appIdStr = pathInfo.substring("/application/".length());
                 
                 // Handle application with action
@@ -223,6 +226,9 @@ public class AdminDashboardServlet extends HttpServlet {
             } else if (pathInfo.equals("/users") && !admin.isScholarshipAdministrator()) {
                 result.put("success", false);
                 result.put("message", "Access denied. Only Scholarship Administrators can manage users.");
+            } else {
+                result.put("success", false);
+                result.put("message", "Invalid endpoint");
             }
             
         } catch (NumberFormatException e) {
@@ -275,54 +281,184 @@ public class AdminDashboardServlet extends HttpServlet {
             }
             
             String pathInfo = request.getPathInfo();
+            System.out.println("POST request to: " + pathInfo); // Debug log
             
-            // Update application status
-            if (pathInfo != null && pathInfo.startsWith("/application/")) {
-                String[] pathParts = pathInfo.split("/");
-                if (pathParts.length >= 4) {
-                    String action = pathParts[3];
-                    int appId = Integer.parseInt(pathParts[2]);
-                    
-                    switch (action) {
-                        case "status":
-                            handleStatusUpdate(request, response, admin, appId, adminId);
-                            return;
-                        case "document":
-                            handleDocumentVerification(request, response, admin, appId, adminId);
-                            return;
-                        case "comment":
-                            handleAddComment(request, response, admin, appId, adminId);
-                            return;
-                        default:
-                            result.put("success", false);
-                            result.put("message", "Invalid action");
-                    }
+            // Handle status update for both /status and /edit endpoints
+            if (pathInfo != null) {
+                // Pattern: /application/{id}/status
+                if (pathInfo.matches("/application/\\d+/status")) {
+                    String[] parts = pathInfo.split("/");
+                    int appId = Integer.parseInt(parts[2]);
+                    handleStatusUpdate(request, response, admin, appId, adminId);
+                    return;
                 }
-            } 
-            // Create new user (admin only)
-            else if (pathInfo != null && pathInfo.equals("/users") && admin.isScholarshipAdministrator()) {
-                handleCreateUser(request, response, admin);
-                return;
+                // Pattern: /application/{id}/edit (for admin edits)
+                else if (pathInfo.matches("/application/\\d+/edit")) {
+                    String[] parts = pathInfo.split("/");
+                    int appId = Integer.parseInt(parts[2]);
+                    handleAdminEdit(request, response, admin, appId, adminId);
+                    return;
+                }
+                // Pattern: /application/{id}/review (for reviewers)
+                else if (pathInfo.matches("/application/\\d+/review")) {
+                    String[] parts = pathInfo.split("/");
+                    int appId = Integer.parseInt(parts[2]);
+                    handleReview(request, response, admin, appId, adminId);
+                    return;
+                }
+                // Pattern: /application/{id}/document/{docKey}/verify
+                else if (pathInfo.matches("/application/\\d+/document/\\w+/verify")) {
+                    String[] parts = pathInfo.split("/");
+                    int appId = Integer.parseInt(parts[2]);
+                    String docKey = parts[4];
+                    handleDocumentVerification(request, response, admin, appId, docKey, adminId);
+                    return;
+                }
             }
-            // Export applications
-            else if (pathInfo != null && pathInfo.equals("/export") && admin.canExportData()) {
-                handleExport(request, response, admin);
-                return;
-            } else {
-                result.put("success", false);
-                result.put("message", "Invalid endpoint or insufficient permissions");
-            }
+            
+            // If we get here, no valid endpoint was matched
+            result.put("success", false);
+            result.put("message", "Invalid endpoint: " + pathInfo);
+            out.write(gson.toJson(result));
             
         } catch (Exception e) {
             e.printStackTrace();
             result.put("success", false);
             result.put("message", "An error occurred: " + e.getMessage());
+            out.write(gson.toJson(result));
         }
-        
-        out.write(gson.toJson(result));
     }
     
-    @Override
+	    private void handleAdminEdit(HttpServletRequest request, HttpServletResponse response, 
+	            Admin admin, int appId, int adminId) throws IOException {
+	
+	Map<String, Object> result = new HashMap<>();
+	
+	if (!admin.canChangeApplicationStatus()) {
+	result.put("success", false);
+	result.put("message", "You don't have permission to change application status");
+	response.getWriter().write(gson.toJson(result));
+	return;
+	}
+	
+	try {
+	// Read request body
+	StringBuilder sb = new StringBuilder();
+	BufferedReader reader = request.getReader();
+	String line;
+	while ((line = reader.readLine()) != null) {
+	sb.append(line);
+	}
+	
+	System.out.println("Received edit request body: " + sb.toString()); // Debug log
+	
+	JsonObject jsonData = JsonParser.parseString(sb.toString()).getAsJsonObject();
+	String status = jsonData.get("status").getAsString();
+	String comment = jsonData.has("comment") ? jsonData.get("comment").getAsString() : "";
+	
+	// Update application status
+	boolean updated = adminDAO.updateApplicationStatus(admin, appId, status, comment, adminId);
+	
+	if (updated) {
+	result.put("success", true);
+	result.put("message", "Application updated successfully");
+	} else {
+	result.put("success", false);
+	result.put("message", "Failed to update application");
+	}
+	
+	} catch (Exception e) {
+	e.printStackTrace();
+	result.put("success", false);
+	result.put("message", "Error: " + e.getMessage());
+	}
+	
+	response.getWriter().write(gson.toJson(result));
+	}
+	
+	private void handleReview(HttpServletRequest request, HttpServletResponse response, 
+	         Admin admin, int appId, int adminId) throws IOException {
+	
+	Map<String, Object> result = new HashMap<>();
+	
+	if (!admin.canReviewApplications()) {
+	result.put("success", false);
+	result.put("message", "You don't have permission to review applications");
+	response.getWriter().write(gson.toJson(result));
+	return;
+	}
+	
+	try {
+	// Read request body
+	StringBuilder sb = new StringBuilder();
+	BufferedReader reader = request.getReader();
+	String line;
+	while ((line = reader.readLine()) != null) {
+	sb.append(line);
+	}
+	
+	System.out.println("Received review request body: " + sb.toString()); // Debug log
+	
+	JsonObject jsonData = JsonParser.parseString(sb.toString()).getAsJsonObject();
+	String status = jsonData.get("status").getAsString();
+	String comment = jsonData.has("comment") ? jsonData.get("comment").getAsString() : "";
+	
+	// Update application status
+	boolean updated = adminDAO.updateApplicationStatus(admin, appId, status, comment, adminId);
+	
+	if (updated) {
+	result.put("success", true);
+	result.put("message", "Review submitted successfully");
+	} else {
+	result.put("success", false);
+	result.put("message", "Failed to submit review");
+	}
+	
+	} catch (Exception e) {
+	e.printStackTrace();
+	result.put("success", false);
+	result.put("message", "Error: " + e.getMessage());
+	}
+	
+	response.getWriter().write(gson.toJson(result));
+	}
+
+private void handleDocumentVerification(HttpServletRequest request, HttpServletResponse response, 
+                       Admin admin, int appId, String docKey, int adminId) throws IOException {
+
+Map<String, Object> result = new HashMap<>();
+
+if (!admin.canVerifyDocuments()) {
+result.put("success", false);
+result.put("message", "You don't have permission to verify documents");
+response.getWriter().write(gson.toJson(result));
+return;
+}
+
+try {
+// Get document ID from the applications table or documents table
+// This depends on how your documents are stored
+String documentPath = adminDAO.getDocumentPath(appId, docKey);
+
+if (documentPath != null) {
+result.put("success", true);
+result.put("message", "Document verified successfully");
+result.put("path", documentPath);
+} else {
+result.put("success", false);
+result.put("message", "Document not found");
+}
+
+} catch (Exception e) {
+e.printStackTrace();
+result.put("success", false);
+result.put("message", "Error: " + e.getMessage());
+}
+
+response.getWriter().write(gson.toJson(result));
+}
+
+	@Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
@@ -549,7 +685,7 @@ public class AdminDashboardServlet extends HttpServlet {
     }
     
     private int getFilteredApplicationsCount(String status, String search) {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(*) as total FROM applications a JOIN users u ON a.user_id = u.id WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) as total FROM applications a WHERE 1=1");
         List<Object> params = new ArrayList<>();
         
         if (status != null && !status.isEmpty() && !status.equals("all")) {
@@ -558,7 +694,7 @@ public class AdminDashboardServlet extends HttpServlet {
         }
         
         if (search != null && !search.isEmpty()) {
-            sql.append(" AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ? OR a.reference_number LIKE ?)");
+            sql.append(" AND (a.first_name LIKE ? OR a.last_name LIKE ? OR a.email LIKE ? OR a.reference_number LIKE ?)");
             String searchPattern = "%" + search + "%";
             for (int i = 0; i < 4; i++) {
                 params.add(searchPattern);
@@ -667,15 +803,22 @@ public class AdminDashboardServlet extends HttpServlet {
             ps = conn.prepareStatement(sql);
             ps.setString(1, getJsonString(data, "program"));
             ps.setString(2, getJsonString(data, "school"));
-            ps.setDouble(3, getJsonDouble(data, "gwa", 0));
+            
+            double gwa = getJsonDouble(data, "gwa", 0);
+            ps.setDouble(3, gwa);
             ps.setInt(4, appId);
             
             int updated = ps.executeUpdate();
             
             if (updated > 0) {
-                // Update user info if needed
-                if (data.has("applicantName") || data.has("email") || data.has("phone")) {
-                    updateUserFromApplication(conn, appId, data);
+                // Update name if needed
+                if (data.has("applicantName")) {
+                    updateNameFromApplication(conn, appId, data);
+                }
+                
+                // Update email if needed
+                if (data.has("email")) {
+                    updateEmailFromApplication(conn, appId, data);
                 }
                 
                 // Add timeline entry
@@ -710,54 +853,30 @@ public class AdminDashboardServlet extends HttpServlet {
         return false;
     }
     
-    private void updateUserFromApplication(Connection conn, int appId, JsonObject data) throws SQLException {
-        // Get user_id from application
-        String getUserIdSql = "SELECT user_id FROM applications WHERE id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(getUserIdSql)) {
-            ps.setInt(1, appId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    int userId = rs.getInt("user_id");
-                    
-                    // Update user
-                    StringBuilder updateSql = new StringBuilder("UPDATE users SET ");
-                    List<Object> params = new ArrayList<>();
-                    
-                    if (data.has("applicantName")) {
-                        String[] nameParts = data.get("applicantName").getAsString().split(" ", 2);
-                        updateSql.append("first_name = ?, ");
-                        params.add(nameParts[0]);
-                        if (nameParts.length > 1) {
-                            updateSql.append("last_name = ?, ");
-                            params.add(nameParts[1]);
-                        }
-                    }
-                    
-                    if (data.has("email")) {
-                        updateSql.append("email = ?, ");
-                        params.add(data.get("email").getAsString());
-                    }
-                    
-                    if (data.has("phone")) {
-                        updateSql.append("phone = ?, ");
-                        params.add(data.get("phone").getAsString());
-                    }
-                    
-                    // Remove trailing comma and add WHERE clause
-                    if (!params.isEmpty()) {
-                        updateSql.setLength(updateSql.length() - 2);
-                        updateSql.append(" WHERE id = ?");
-                        params.add(userId);
-                        
-                        try (PreparedStatement updatePs = conn.prepareStatement(updateSql.toString())) {
-                            for (int i = 0; i < params.size(); i++) {
-                                updatePs.setObject(i + 1, params.get(i));
-                            }
-                            updatePs.executeUpdate();
-                        }
-                    }
-                }
-            }
+    private void updateNameFromApplication(Connection conn, int appId, JsonObject data) throws SQLException {
+        String fullName = data.get("applicantName").getAsString();
+        String[] nameParts = fullName.split(" ", 3);
+        
+        String firstName = nameParts[0];
+        String lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+        String middleName = nameParts.length > 2 ? nameParts[1] : "";
+        
+        String sql = "UPDATE applications SET first_name = ?, middle_name = ?, last_name = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, firstName);
+            ps.setString(2, middleName);
+            ps.setString(3, lastName);
+            ps.setInt(4, appId);
+            ps.executeUpdate();
+        }
+    }
+    
+    private void updateEmailFromApplication(Connection conn, int appId, JsonObject data) throws SQLException {
+        String sql = "UPDATE applications SET email = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, data.get("email").getAsString());
+            ps.setInt(2, appId);
+            ps.executeUpdate();
         }
     }
     

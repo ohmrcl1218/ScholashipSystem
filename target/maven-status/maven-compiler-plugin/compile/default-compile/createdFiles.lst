@@ -9,6 +9,7 @@ com\hiraya\servlet\AdminLoginServlet.class
 com\hiraya\servlet\LoginServlet.class
 com\hiraya\servlet\TestServlet.class
 com\hiraya\servlet\PingServlet.class
+com\hiraya\servlet\CheckSessionServlet.class
 com\hiraya\servlet\RegisterServlet.class
 com\hiraya\servlet\TestConnectionServlet.class
 com\hiraya\model\Application.class

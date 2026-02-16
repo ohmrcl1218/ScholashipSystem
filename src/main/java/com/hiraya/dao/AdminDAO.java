@@ -3,8 +3,6 @@ package com.hiraya.dao;
 import com.hiraya.config.DatabaseConfig;
 import com.hiraya.model.Admin;
 import com.hiraya.util.PasswordUtil;
-import com.hiraya.dao.DocumentDAO;
-import com.hiraya.dao.ApplicationDAO;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +18,7 @@ public class AdminDAO {
         String sql = "SELECT u.*, a.id as admin_table_id, a.admin_id, a.role, a.department, a.permissions, a.last_login " +
                     "FROM users u " +
                     "LEFT JOIN admins a ON u.id = a.user_id " +
-                    "WHERE u.email = ? AND u.user_type = 'admin' AND u.status = 'active'";
+                    "WHERE u.email = ? AND u.user_type IN ('admin', 'reviewer') AND u.status = 'active'";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -73,7 +71,7 @@ public class AdminDAO {
         String sql = "SELECT u.*, a.id as admin_table_id, a.admin_id, a.role, a.department, a.permissions, a.last_login " +
                     "FROM users u " +
                     "LEFT JOIN admins a ON u.id = a.user_id " +
-                    "WHERE u.id = ? AND u.user_type = 'admin'";
+                    "WHERE u.id = ? AND u.user_type IN ('admin', 'reviewer')";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -83,6 +81,37 @@ public class AdminDAO {
             conn = DatabaseConfig.getConnection();
             ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
+            
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToAdmin(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConfig.closeConnection(conn, ps, rs);
+        }
+        return null;
+    }
+    
+    /**
+     * Get admin by user ID
+     */
+    public Admin getAdminByUserId(int userId) {
+        String sql = "SELECT u.*, a.id as admin_table_id, a.admin_id, a.role, a.department, a.permissions, a.last_login " +
+                    "FROM users u " +
+                    "LEFT JOIN admins a ON u.id = a.user_id " +
+                    "WHERE u.id = ? AND u.user_type IN ('admin', 'reviewer')";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConfig.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, userId);
             
             rs = ps.executeQuery();
             
@@ -120,37 +149,60 @@ public class AdminDAO {
     }
     
     /**
-     * Get dashboard statistics with role-based access
+     * Get dashboard statistics
      */
     public Map<String, Object> getDashboardStats(Admin admin) {
         Map<String, Object> stats = new HashMap<>();
-        String sql;
         
-        if (admin.isScholarshipAdministrator()) {
-            // Admin sees all stats
-            sql = "SELECT " +
-                  "(SELECT COUNT(*) FROM users WHERE user_type = 'applicant') as total_applicants, " +
-                  "(SELECT COUNT(*) FROM users WHERE user_type = 'applicant' AND DATE(created_at) = CURDATE()) as new_applicants_today, " +
-                  "(SELECT COUNT(*) FROM applications) as total_applications, " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'draft') as draft_applications, " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'submitted') as submitted_applications, " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'under_review') as under_review, " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'interview') as for_interview, " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'approved') as approved, " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'declined') as declined, " +
-                  "(SELECT COUNT(*) FROM documents WHERE upload_status = 'pending') as pending_documents, " +
-                  "(SELECT COUNT(*) FROM applications WHERE DATE(created_at) = CURDATE()) as applications_today, " +
-                  "(SELECT COUNT(*) FROM applications WHERE DATE(submission_date) = CURDATE()) as submissions_today";
-        } else {
-            // Reviewer sees limited stats
-            sql = "SELECT " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'submitted') as pending_review, " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'under_review') as under_review, " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'interview') as for_interview, " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'approved') as approved, " +
-                  "(SELECT COUNT(*) FROM applications WHERE application_status = 'declined') as declined, " +
-                  "(SELECT COUNT(*) FROM documents WHERE upload_status = 'pending') as pending_documents";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConfig.getConnection();
+            
+            String sql = "SELECT " +
+                        "COUNT(*) as total_applications, " +
+                        "SUM(CASE WHEN application_status = 'submitted' THEN 1 ELSE 0 END) as pending_review, " +
+                        "SUM(CASE WHEN application_status = 'under_review' THEN 1 ELSE 0 END) as under_review, " +
+                        "SUM(CASE WHEN application_status = 'interview' THEN 1 ELSE 0 END) as interview, " +
+                        "SUM(CASE WHEN application_status = 'approved' THEN 1 ELSE 0 END) as approved, " +
+                        "SUM(CASE WHEN application_status = 'declined' THEN 1 ELSE 0 END) as declined, " +
+                        "SUM(CASE WHEN application_status = 'draft' THEN 1 ELSE 0 END) as draft_applications " +
+                        "FROM applications";
+            
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                stats.put("totalApplications", rs.getInt("total_applications"));
+                stats.put("pendingReview", rs.getInt("pending_review"));
+                stats.put("underReview", rs.getInt("under_review"));
+                stats.put("interview", rs.getInt("interview"));
+                stats.put("approved", rs.getInt("approved"));
+                stats.put("declined", rs.getInt("declined"));
+                stats.put("draftApplications", rs.getInt("draft_applications"));
+                
+                // For admin dashboard
+                if (admin.isScholarshipAdministrator()) {
+                    stats.put("submittedApplications", rs.getInt("pending_review"));
+                }
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConfig.closeConnection(conn, ps, rs);
         }
+        
+        return stats;
+    }
+    
+    /**
+     * Get total applications count
+     */
+    public int getTotalApplicationsCount() {
+        String sql = "SELECT COUNT(*) as total FROM applications";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -162,57 +214,72 @@ public class AdminDAO {
             rs = ps.executeQuery();
             
             if (rs.next()) {
-                if (admin.isScholarshipAdministrator()) {
-                    stats.put("totalApplicants", rs.getInt("total_applicants"));
-                    stats.put("newApplicantsToday", rs.getInt("new_applicants_today"));
-                    stats.put("totalApplications", rs.getInt("total_applications"));
-                    stats.put("draftApplications", rs.getInt("draft_applications"));
-                    stats.put("submittedApplications", rs.getInt("submitted_applications"));
-                    stats.put("underReview", rs.getInt("under_review"));
-                    stats.put("forInterview", rs.getInt("for_interview"));
-                    stats.put("approved", rs.getInt("approved"));
-                    stats.put("declined", rs.getInt("declined"));
-                    stats.put("pendingDocuments", rs.getInt("pending_documents"));
-                    stats.put("applicationsToday", rs.getInt("applications_today"));
-                    stats.put("submissionsToday", rs.getInt("submissions_today"));
-                } else {
-                    stats.put("pendingReview", rs.getInt("pending_review"));
-                    stats.put("underReview", rs.getInt("under_review"));
-                    stats.put("forInterview", rs.getInt("for_interview"));
-                    stats.put("approved", rs.getInt("approved"));
-                    stats.put("declined", rs.getInt("declined"));
-                    stats.put("pendingDocuments", rs.getInt("pending_documents"));
-                }
+                return rs.getInt("total");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             DatabaseConfig.closeConnection(conn, ps, rs);
         }
-        return stats;
+        return 0;
     }
     
     /**
-     * Get recent applications with role-based access - CORRECT VERSION with your actual column names
+     * Get filtered applications count
+     */
+    public int getFilteredApplicationsCount(String status, String search) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) as total FROM applications WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        
+        if (status != null && !status.isEmpty() && !status.equals("all")) {
+            sql.append(" AND application_status = ?");
+            params.add(status);
+        }
+        
+        if (search != null && !search.isEmpty()) {
+            sql.append(" AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR reference_number LIKE ?)");
+            String searchPattern = "%" + search + "%";
+            for (int i = 0; i < 4; i++) {
+                params.add(searchPattern);
+            }
+        }
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConfig.getConnection();
+            ps = conn.prepareStatement(sql.toString());
+            
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConfig.closeConnection(conn, ps, rs);
+        }
+        return 0;
+    }
+    
+    /**
+     * Get recent applications for dashboard
      */
     public List<Map<String, Object>> getRecentApplications(Admin admin, int limit) {
         List<Map<String, Object>> applications = new ArrayList<>();
-        String sql;
-        
-        if (admin.isScholarshipAdministrator()) {
-            sql = "SELECT a.*, u.first_name, u.last_name, u.email, u.phone, " +
-                  "u.user_id as applicant_user_id " +
-                  "FROM applications a " +
-                  "JOIN users u ON a.user_id = u.id " +
-                  "ORDER BY a.created_at DESC LIMIT ?";
-        } else {
-            sql = "SELECT a.id, a.reference_number, a.application_status, a.created_at, a.submission_date, " +
-                  "u.first_name, u.last_name, u.email, " +
-                  "a.program_first as program, a.college_first as school, a.grade_12_gwa as gwa " +
-                  "FROM applications a " +
-                  "JOIN users u ON a.user_id = u.id " +
-                  "ORDER BY a.created_at DESC LIMIT ?";
-        }
+        String sql = "SELECT id, reference_number, application_status, created_at, " +
+                     "first_name, middle_name, last_name, email, " +
+                     "college_first, program_first, grade_12_gwa " +
+                     "FROM applications " +
+                     "WHERE application_status IN ('submitted', 'under_review', 'approved', 'declined') " +
+                     "ORDER BY created_at DESC LIMIT ?";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -228,23 +295,25 @@ public class AdminDAO {
                 Map<String, Object> app = new HashMap<>();
                 app.put("id", rs.getInt("id"));
                 app.put("referenceNumber", rs.getString("reference_number"));
-                app.put("applicantName", rs.getString("first_name") + " " + rs.getString("last_name"));
+                app.put("reference_number", rs.getString("reference_number"));
+                
+                String fullName = buildFullName(
+                    rs.getString("first_name"),
+                    rs.getString("middle_name"),
+                    rs.getString("last_name")
+                );
+                app.put("applicantName", fullName);
+                
                 app.put("email", rs.getString("email"));
                 app.put("status", rs.getString("application_status"));
+                app.put("application_status", rs.getString("application_status"));
                 app.put("createdAt", rs.getTimestamp("created_at"));
+                app.put("created_at", rs.getTimestamp("created_at"));
+                app.put("school", rs.getString("college_first"));
+                app.put("program", rs.getString("program_first"));
+                app.put("gwa", rs.getBigDecimal("grade_12_gwa"));
+                app.put("grade_12_gwa", rs.getBigDecimal("grade_12_gwa"));
                 
-                if (admin.isScholarshipAdministrator()) {
-                    // For administrators, get all fields directly from the applications table
-                    app.put("program", rs.getString("program_first"));
-                    app.put("school", rs.getString("college_first"));
-                    app.put("gwa", rs.getDouble("grade_12_gwa"));
-                    app.put("phone", rs.getString("phone"));
-                } else {
-                    // For reviewers, use the aliased columns
-                    app.put("program", rs.getString("program"));
-                    app.put("school", rs.getString("school"));
-                    app.put("gwa", rs.getDouble("gwa"));
-                }
                 applications.add(app);
             }
         } catch (SQLException e) {
@@ -254,53 +323,46 @@ public class AdminDAO {
         }
         return applications;
     }
-
+    
     /**
-     * Get all applications with filters (role-based) - CORRECT VERSION with your actual column names
+     * Get all applications with filters
      */
     public List<Map<String, Object>> getAllApplications(Admin admin, String status, String search, int page, int limit) {
         List<Map<String, Object>> applications = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
         
         System.out.println("===== getAllApplications called =====");
-        System.out.println("Admin role: " + (admin != null ? admin.getRole() : "null"));
         System.out.println("Status filter: " + status);
         System.out.println("Search filter: " + search);
         System.out.println("Page: " + page + ", Limit: " + limit);
         
-        if (admin.isScholarshipAdministrator()) {
-            sql.append("SELECT a.*, u.first_name, u.last_name, u.email, u.phone, u.user_id as applicant_user_id ");
-        } else {
-            sql.append("SELECT a.id, a.reference_number, a.application_status, a.created_at, a.submission_date, ");
-            sql.append("u.first_name, u.last_name, u.email, ");
-            sql.append("a.program_first as program, a.college_first as school, a.grade_12_gwa as gwa ");
-        }
-        sql.append("FROM applications a ");
-        sql.append("JOIN users u ON a.user_id = u.id ");
+        // Select all columns from applications table
+        sql.append("SELECT * FROM applications ");
         sql.append("WHERE 1=1 ");
         
         List<Object> params = new ArrayList<>();
         
+        // Apply status filter
         if (status != null && !status.isEmpty() && !status.equals("all")) {
-            sql.append("AND a.application_status = ? ");
+            sql.append("AND application_status = ? ");
             params.add(status);
         }
         
+        // Apply search filter
         if (search != null && !search.isEmpty()) {
-            sql.append("AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ? OR a.reference_number LIKE ?) ");
+            sql.append("AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR reference_number LIKE ?) ");
             String searchPattern = "%" + search + "%";
-            params.add(searchPattern);
-            params.add(searchPattern);
-            params.add(searchPattern);
-            params.add(searchPattern);
+            for (int i = 0; i < 4; i++) {
+                params.add(searchPattern);
+            }
         }
         
-        sql.append("ORDER BY a.created_at DESC LIMIT ? OFFSET ?");
+        // Add pagination
+        sql.append("ORDER BY created_at DESC LIMIT ? OFFSET ?");
         params.add(limit);
         params.add((page - 1) * limit);
         
         System.out.println("SQL Query: " + sql.toString());
-        System.out.println("Parameters: " + params);
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -312,7 +374,6 @@ public class AdminDAO {
             
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
-                System.out.println("Param " + (i+1) + ": " + params.get(i));
             }
             
             rs = ps.executeQuery();
@@ -323,40 +384,91 @@ public class AdminDAO {
                 
                 Map<String, Object> app = new HashMap<>();
                 
-                // Common fields for all admin types
+                // Basic Information
                 app.put("id", rs.getInt("id"));
+                app.put("application_id", rs.getString("application_id"));
+                app.put("user_id", rs.getInt("user_id"));
                 app.put("referenceNumber", rs.getString("reference_number"));
-                app.put("applicantName", rs.getString("first_name") + " " + rs.getString("last_name"));
-                app.put("email", rs.getString("email"));
+                app.put("reference_number", rs.getString("reference_number"));
+                app.put("application_status", rs.getString("application_status"));
                 app.put("status", rs.getString("application_status"));
                 app.put("createdAt", rs.getTimestamp("created_at"));
+                app.put("created_at", rs.getTimestamp("created_at"));
+                app.put("updated_at", rs.getTimestamp("updated_at"));
+                app.put("submission_date", rs.getTimestamp("submission_date"));
+                app.put("last_saved", rs.getTimestamp("last_saved"));
+                app.put("admin_comment", rs.getString("admin_comment"));
                 
-                if (admin.isScholarshipAdministrator()) {
-                    // For administrators, get all fields directly from the applications table
-                    app.put("program", rs.getString("program_first"));
-                    app.put("school", rs.getString("college_first"));
-                    app.put("gwa", rs.getDouble("grade_12_gwa"));
-                    app.put("phone", rs.getString("phone"));
-                    
-                    System.out.println("  Row " + rowCount + ": ID=" + rs.getInt("id") + 
-                                     ", Name=" + rs.getString("first_name") + " " + rs.getString("last_name") + 
-                                     ", Program=" + rs.getString("program_first") + 
-                                     ", School=" + rs.getString("college_first") +
-                                     ", GWA=" + rs.getDouble("grade_12_gwa") +
-                                     ", Status=" + rs.getString("application_status"));
-                } else {
-                    // For reviewers, use the aliased columns
-                    app.put("program", rs.getString("program"));
-                    app.put("school", rs.getString("school"));
-                    app.put("gwa", rs.getDouble("gwa"));
-                    
-                    System.out.println("  Row " + rowCount + ": ID=" + rs.getInt("id") + 
-                                     ", Name=" + rs.getString("first_name") + " " + rs.getString("last_name") + 
-                                     ", Program=" + rs.getString("program") + 
-                                     ", School=" + rs.getString("school") +
-                                     ", GWA=" + rs.getDouble("gwa") +
-                                     ", Status=" + rs.getString("application_status"));
-                }
+                // Personal Information
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String middleName = rs.getString("middle_name");
+                
+                String fullName = buildFullName(firstName, middleName, lastName);
+                
+                app.put("applicantName", fullName);
+                app.put("first_name", firstName);
+                app.put("middle_name", middleName);
+                app.put("last_name", lastName);
+                app.put("sex", rs.getString("sex"));
+                app.put("birthdate", rs.getDate("birthdate"));
+                app.put("age", rs.getInt("age"));
+                app.put("place_of_birth", rs.getString("place_of_birth"));
+                app.put("height", rs.getBigDecimal("height"));
+                app.put("weight", rs.getBigDecimal("weight"));
+                app.put("mobile_number", rs.getString("mobile_number"));
+                app.put("email", rs.getString("email"));
+                app.put("facebook_url", rs.getString("facebook_url"));
+                
+                // Present Address
+                app.put("present_region", rs.getString("present_region"));
+                app.put("present_province", rs.getString("present_province"));
+                app.put("present_municipality", rs.getString("present_municipality"));
+                app.put("present_barangay", rs.getString("present_barangay"));
+                app.put("present_house_number", rs.getString("present_house_number"));
+                app.put("present_street", rs.getString("present_street"));
+                app.put("present_zip_code", rs.getString("present_zip_code"));
+                
+                // Permanent Address
+                app.put("permanent_region", rs.getString("permanent_region"));
+                app.put("permanent_province", rs.getString("permanent_province"));
+                app.put("permanent_municipality", rs.getString("permanent_municipality"));
+                app.put("permanent_barangay", rs.getString("permanent_barangay"));
+                app.put("permanent_house_number", rs.getString("permanent_house_number"));
+                app.put("permanent_street", rs.getString("permanent_street"));
+                app.put("permanent_zip_code", rs.getString("permanent_zip_code"));
+                
+                // Educational Background - JHS
+                app.put("jhs_name", rs.getString("jhs_name"));
+                app.put("jhs_school_id", rs.getString("jhs_school_id"));
+                app.put("jhs_type", rs.getString("jhs_type"));
+                
+                // Educational Background - SHS
+                app.put("shs_name", rs.getString("shs_name"));
+                app.put("shs_school_id", rs.getString("shs_school_id"));
+                app.put("shs_type", rs.getString("shs_type"));
+                app.put("track", rs.getString("track"));
+                app.put("strand", rs.getString("strand"));
+                
+                // Academic Performance
+                app.put("grade_12_gwa", rs.getBigDecimal("grade_12_gwa"));
+                app.put("gwa", rs.getBigDecimal("grade_12_gwa"));
+                app.put("honors_received", rs.getString("honors_received"));
+                
+                // College Choices
+                app.put("college_first", rs.getString("college_first"));
+                app.put("college_second", rs.getString("college_second"));
+                app.put("college_third", rs.getString("college_third"));
+                app.put("school", rs.getString("college_first"));
+                
+                // Program Choices
+                app.put("program_first", rs.getString("program_first"));
+                app.put("program_second", rs.getString("program_second"));
+                app.put("program_third", rs.getString("program_third"));
+                app.put("program", rs.getString("program_first"));
+                
+                // Essay
+                app.put("essay", rs.getString("essay"));
                 
                 applications.add(app);
             }
@@ -378,20 +490,11 @@ public class AdminDAO {
     }
     
     /**
-     * Get application details by ID (role-based)
+     * Get application details by ID
      */
     public Map<String, Object> getApplicationDetails(Admin admin, int appId) {
         Map<String, Object> details = new HashMap<>();
-        String sql;
-        
-        if (admin.isScholarshipAdministrator()) {
-            sql = "SELECT a.*, u.* FROM applications a " +
-                  "JOIN users u ON a.user_id = u.id WHERE a.id = ?";
-        } else {
-            sql = "SELECT a.*, u.first_name, u.last_name, u.email, u.user_id " +
-                  "FROM applications a " +
-                  "JOIN users u ON a.user_id = u.id WHERE a.id = ?";
-        }
+        String sql = "SELECT * FROM applications WHERE id = ?";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -410,15 +513,17 @@ public class AdminDAO {
                     String columnName = meta.getColumnLabel(i);
                     app.put(columnName, rs.getObject(i));
                 }
+                
+                // Format full name
+                String fullName = buildFullName(
+                    rs.getString("first_name"),
+                    rs.getString("middle_name"),
+                    rs.getString("last_name")
+                );
+                app.put("applicantName", fullName);
+                
                 details.put("application", app);
-                
-                // Get documents
-                DocumentDAO documentDAO = new DocumentDAO();
-                details.put("documents", documentDAO.getDocumentsByApplicationId(appId));
-                
-                // Get timeline
-                ApplicationDAO applicationDAO = new ApplicationDAO();
-                details.put("timeline", applicationDAO.getApplicationTimeline(appId));
+                details.put("success", true);
                 
                 // Add permissions
                 Map<String, Boolean> permissions = new HashMap<>();
@@ -426,9 +531,9 @@ public class AdminDAO {
                 permissions.put("canVerifyDocuments", admin.canVerifyDocuments());
                 permissions.put("canExportData", admin.canExportData());
                 permissions.put("canManageUsers", admin.canManageUsers());
+                permissions.put("canReviewApplications", admin.canReviewApplications());
                 details.put("permissions", permissions);
                 
-                details.put("success", true);
             } else {
                 details.put("success", false);
                 details.put("message", "Application not found");
@@ -456,21 +561,6 @@ public class AdminDAO {
         
         try {
             conn = DatabaseConfig.getConnection();
-            conn.setAutoCommit(false);
-            
-            // First delete related timeline entries
-            String deleteTimelineSql = "DELETE FROM application_timeline WHERE application_id = ?";
-            ps = conn.prepareStatement(deleteTimelineSql);
-            ps.setInt(1, appId);
-            ps.executeUpdate();
-            ps.close();
-            
-            // Delete related documents
-            String deleteDocsSql = "DELETE FROM documents WHERE application_id = ?";
-            ps = conn.prepareStatement(deleteDocsSql);
-            ps.setInt(1, appId);
-            ps.executeUpdate();
-            ps.close();
             
             // Delete the application
             String deleteAppSql = "DELETE FROM applications WHERE id = ?";
@@ -479,54 +569,27 @@ public class AdminDAO {
             
             int deleted = ps.executeUpdate();
             
-            if (deleted > 0) {
-                conn.commit();
-                return true;
-            }
-            
-            conn.rollback();
-            return false;
+            return deleted > 0;
             
         } catch (SQLException e) {
-            try {
-                if (conn != null) conn.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
             e.printStackTrace();
             return false;
         } finally {
-            try {
-                if (conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DatabaseConfig.closeConnection(conn, ps);
         }
     }
-
+    
     /**
-     * Get applications pending review (for reviewers)
+     * Get applications pending review
      */
     public List<Map<String, Object>> getPendingReviews(Admin admin, int limit) {
-        if (!admin.canReviewApplications()) {
-            return new ArrayList<>();
-        }
-        
         List<Map<String, Object>> applications = new ArrayList<>();
-        String sql = "SELECT a.id, a.reference_number, a.application_status, " +
-                     "u.first_name, u.last_name, u.email, " +
-                     "a.created_at, a.submission_date, " +
-                     "COUNT(d.id) as total_documents, " +
-                     "SUM(CASE WHEN d.upload_status = 'verified' THEN 1 ELSE 0 END) as verified_documents " +
-                     "FROM applications a " +
-                     "JOIN users u ON a.user_id = u.id " +
-                     "LEFT JOIN documents d ON a.id = d.application_id " +
-                     "WHERE a.application_status IN ('submitted', 'under_review') " +
-                     "GROUP BY a.id " +
-                     "ORDER BY a.submission_date ASC LIMIT ?";
+        String sql = "SELECT id, reference_number, application_status, " +
+                     "first_name, middle_name, last_name, email, " +
+                     "created_at, submission_date " +
+                     "FROM applications " +
+                     "WHERE application_status IN ('submitted', 'under_review') " +
+                     "ORDER BY submission_date ASC LIMIT ?";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -542,12 +605,18 @@ public class AdminDAO {
                 Map<String, Object> app = new HashMap<>();
                 app.put("id", rs.getInt("id"));
                 app.put("referenceNumber", rs.getString("reference_number"));
-                app.put("applicantName", rs.getString("first_name") + " " + rs.getString("last_name"));
+                
+                String fullName = buildFullName(
+                    rs.getString("first_name"),
+                    rs.getString("middle_name"),
+                    rs.getString("last_name")
+                );
+                app.put("applicantName", fullName);
+                
                 app.put("email", rs.getString("email"));
                 app.put("status", rs.getString("application_status"));
                 app.put("submittedAt", rs.getTimestamp("submission_date"));
-                app.put("totalDocuments", rs.getInt("total_documents"));
-                app.put("verifiedDocuments", rs.getInt("verified_documents"));
+                
                 applications.add(app);
             }
         } catch (SQLException e) {
@@ -557,114 +626,44 @@ public class AdminDAO {
         }
         return applications;
     }
-
-    /**
-     * Get review statistics for reviewer dashboard
-     */
-    public Map<String, Object> getReviewerStats(Admin admin) {
-        Map<String, Object> stats = new HashMap<>();
-        String sql = "SELECT " +
-                     "(SELECT COUNT(*) FROM applications WHERE application_status = 'submitted') as pending_review, " +
-                     "(SELECT COUNT(*) FROM applications WHERE application_status = 'under_review') as under_review, " +
-                     "(SELECT COUNT(*) FROM applications WHERE application_status = 'interview') as for_interview, " +
-                     "(SELECT COUNT(*) FROM documents WHERE upload_status = 'pending') as pending_documents, " +
-                     "(SELECT COUNT(*) FROM applications WHERE application_status = 'approved') as approved, " +
-                     "(SELECT COUNT(*) FROM applications WHERE application_status = 'declined') as declined";
-        
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = DatabaseConfig.getConnection();
-            ps = conn.prepareStatement(sql);
-            rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                stats.put("pendingReview", rs.getInt("pending_review"));
-                stats.put("underReview", rs.getInt("under_review"));
-                stats.put("forInterview", rs.getInt("for_interview"));
-                stats.put("pendingDocuments", rs.getInt("pending_documents"));
-                stats.put("approved", rs.getInt("approved"));
-                stats.put("declined", rs.getInt("declined"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DatabaseConfig.closeConnection(conn, ps, rs);
-        }
-        return stats;
-    }
     
     /**
-     * Update application status with role check
+     * Update application status
      */
-    public boolean updateApplicationStatus(Admin admin, int appId, String status, String notes, int adminId) {
+    public boolean updateApplicationStatus(Admin admin, int appId, String status, String comment, int adminId) {
         if (!admin.canChangeApplicationStatus()) {
             return false;
         }
         
         Connection conn = null;
         PreparedStatement ps = null;
-        ResultSet rs = null;
-        String oldStatus = null;
         
         try {
             conn = DatabaseConfig.getConnection();
-            conn.setAutoCommit(false);
             
-            // Get old status
-            String getSql = "SELECT application_status FROM applications WHERE id = ?";
-            ps = conn.prepareStatement(getSql);
-            ps.setInt(1, appId);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                oldStatus = rs.getString("application_status");
-            }
-            rs.close();
-            ps.close();
-            
-            // Update status
-            String updateSql = "UPDATE applications SET application_status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+            // Update status and admin_comment
+            String updateSql = "UPDATE applications SET application_status = ?, admin_comment = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
             ps = conn.prepareStatement(updateSql);
             ps.setString(1, status);
-            ps.setInt(2, appId);
+            ps.setString(2, comment);
+            ps.setInt(3, appId);
             
             int updated = ps.executeUpdate();
             
-            if (updated > 0) {
-                // Add timeline entry
-                ApplicationDAO applicationDAO = new ApplicationDAO();
-                applicationDAO.addTimelineEntry(appId, adminId, "STATUS_UPDATE", 
-                    notes, oldStatus, status);
-                
-                conn.commit();
-                return true;
-            }
+            return updated > 0;
             
-            conn.rollback();
         } catch (SQLException e) {
-            try {
-                if (conn != null) conn.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
             e.printStackTrace();
+            return false;
         } finally {
-            try {
-                if (conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            DatabaseConfig.closeConnection(conn, ps);
         }
-        return false;
     }
     
     /**
-     * Verify document with role check
+     * Verify document
+     * Note: This assumes you have a documents table. If documents are stored in the applications table,
+     * you'll need to modify this method accordingly.
      */
     public boolean verifyDocument(Admin admin, int docId, int appId, String status, String rejectionReason, int adminId) {
         if (!admin.canVerifyDocuments()) {
@@ -676,34 +675,57 @@ public class AdminDAO {
         
         try {
             conn = DatabaseConfig.getConnection();
-            String sql = "UPDATE documents SET upload_status = ?, verified_at = CURRENT_TIMESTAMP, " +
+            
+            // Check if documents table exists, if not, update the application table directly
+            String sql = "UPDATE documents SET verification_status = ?, verified_by = ?, verified_at = CURRENT_TIMESTAMP, " +
                         "rejection_reason = ? WHERE id = ? AND application_id = ?";
             
             ps = conn.prepareStatement(sql);
             ps.setString(1, status);
-            ps.setString(2, rejectionReason);
-            ps.setInt(3, docId);
-            ps.setInt(4, appId);
+            ps.setInt(2, adminId);
+            ps.setString(3, rejectionReason);
+            ps.setInt(4, docId);
+            ps.setInt(5, appId);
             
             int updated = ps.executeUpdate();
             
-            if (updated > 0) {
-                // Add timeline entry
-                ApplicationDAO applicationDAO = new ApplicationDAO();
-                applicationDAO.addTimelineEntry(appId, adminId,
-                    "DOCUMENT_" + status.toUpperCase(), 
-                    "Document " + (status.equals("verified") ? "verified" : "rejected") + 
-                    (rejectionReason != null ? ": " + rejectionReason : ""),
-                    null, null);
-                
-                return true;
+            return updated > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DatabaseConfig.closeConnection(conn, ps);
+        }
+    }
+    
+    /**
+     * Get document path
+     */
+    public String getDocumentPath(int appId, String documentKey) {
+        // Document keys in the applications table are stored as column names
+        String sql = "SELECT " + documentKey + " FROM applications WHERE id = ?";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConfig.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, appId);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getString(documentKey);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            DatabaseConfig.closeConnection(conn, ps);
+            DatabaseConfig.closeConnection(conn, ps, rs);
         }
-        return false;
+        
+        return null;
     }
     
     /**
@@ -786,6 +808,113 @@ public class AdminDAO {
     }
     
     /**
+     * Get total users count
+     */
+    public int getTotalUsersCount(String type, String status, String search) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) as total FROM users WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        
+        if (type != null && !type.isEmpty() && !type.equals("all")) {
+            sql.append(" AND user_type = ?");
+            params.add(type);
+        }
+        
+        if (status != null && !status.isEmpty() && !status.equals("all")) {
+            sql.append(" AND status = ?");
+            params.add(status);
+        }
+        
+        if (search != null && !search.isEmpty()) {
+            sql.append(" AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR user_id LIKE ?)");
+            String searchPattern = "%" + search + "%";
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+        }
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConfig.getConnection();
+            ps = conn.prepareStatement(sql.toString());
+            
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConfig.closeConnection(conn, ps, rs);
+        }
+        return 0;
+    }
+    
+    /**
+     * Get user statistics
+     */
+    public Map<String, Object> getUserStats() {
+        Map<String, Object> stats = new HashMap<>();
+        String sql = "SELECT " +
+                     "SUM(CASE WHEN user_type IN ('admin', 'reviewer') THEN 1 ELSE 0 END) as admins, " +
+                     "SUM(CASE WHEN user_type = 'applicant' THEN 1 ELSE 0 END) as applicants, " +
+                     "SUM(CASE WHEN user_type = 'scholar' THEN 1 ELSE 0 END) as scholars, " +
+                     "COUNT(*) as total " +
+                     "FROM users";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConfig.getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                stats.put("admins", rs.getInt("admins"));
+                stats.put("applicants", rs.getInt("applicants"));
+                stats.put("scholars", rs.getInt("scholars"));
+                stats.put("total", rs.getInt("total"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConfig.closeConnection(conn, ps, rs);
+        }
+        return stats;
+    }
+    
+    /**
+     * Helper method to build full name
+     */
+    private String buildFullName(String firstName, String middleName, String lastName) {
+        StringBuilder fullName = new StringBuilder();
+        
+        if (firstName != null && !firstName.isEmpty()) {
+            fullName.append(firstName);
+        }
+        
+        if (middleName != null && !middleName.isEmpty()) {
+            fullName.append(" ").append(middleName);
+        }
+        
+        if (lastName != null && !lastName.isEmpty()) {
+            fullName.append(" ").append(lastName);
+        }
+        
+        return fullName.toString().trim();
+    }
+    
+    /**
      * Map ResultSet to Admin object
      */
     private Admin mapResultSetToAdmin(ResultSet rs) throws SQLException {
@@ -810,5 +939,181 @@ public class AdminDAO {
         admin.setLastLogin(rs.getTimestamp("last_login"));
         
         return admin;
+    }
+    
+    /**
+     * Create a new admin user
+     */
+    public boolean createAdmin(Admin admin, String password) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConfig.getConnection();
+            conn.setAutoCommit(false);
+            
+            // First insert into users table
+            String userSql = "INSERT INTO users (user_id, first_name, last_name, email, phone, password_hash, user_type, status, created_at, updated_at) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, 'active', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+            
+            ps = conn.prepareStatement(userSql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, admin.getUserId());
+            ps.setString(2, admin.getFirstName());
+            ps.setString(3, admin.getLastName());
+            ps.setString(4, admin.getEmail());
+            ps.setString(5, admin.getPhone());
+            ps.setString(6, PasswordUtil.hashPassword(password));
+            ps.setString(7, admin.getUserType());
+            
+            int userInserted = ps.executeUpdate();
+            
+            if (userInserted == 0) {
+                conn.rollback();
+                return false;
+            }
+            
+            // Get the generated user ID
+            rs = ps.getGeneratedKeys();
+            int userId = -1;
+            if (rs.next()) {
+                userId = rs.getInt(1);
+            }
+            
+            if (userId == -1) {
+                conn.rollback();
+                return false;
+            }
+            
+            // Then insert into admins table
+            String adminSql = "INSERT INTO admins (user_id, admin_id, role, department, permissions, created_at, updated_at) " +
+                             "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+            
+            ps = conn.prepareStatement(adminSql);
+            ps.setInt(1, userId);
+            ps.setString(2, admin.getAdminId());
+            ps.setString(3, admin.getRole());
+            ps.setString(4, admin.getDepartment());
+            ps.setString(5, admin.getPermissions());
+            
+            int adminInserted = ps.executeUpdate();
+            
+            if (adminInserted > 0) {
+                conn.commit();
+                return true;
+            } else {
+                conn.rollback();
+                return false;
+            }
+            
+        } catch (SQLException e) {
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+     * Update admin information
+     */
+    public boolean updateAdmin(Admin admin) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = DatabaseConfig.getConnection();
+            conn.setAutoCommit(false);
+            
+            // Update users table
+            String userSql = "UPDATE users SET first_name = ?, last_name = ?, email = ?, phone = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+            ps = conn.prepareStatement(userSql);
+            ps.setString(1, admin.getFirstName());
+            ps.setString(2, admin.getLastName());
+            ps.setString(3, admin.getEmail());
+            ps.setString(4, admin.getPhone());
+            ps.setInt(5, admin.getId());
+            
+            int userUpdated = ps.executeUpdate();
+            
+            if (userUpdated == 0) {
+                conn.rollback();
+                return false;
+            }
+            
+            // Update admins table
+            String adminSql = "UPDATE admins SET role = ?, department = ?, permissions = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?";
+            ps = conn.prepareStatement(adminSql);
+            ps.setString(1, admin.getRole());
+            ps.setString(2, admin.getDepartment());
+            ps.setString(3, admin.getPermissions());
+            ps.setInt(4, admin.getId());
+            
+            int adminUpdated = ps.executeUpdate();
+            
+            if (adminUpdated > 0) {
+                conn.commit();
+                return true;
+            } else {
+                conn.rollback();
+                return false;
+            }
+            
+        } catch (SQLException e) {
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+     * Update admin password
+     */
+    public boolean updatePassword(int adminId, String newPassword) {
+        String sql = "UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = DatabaseConfig.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, PasswordUtil.hashPassword(newPassword));
+            ps.setInt(2, adminId);
+            
+            int updated = ps.executeUpdate();
+            return updated > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DatabaseConfig.closeConnection(conn, ps);
+        }
     }
 }

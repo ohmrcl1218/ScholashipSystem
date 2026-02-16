@@ -1514,18 +1514,17 @@
             closeModal();
         }
 
-     // ============ FIXED ACTION FUNCTIONS WITH PROPER REDIRECTS ============
+        // ============ FIXED ACTION FUNCTIONS WITH PROPER REDIRECTS ============
+        
         function startNewApplication() {
             // Clear any existing flags
             sessionStorage.removeItem('continueApplication');
             sessionStorage.removeItem('uploadDocuments');
-            sessionStorage.removeItem('currentApplicationId');
             
             // Set flag for new application
             sessionStorage.setItem('newApplication', 'true');
-            sessionStorage.setItem('redirectFromDashboard', 'true');
             
-            // Use window.location.href with absolute path
+            // Use window.location.href with full path
             window.location.href = '/ScholarshipSystem/application.html';
         }
 
@@ -1538,17 +1537,11 @@
                 // Set flags for continuing application
                 sessionStorage.setItem('currentApplicationId', currentApplication.id);
                 sessionStorage.setItem('continueApplication', 'true');
-                sessionStorage.setItem('redirectFromDashboard', 'true');
-                
-                // Also store the full application data in sessionStorage as backup
-                sessionStorage.setItem('backupApplication', JSON.stringify(currentApplication));
                 
                 // Redirect to application form
                 window.location.href = '/ScholarshipSystem/application.html';
             } else {
                 console.error('No current application to continue');
-                // Fallback to new application
-                startNewApplication();
             }
         }
 
@@ -1561,7 +1554,6 @@
                 // Set flags for document upload
                 sessionStorage.setItem('currentApplicationId', currentApplication.id);
                 sessionStorage.setItem('uploadDocuments', 'true');
-                sessionStorage.setItem('redirectFromDashboard', 'true');
                 
                 // Redirect to application form with document section parameter
                 window.location.href = `/ScholarshipSystem/application.html?section=3&appId=${currentApplication.id}`;
@@ -1571,20 +1563,58 @@
             }
         }
 
-        // Simplified authentication check - don't block redirect
+        // Authentication check before redirect
+        async function checkAuthBeforeRedirect() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (!data.authenticated) {
+                    window.location.href = '/ScholarshipSystem/login.html';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/ScholarshipSystem/login.html';
+                return false;
+            }
+        }
+
+        // Safe wrapper functions with authentication check
         async function safeStartNewApplication() {
-            // Don't check auth here - let the application form handle it
-            startNewApplication();
+            const isAuthenticated = await checkAuthBeforeRedirect();
+            if (isAuthenticated) {
+                // Small delay to ensure session is valid
+                setTimeout(() => {
+                    startNewApplication();
+                }, 100);
+            }
         }
 
         async function safeContinueApplication() {
-            // Don't check auth here - let the application form handle it
-            continueApplication();
+            const isAuthenticated = await checkAuthBeforeRedirect();
+            if (isAuthenticated) {
+                setTimeout(() => {
+                    continueApplication();
+                }, 100);
+            }
         }
 
         async function safeUploadDocuments() {
-            // Don't check auth here - let the application form handle it
-            uploadDocuments();
+            const isAuthenticated = await checkAuthBeforeRedirect();
+            if (isAuthenticated) {
+                setTimeout(() => {
+                    uploadDocuments();
+                }, 100);
+            }
         }
         
         function contactSupport() {

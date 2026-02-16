@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class DatabaseUtil {
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/hiraya_scholarship?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String JDBC_USER = "root";
-    private static final String JDBC_PASSWORD = "Wsqk@2jej76"; // ← YOUR PASSWORD
+    private static final String JDBC_PASSWORD = "Wsqk@2jej76"; 
     
     private static DatabaseUtil instance;
     

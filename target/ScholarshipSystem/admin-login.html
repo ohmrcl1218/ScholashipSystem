@@ -276,7 +276,7 @@
             loginBtn.textContent = 'Logging in...';
             
             try {
-                console.log('Attempting login to:', `${API_BASE}/admin/login`);
+                console.log('Attempting login...');
                 
                 const response = await fetch(`${API_BASE}/admin/login`, {
                     method: 'POST',
@@ -284,23 +284,21 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ email, password }),
-                    credentials: 'include'
+                    credentials: 'include'  // THIS IS ABSOLUTELY CRITICAL
                 });
                 
-                console.log('Response status:', response.status);
-                
                 const data = await response.json();
-                console.log('Response data:', data);
+                console.log('Login response:', data);
                 
                 if (data.success) {
-                    // Store admin info in sessionStorage for UI
-                    sessionStorage.setItem('adminInfo', JSON.stringify({
-                        id: data.adminId,
-                        name: data.adminName,
-                        email: data.adminEmail,
-                        role: data.adminRole
-                    }));
+                    console.log('Login successful, session should be set');
                     
+                    // Store minimal info in sessionStorage as backup
+                    sessionStorage.setItem('adminLoggedIn', 'true');
+                    sessionStorage.setItem('adminName', data.adminName);
+                    sessionStorage.setItem('adminRole', data.adminRole);
+                    
+                    // Redirect to dashboard
                     window.location.href = 'admin-dashboard.html';
                 } else {
                     errorDiv.textContent = data.message || 'Invalid credentials';
@@ -316,6 +314,21 @@
                 loginBtn.textContent = 'LOGIN';
             }
         }
+
+        // Check session on page load
+        window.onload = async function() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    credentials: 'include'  // MUST include this
+                });
+                const data = await response.json();
+                if (data.authenticated) {
+                    window.location.href = 'admin-dashboard.html';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        };
 
         async function checkApiConnection() {
             const errorDiv = document.getElementById('errorMessage');

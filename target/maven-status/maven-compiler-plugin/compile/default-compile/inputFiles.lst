@@ -16,6 +16,7 @@ C:\Users\Acer\eclipse-workspace\ScholarshipSystem\src\main\java\com\hiraya\servl
 C:\Users\Acer\eclipse-workspace\ScholarshipSystem\src\main\java\com\hiraya\model\User.java
 C:\Users\Acer\eclipse-workspace\ScholarshipSystem\src\main\java\com\hiraya\servlet\ApplicationServlet.java
 C:\Users\Acer\eclipse-workspace\ScholarshipSystem\src\main\java\com\hiraya\servlet\LoginServlet.java
+C:\Users\Acer\eclipse-workspace\ScholarshipSystem\src\main\java\com\hiraya\servlet\CheckSessionServlet.java
 C:\Users\Acer\eclipse-workspace\ScholarshipSystem\src\main\java\com\hiraya\servlet\AuthServlet.java
 C:\Users\Acer\eclipse-workspace\ScholarshipSystem\src\main\java\com\hiraya\dao\DocumentDAO.java
 C:\Users\Acer\eclipse-workspace\ScholarshipSystem\src\main\java\com\hiraya\dao\ApplicationDAO.java

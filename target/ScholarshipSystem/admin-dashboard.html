@@ -7,7 +7,6 @@
     <title>Admin Dashboard - Hiraya Foundation</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Keep your existing styles */
         * {
             margin: 0;
             padding: 0;
@@ -22,27 +21,25 @@
             min-height: 100vh;
         }
 
+        /* Sidebar */
         .admin-sidebar {
-            width: 240px;
+            width: 260px;
             background: linear-gradient(180deg, #192064 0%, #0d1642 100%);
             color: white;
-            padding: 25px 0;
+            padding: 30px 0;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .admin-logo {
             text-align: center;
-            padding: 0 20px 25px 20px;
+            padding: 0 20px 30px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 25px;
         }
 
         .admin-logo h1 {
-            font-size: 1.4rem;
-            font-weight: 700;
+            font-size: 1.5rem;
         }
 
         .admin-logo span {
@@ -50,13 +47,13 @@
         }
 
         .admin-role {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             opacity: 0.8;
             margin-top: 5px;
         }
 
         .admin-nav {
-            padding: 0 15px;
+            padding: 0 20px;
         }
 
         .nav-links {
@@ -64,7 +61,7 @@
         }
 
         .nav-links li {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .nav-links a {
@@ -72,7 +69,7 @@
             align-items: center;
             gap: 12px;
             padding: 12px 15px;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             border-radius: 8px;
             transition: all 0.3s ease;
@@ -80,7 +77,7 @@
 
         .nav-links a:hover,
         .nav-links a.active {
-            background: rgba(153, 197, 255, 0.15);
+            background: rgba(153, 197, 255, 0.1);
             color: white;
         }
 
@@ -88,32 +85,33 @@
             font-size: 1.2rem;
         }
 
+        /* Main Content */
         .admin-main {
             flex: 1;
-            margin-left: 240px;
+            margin-left: 260px;
             padding: 20px;
         }
 
+        /* Header */
         .admin-header {
             background: white;
             border-radius: 12px;
-            padding: 20px 25px;
+            padding: 20px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .header-left h2 {
             color: #192064;
-            font-size: 1.6rem;
-            font-weight: 600;
+            font-size: 1.8rem;
         }
 
         .header-left p {
             color: #666;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             margin-top: 5px;
         }
 
@@ -123,44 +121,11 @@
             gap: 20px;
         }
 
-        .admin-search {
-            position: relative;
-        }
-
-        .admin-search input {
-            padding: 10px 15px 10px 40px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            width: 250px;
-            font-size: 0.95rem;
-        }
-
-        .admin-search input:focus {
-            outline: none;
-            border-color: #192064;
-            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-        }
-
         .admin-profile {
             display: flex;
             align-items: center;
             gap: 10px;
             cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 8px;
-            transition: background 0.3s ease;
-        }
-
-        .admin-profile:hover {
-            background: #f5f5f5;
         }
 
         .profile-avatar {
@@ -180,6 +145,26 @@
             color: #333;
         }
 
+        /* Role Badge */
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .role-admin {
+            background: #192064;
+            color: white;
+        }
+
+        .role-reviewer {
+            background: #ff9800;
+            color: white;
+        }
+
+        /* Stats Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -192,61 +177,132 @@
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            border-left: 5px solid #192064;
         }
 
-        .stat-card:hover {
-            transform: translateY(-3px);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-        }
-
-        .stat-card.total::before { background: #192064; }
-        .stat-card.pending::before { background: #ff9800; }
-        .stat-card.review::before { background: #2196f3; }
-        .stat-card.approved::before { background: #4caf50; }
-        .stat-card.declined::before { background: #f44336; }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
+        .stat-card.pending { border-left-color: #ff9800; }
+        .stat-card.review { border-left-color: #2196f3; }
+        .stat-card.approved { border-left-color: #4caf50; }
+        .stat-card.declined { border-left-color: #f44336; }
 
         .stat-title {
             font-size: 0.9rem;
             color: #666;
-            font-weight: 600;
-        }
-
-        .stat-icon {
-            font-size: 1.5rem;
-            opacity: 0.3;
+            margin-bottom: 10px;
         }
 
         .stat-value {
             font-size: 2rem;
             font-weight: 700;
             color: #192064;
-            margin-bottom: 5px;
         }
 
+        /* Action Bar */
+        .action-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #192064;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0d1642;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #388e3c;
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #f57c00;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        .btn-info {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #1976d2;
+        }
+
+        /* Filter Tabs */
+        .filter-container {
+            margin-bottom: 20px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover,
+        .filter-tab.active {
+            background: #192064;
+            color: white;
+            border-color: #192064;
+        }
+
+        /* Applications Table */
         .applications-section {
             background: white;
             border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
+            padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
         }
 
         .section-header {
@@ -257,32 +313,8 @@
         }
 
         .section-title {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.3rem;
             color: #192064;
-        }
-
-        .filter-badge {
-            display: flex;
-            gap: 10px;
-        }
-
-        .filter-btn {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            background: white;
-            color: #666;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: #192064;
-            color: white;
-            border-color: #192064;
         }
 
         .applications-table {
@@ -292,18 +324,16 @@
 
         .applications-table th {
             text-align: left;
-            padding: 12px 15px;
+            padding: 15px;
             background: #f8faff;
             color: #192064;
             font-weight: 600;
-            font-size: 0.9rem;
             border-bottom: 2px solid #eef2ff;
         }
 
         .applications-table td {
-            padding: 12px 15px;
+            padding: 15px;
             border-bottom: 1px solid #f0f0f0;
-            font-size: 0.95rem;
         }
 
         .applications-table tr:hover {
@@ -326,32 +356,45 @@
             justify-content: center;
             font-weight: bold;
             color: #192064;
-            font-size: 0.9rem;
         }
 
         .applicant-details h4 {
             font-weight: 600;
-            font-size: 0.95rem;
             margin-bottom: 3px;
         }
 
         .applicant-details p {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #666;
         }
 
         .status-badge {
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 600;
             display: inline-block;
         }
 
-        .status-pending { background: #fff3e0; color: #ef6c00; }
-        .status-review { background: #e3f2fd; color: #1565c0; }
-        .status-approved { background: #e8f5e9; color: #2e7d32; }
-        .status-declined { background: #ffebee; color: #c62828; }
+        .status-pending {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-review {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-approved {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-declined {
+            background: #ffebee;
+            color: #c62828;
+        }
 
         .action-buttons {
             display: flex;
@@ -359,43 +402,147 @@
         }
 
         .action-btn {
-            padding: 5px 10px;
+            padding: 6px 12px;
             border: none;
-            border-radius: 4px;
-            font-size: 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .btn-view {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-
-        .btn-view:hover {
-            background: #bbdefb;
-        }
-
         .btn-review {
-            background: #fff3e0;
-            color: #ef6c00;
+            background: #2196f3;
+            color: white;
         }
 
-        .btn-review:hover {
-            background: #ffe0b2;
+        .btn-edit {
+            background: #4caf50;
+            color: white;
         }
 
-        .error-message {
-            background: #ffebee;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-view {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        /* Search Box */
+        .search-box {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        /* Modal */
+        .modal-overlay {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        .error-message.show {
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: #192064;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
             display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* Loading and No Data */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
         }
 
         .no-data {
@@ -405,64 +552,50 @@
             font-style: italic;
         }
 
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
+        /* Pagination */
+        .pagination {
             display: flex;
             justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #192064;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .page-btn.active {
+            background: #192064;
+            color: white;
+            border-color: #192064;
         }
 
+        /* Responsive */
         @media (max-width: 1024px) {
             .admin-sidebar {
                 width: 70px;
             }
-
+            
             .admin-logo h1,
-            .admin-role,
-            .nav-text {
+            .nav-text,
+            .admin-role {
                 display: none;
             }
-
+            
             .admin-main {
                 margin-left: 70px;
-            }
-
-            .nav-links a {
-                justify-content: center;
             }
         }
 
         @media (max-width: 768px) {
-            .admin-header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-
+            
             .applications-table {
                 display: block;
                 overflow-x: auto;
@@ -471,15 +604,11 @@
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-spinner"></div>
-    </div>
-
+    <!-- Sidebar -->
     <aside class="admin-sidebar">
         <div class="admin-logo">
             <h1>Hiraya <span>Admin</span></h1>
-            <div class="admin-role" id="adminRole">-</div>
+            <div class="admin-role" id="adminRole">Loading...</div>
         </div>
 
         <nav class="admin-nav">
@@ -487,10 +616,6 @@
                 <li><a href="admin-dashboard.html" class="active">
                     <span class="nav-icon">📊</span>
                     <span class="nav-text">Dashboard</span>
-                </a></li>
-                <li><a href="admin-applications.html">
-                    <span class="nav-icon">📋</span>
-                    <span class="nav-text">Applications</span>
                 </a></li>
                 <li><a href="#" onclick="logoutAdmin()">
                     <span class="nav-icon">🚪</span>
@@ -500,204 +625,191 @@
         </nav>
     </aside>
 
+    <!-- Main Content -->
     <main class="admin-main">
-        <div class="error-message" id="errorMessage"></div>
-
+        <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
-                <h2>Dashboard</h2>
-                <p>Welcome back, <span id="adminName">-</span></p>
+                <h2>Admin Dashboard</h2>
+                <p>Welcome back, <span id="adminName">Loading...</span> 
+                    <span id="roleBadge" class="role-badge"></span>
+                </p>
             </div>
             <div class="header-right">
-                <div class="admin-search">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" placeholder="Search applications..." id="searchInput" onkeypress="handleSearch(event)">
-                </div>
-                <div class="admin-profile" onclick="window.location.href='admin-profile.html'">
-                    <div class="profile-avatar" id="adminAvatar">-</div>
-                    <div class="profile-name" id="adminFullName">-</div>
+                <div class="admin-profile">
+                    <div class="profile-avatar" id="adminAvatar">A</div>
+                    <div class="profile-name" id="adminFullName">Loading...</div>
                 </div>
             </div>
         </header>
 
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-card total">
-                <div class="stat-header">
-                    <div class="stat-title">Total Applications</div>
-                    <div class="stat-icon">📋</div>
-                </div>
-                <div class="stat-value" id="totalApplications">0</div>
+        <!-- Statistics -->
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search by name, email, or reference number..." id="searchInput" onkeyup="if(event.key === 'Enter') searchApplications()">
             </div>
-            <div class="stat-card pending">
-                <div class="stat-header">
-                    <div class="stat-title">Pending Review</div>
-                    <div class="stat-icon">⏳</div>
-                </div>
-                <div class="stat-value" id="pendingReview">0</div>
-            </div>
-            <div class="stat-card review">
-                <div class="stat-header">
-                    <div class="stat-title">Under Review</div>
-                    <div class="stat-icon">🔍</div>
-                </div>
-                <div class="stat-value" id="underReview">0</div>
-            </div>
-            <div class="stat-card approved">
-                <div class="stat-header">
-                    <div class="stat-title">Approved</div>
-                    <div class="stat-icon">✅</div>
-                </div>
-                <div class="stat-value" id="approved">0</div>
-            </div>
-            <div class="stat-card declined">
-                <div class="stat-header">
-                    <div class="stat-title">Declined</div>
-                    <div class="stat-icon">❌</div>
-                </div>
-                <div class="stat-value" id="declined">0</div>
+            <button class="btn btn-primary" onclick="searchApplications()">Search</button>
+            <button class="btn btn-info" onclick="clearSearch()">Clear</button>
+            <button class="btn btn-success" onclick="refreshApplications()">Refresh</button>
+            <button class="btn btn-warning" onclick="debugApplications()" style="display: none;">Debug</button>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-container">
+            <div class="filter-tabs">
+                <div class="filter-tab active" onclick="filterApplications('all')">All</div>
+                <div class="filter-tab" onclick="filterApplications('submitted')">Submitted</div>
+                <div class="filter-tab" onclick="filterApplications('under_review')">Under Review</div>
+                <div class="filter-tab" onclick="filterApplications('interview')">For Interview</div>
+                <div class="filter-tab" onclick="filterApplications('approved')">Approved</div>
+                <div class="filter-tab" onclick="filterApplications('declined')">Declined</div>
+                <div class="filter-tab" onclick="filterApplications('draft')">Draft</div>
             </div>
         </div>
 
+        <!-- Applications Table -->
         <section class="applications-section">
             <div class="section-header">
-                <h3 class="section-title">Recent Applications</h3>
-                <div class="filter-badge">
-                    <button class="filter-btn active" onclick="filterApplications('all')">All</button>
-                    <button class="filter-btn" onclick="filterApplications('pending')">Pending</button>
-                    <button class="filter-btn" onclick="filterApplications('review')">In Review</button>
-                </div>
+                <h3 class="section-title">Applications Management</h3>
+                <span id="applicationCount"></span>
             </div>
-            <div class="table-responsive">
-                <table class="applications-table">
-                    <thead>
-                        <tr>
-                            <th>Applicant</th>
-                            <th>School</th>
-                            <th>Program</th>
-                            <th>Submitted</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="applicationsTableBody">
-                        <tr>
-                            <td colspan="6" class="no-data">Loading applications...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            
+            <table class="applications-table">
+                <thead>
+                    <tr>
+                        <th>Applicant</th>
+                        <th>Reference #</th>
+                        <th>School</th>
+                        <th>Program</th>
+                        <th>GWA</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="applicationsTableBody">
+                    <tr>
+                        <td colspan="7" class="loading">Loading applications...</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="pagination"></div>
+        </section>
+
+        <!-- Pending Reviews Section (for Reviewers) -->
+        <section class="applications-section" id="pendingReviewsSection" style="display: none;">
+            <div class="section-header">
+                <h3 class="section-title">Pending Review</h3>
             </div>
+            
+            <table class="applications-table">
+                <thead>
+                    <tr>
+                        <th>Applicant</th>
+                        <th>Reference #</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingReviewsBody">
+                    <tr>
+                        <td colspan="5" class="loading">Loading pending reviews...</td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
     </main>
+
+    <!-- Application Modal -->
+    <div class="modal-overlay" id="applicationModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">Application Details</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
 
 <script>
     const API_BASE = '/ScholarshipSystem/api';
     let currentAdmin = null;
-    let sessionCheckCount = 0;
-    const MAX_RETRIES = 3;
+    let currentFilter = 'all';
+    let applications = [];
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentSearch = '';
 
-    // Hide loading overlay initially
-    document.getElementById('loadingOverlay').style.display = 'flex';
-
+    // Check session on load
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Page loaded, checking session...');
         checkSession();
     });
 
     async function checkSession() {
         try {
-            sessionCheckCount++;
-            console.log(`Session check attempt ${sessionCheckCount}...`);
-            
-            const response = await fetch(`${API_BASE}/admin/dashboard/check-session`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: { 
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache'
-                }
+            const response = await fetch(`${API_BASE}/admin/check-session`, {
+                credentials: 'include'
             });
             
-            console.log('Session check response status:', response.status);
-            
-            if (response.status === 401 || response.status === 403) {
-                throw new Error('Not authenticated');
-            }
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            
             const data = await response.json();
-            console.log('Session check data:', data);
             
-            if (data.authenticated && data.admin) {
-                console.log('Authentication successful');
+            if (data.authenticated) {
                 currentAdmin = data.admin;
-                updateAdminUI();
+                updateUIForAdmin();
                 loadDashboardData();
-                document.getElementById('loadingOverlay').style.display = 'none';
             } else {
-                throw new Error('Not authenticated');
+                window.location.href = 'admin-login.html';
             }
         } catch (error) {
             console.error('Session check failed:', error);
-            
-            if (sessionCheckCount < MAX_RETRIES) {
-                console.log(`Retrying in 1 second... (Attempt ${sessionCheckCount}/${MAX_RETRIES})`);
-                setTimeout(checkSession, 1000);
-            } else {
-                handleNotAuthenticated();
-            }
+            window.location.href = 'admin-login.html';
         }
     }
 
-    function handleNotAuthenticated() {
-        console.log('Max retries reached, redirecting to login');
-        document.getElementById('loadingOverlay').style.display = 'none';
-        
-        // Check if we're not already on login page
-        if (!window.location.href.includes('admin-login.html')) {
-            showError('Session expired. Redirecting to login...');
-            setTimeout(() => {
-                window.location.href = 'admin-login.html';
-            }, 2000);
-        }
-    }
-
-    function updateAdminUI() {
+    function updateUIForAdmin() {
         if (!currentAdmin) return;
         
-        const adminName = currentAdmin.name || 'Admin';
-        document.getElementById('adminName').textContent = adminName;
-        document.getElementById('adminFullName').textContent = adminName;
-        document.getElementById('adminRole').textContent = currentAdmin.role || 'Administrator';
+        document.getElementById('adminName').textContent = currentAdmin.fullName;
+        document.getElementById('adminFullName').textContent = currentAdmin.fullName;
+        document.getElementById('adminRole').textContent = currentAdmin.roleDisplayName;
         
-        const initials = getInitials(adminName);
-        document.getElementById('adminAvatar').textContent = initials;
+        const initials = currentAdmin.fullName.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById('adminAvatar').textContent = initials.substring(0, 2);
+        
+        const roleBadge = document.getElementById('roleBadge');
+        roleBadge.textContent = currentAdmin.role;
+        roleBadge.className = `role-badge ${currentAdmin.isAdministrator ? 'role-admin' : 'role-reviewer'}`;
+        
+        // Show pending reviews section for reviewers
+        if (!currentAdmin.isAdministrator) {
+            document.getElementById('pendingReviewsSection').style.display = 'block';
+        }
     }
 
     async function loadDashboardData() {
         try {
             console.log('Loading dashboard data...');
-            const response = await fetch(`${API_BASE}/admin/dashboard/`, {
-                credentials: 'include',
-                headers: { 
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache'
-                }
+            const response = await fetch(`${API_BASE}/admin/dashboard`, {
+                credentials: 'include'
             });
             
-            if (!response.ok) throw new Error('Failed to load dashboard');
-            
             const data = await response.json();
-            console.log('Dashboard data:', data);
+            console.log('Dashboard response:', data);
             
             if (data.authenticated) {
-                if (data.stats) {
-                    updateStats(data.stats);
-                }
-                if (data.recentApplications) {
-                    updateApplicationsTable(data.recentApplications);
+                updateStats(data.stats);
+                loadAllApplications();
+                
+                if (currentAdmin && !currentAdmin.isAdministrator) {
+                    loadPendingReviews();
                 }
             }
         } catch (error) {
@@ -706,84 +818,553 @@
         }
     }
 
-    function updateStats(stats) {
-        document.getElementById('totalApplications').textContent = stats.totalApplications || 0;
-        document.getElementById('pendingReview').textContent = stats.submittedApplications || 0;
-        document.getElementById('underReview').textContent = stats.underReview || 0;
-        document.getElementById('approved').textContent = stats.approved || 0;
-        document.getElementById('declined').textContent = stats.declined || 0;
+    async function loadAllApplications() {
+        try {
+            let url = `${API_BASE}/admin/dashboard/applications?page=${currentPage}&limit=10`;
+            
+            if (currentFilter !== 'all') {
+                url += `&status=${currentFilter}`;
+            }
+            
+            if (currentSearch) {
+                url += `&search=${encodeURIComponent(currentSearch)}`;
+            }
+            
+            console.log('Loading applications from:', url);
+            const response = await fetch(url, {
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            console.log('Applications API response:', data);
+            
+            if (data.success) {
+                if (data.applications && data.applications.length > 0) {
+                    console.log(`Loaded ${data.applications.length} applications`);
+                    applications = data.applications;
+                    totalPages = data.totalPages || 1;
+                    document.getElementById('applicationCount').textContent = 
+                        `Showing ${applications.length} of ${data.totalCount || applications.length} applications`;
+                } else {
+                    console.log('No applications returned from API');
+                    applications = [];
+                    totalPages = 1;
+                    document.getElementById('applicationCount').textContent = 'No applications found';
+                }
+                displayApplications(applications);
+                displayPagination();
+            } else {
+                console.error('Failed to load applications:', data.message);
+                document.getElementById('applicationsTableBody').innerHTML = 
+                    '<tr><td colspan="7" class="no-data">Error loading applications</td></tr>';
+            }
+        } catch (error) {
+            console.error('Error loading all applications:', error);
+            document.getElementById('applicationsTableBody').innerHTML = 
+                '<tr><td colspan="7" class="no-data">Error loading applications</td></tr>';
+        }
     }
 
-    function updateApplicationsTable(applications) {
-        const tbody = document.getElementById('applicationsTableBody');
-        if (!tbody) return;
+    function updateStats(stats) {
+        const statsGrid = document.getElementById('statsGrid');
         
-        if (!applications || applications.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="no-data">No applications found</td></tr>';
+        if (currentAdmin && currentAdmin.isAdministrator) {
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-title">Total Applications</div>
+                    <div class="stat-value">${stats.totalApplications || 0}</div>
+                </div>
+                <div class="stat-card pending">
+                    <div class="stat-title">Submitted</div>
+                    <div class="stat-value">${stats.submittedApplications || 0}</div>
+                </div>
+                <div class="stat-card review">
+                    <div class="stat-title">Under Review</div>
+                    <div class="stat-value">${stats.underReview || 0}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">For Interview</div>
+                    <div class="stat-value">${stats.interview || 0}</div>
+                </div>
+                <div class="stat-card approved">
+                    <div class="stat-title">Approved</div>
+                    <div class="stat-value">${stats.approved || 0}</div>
+                </div>
+                <div class="stat-card declined">
+                    <div class="stat-title">Declined</div>
+                    <div class="stat-value">${stats.declined || 0}</div>
+                </div>
+            `;
+        } else {
+            statsGrid.innerHTML = `
+                <div class="stat-card pending">
+                    <div class="stat-title">Pending Review</div>
+                    <div class="stat-value">${stats.pendingReview || 0}</div>
+                </div>
+                <div class="stat-card review">
+                    <div class="stat-title">Under Review</div>
+                    <div class="stat-value">${stats.underReview || 0}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">For Interview</div>
+                    <div class="stat-value">${stats.interview || 0}</div>
+                </div>
+                <div class="stat-card approved">
+                    <div class="stat-title">Approved</div>
+                    <div class="stat-value">${stats.approved || 0}</div>
+                </div>
+                <div class="stat-card declined">
+                    <div class="stat-title">Declined</div>
+                    <div class="stat-value">${stats.declined || 0}</div>
+                </div>
+            `;
+        }
+    }
+
+    async function loadPendingReviews() {
+        try {
+            const response = await fetch(`${API_BASE}/admin/dashboard/reviews/pending?limit=10`, {
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                displayPendingReviews(data.reviews);
+            }
+        } catch (error) {
+            console.error('Error loading pending reviews:', error);
+        }
+    }
+
+    function displayApplications(apps) {
+        console.log('Displaying applications:', apps);
+        const tbody = document.getElementById('applicationsTableBody');
+        
+        if (!apps || apps.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="no-data">No applications found</td></tr>';
             return;
         }
         
-        tbody.innerHTML = '';
-        
-        applications.slice(0, 10).forEach(app => {
-            const row = document.createElement('tr');
+        tbody.innerHTML = apps.map(app => {
+            const statusValue = app.status || app.application_status || 'pending';
+            const statusClass = getStatusClass(statusValue);
+            const formattedStatus = formatStatus(statusValue);
             
-            const applicantName = app.applicantName || app.studentName || app.name || 'Unknown';
-            const school = app.school || app.institution || 'N/A';
-            const program = app.program || app.course || 'N/A';
-            const submittedDate = formatDate(app.createdAt || app.submittedAt || app.applicationDate);
+            const school = app.school || app.college_first || 'N/A';
+            const program = app.program || app.program_first || 'N/A';
+            const gwa = app.gwa || app.grade_12_gwa || 'N/A';
+            const gwaDisplay = gwa !== 'N/A' ? parseFloat(gwa).toFixed(2) : 'N/A';
             
-            row.innerHTML = `
-                <td>
-                    <div class="applicant-info">
-                        <div class="applicant-avatar">${getInitials(applicantName)}</div>
-                        <div class="applicant-details">
-                            <h4>${escapeHtml(applicantName)}</h4>
+            const initials = getInitials(app.applicantName);
+            
+            return `
+                <tr>
+                    <td>
+                        <div class="applicant-info">
+                            <div class="applicant-avatar">${initials}</div>
+                            <div class="applicant-details">
+                                <h4>${escapeHtml(app.applicantName || 'N/A')}</h4>
+                                <p>${escapeHtml(app.email || 'N/A')}</p>
+                            </div>
                         </div>
-                    </div>
-                </td>
-                <td>${escapeHtml(school)}</td>
-                <td>${escapeHtml(program)}</td>
-                <td>${submittedDate}</td>
-                <td><span class="status-badge ${getStatusClass(app.status)}">${formatStatus(app.status)}</span></td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="action-btn btn-view" onclick="viewApplication(${app.id})">View</button>
-                        <button class="action-btn btn-review" onclick="reviewApplication(${app.id})">Review</button>
-                    </div>
-                </td>
+                    </td>
+                    <td>${app.referenceNumber || 'N/A'}</td>
+                    <td>${escapeHtml(school)}</td>
+                    <td>${escapeHtml(program)}</td>
+                    <td>${gwaDisplay}</td>
+                    <td><span class="status-badge ${statusClass}">${formattedStatus}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn btn-view" onclick="viewApplication(${app.id})">View</button>
+                            ${currentAdmin && currentAdmin.isAdministrator ? `
+                                <button class="action-btn btn-edit" onclick="editApplication(${app.id})">Edit</button>
+                                <button class="action-btn btn-delete" onclick="deleteApplication(${app.id})">Delete</button>
+                            ` : `
+                                <button class="action-btn btn-review" onclick="reviewApplication(${app.id})">Review</button>
+                            `}
+                        </div>
+                    </td>
+                </tr>
             `;
-            
-            tbody.appendChild(row);
-        });
+        }).join('');
     }
 
-    function showError(message) {
-        const errorEl = document.getElementById('errorMessage');
-        errorEl.textContent = message;
-        errorEl.classList.add('show');
+    function displayPendingReviews(reviews) {
+        const tbody = document.getElementById('pendingReviewsBody');
         
-        setTimeout(() => {
-            errorEl.classList.remove('show');
-        }, 5000);
+        if (!reviews || reviews.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="no-data">No pending reviews</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = reviews.map(review => {
+            const submittedAt = review.submittedAt ? new Date(review.submittedAt).toLocaleDateString() : 'N/A';
+            
+            return `
+                <tr>
+                    <td>
+                        <div class="applicant-info">
+                            <div class="applicant-avatar">${getInitials(review.applicantName)}</div>
+                            <div class="applicant-details">
+                                <h4>${escapeHtml(review.applicantName)}</h4>
+                                <p>${escapeHtml(review.email)}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${review.referenceNumber}</td>
+                    <td>${submittedAt}</td>
+                    <td><span class="status-badge status-pending">Pending</span></td>
+                    <td>
+                        <button class="action-btn btn-review" onclick="reviewApplication(${review.id})">Review</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
     }
 
-    function filterApplications(status) {
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('active');
+    function displayPagination() {
+        const pagination = document.getElementById('pagination');
+        if (totalPages <= 1) {
+            pagination.innerHTML = '';
+            return;
+        }
+        
+        let html = '';
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+        }
+        pagination.innerHTML = html;
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        loadAllApplications();
+    }
+
+    // Application Actions
+    async function viewApplication(id) {
+        try {
+            const response = await fetch(`${API_BASE}/admin/dashboard/application/${id}`, {
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showApplicationModal('view', data.application);
+            } else {
+                alert(data.message || 'Failed to load application details');
+            }
+        } catch (error) {
+            console.error('Error loading application:', error);
+            alert('Failed to load application details');
+        }
+    }
+
+    function editApplication(id) {
+        const app = applications.find(a => a.id === id);
+        if (app) {
+            showApplicationModal('edit', app);
+        }
+    }
+
+    async function deleteApplication(id) {
+        if (!confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_BASE}/admin/dashboard/application/${id}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Application deleted successfully');
+                loadAllApplications();
+            } else {
+                alert(data.message || 'Failed to delete application');
+            }
+        } catch (error) {
+            console.error('Error deleting application:', error);
+            alert('Failed to delete application');
+        }
+    }
+
+    function reviewApplication(id) {
+        const app = applications.find(a => a.id === id);
+        if (app) {
+            showApplicationModal('review', app);
+        }
+    }
+
+    // Modal Functions
+    function showApplicationModal(mode, application) {
+        const modal = document.getElementById('applicationModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        
+        let title = '';
+        let content = '';
+        
+        switch(mode) {
+            case 'view':
+                title = 'Application Details';
+                content = `
+                    <div class="form-group">
+                        <label>Applicant Name</label>
+                        <input type="text" value="${escapeHtml(application.applicantName || application.first_name + ' ' + application.last_name)}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" value="${escapeHtml(application.email || '')}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="text" value="${escapeHtml(application.mobile_number || 'N/A')}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>School (First Choice)</label>
+                        <input type="text" value="${escapeHtml(application.college_first || application.school || 'N/A')}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Program (First Choice)</label>
+                        <input type="text" value="${escapeHtml(application.program_first || application.program || 'N/A')}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>GWA</label>
+                        <input type="text" value="${application.grade_12_gwa || application.gwa || 'N/A'}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <input type="text" value="${formatStatus(application.application_status || application.status)}" readonly>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-info" onclick="closeModal()">Close</button>
+                    </div>
+                `;
+                break;
+                
+            case 'edit':
+                title = 'Edit Application';
+                content = `
+                    <form onsubmit="saveApplication(event, ${application.id})">
+                        <div class="form-group">
+                            <label>Applicant Name *</label>
+                            <input type="text" id="editName" value="${escapeHtml(application.applicantName || '')}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="editEmail" value="${escapeHtml(application.email || '')}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>School (First Choice)</label>
+                            <input type="text" id="editSchool" value="${escapeHtml(application.college_first || application.school || '')}">
+                        </div>
+                        <div class="form-group">
+                            <label>Program (First Choice)</label>
+                            <input type="text" id="editProgram" value="${escapeHtml(application.program_first || application.program || '')}">
+                        </div>
+                        <div class="form-group">
+                            <label>Status *</label>
+                            <select id="editStatus" required>
+                                <option value="draft" ${(application.application_status || application.status) === 'draft' ? 'selected' : ''}>Draft</option>
+                                <option value="submitted" ${(application.application_status || application.status) === 'submitted' ? 'selected' : ''}>Submitted</option>
+                                <option value="under_review" ${(application.application_status || application.status) === 'under_review' ? 'selected' : ''}>Under Review</option>
+                                <option value="interview" ${(application.application_status || application.status) === 'interview' ? 'selected' : ''}>For Interview</option>
+                                <option value="approved" ${(application.application_status || application.status) === 'approved' ? 'selected' : ''}>Approved</option>
+                                <option value="declined" ${(application.application_status || application.status) === 'declined' ? 'selected' : ''}>Declined</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>GWA</label>
+                            <input type="number" step="0.01" id="editGwa" value="${application.grade_12_gwa || application.gwa || ''}">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn btn-success">Save Changes</button>
+                            <button type="button" class="btn btn-danger" onclick="closeModal()">Cancel</button>
+                        </div>
+                    </form>
+                `;
+                break;
+                
+            case 'review':
+                title = 'Review Application';
+                content = `
+                    <form onsubmit="submitReview(event, ${application.id})">
+                        <div class="form-group">
+                            <label>Applicant</label>
+                            <input type="text" value="${escapeHtml(application.applicantName || '')}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="text" value="${escapeHtml(application.email || '')}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Reference #</label>
+                            <input type="text" value="${application.referenceNumber || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Review Decision *</label>
+                            <select id="reviewStatus" required>
+                                <option value="under_review">Mark as Under Review</option>
+                                <option value="interview">Schedule Interview</option>
+                                <option value="approved">Approve Application</option>
+                                <option value="declined">Decline Application</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Review Notes</label>
+                            <textarea id="reviewNotes" placeholder="Enter your review notes and comments..."></textarea>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn btn-success">Submit Review</button>
+                            <button type="button" class="btn btn-danger" onclick="closeModal()">Cancel</button>
+                        </div>
+                    </form>
+                `;
+                break;
+        }
+        
+        modalTitle.textContent = title;
+        modalBody.innerHTML = content;
+        modal.classList.add('active');
+    }
+
+    async function saveApplication(event, id) {
+        event.preventDefault();
+        
+        const updatedData = {
+            applicantName: document.getElementById('editName').value,
+            email: document.getElementById('editEmail').value,
+            school: document.getElementById('editSchool').value,
+            program: document.getElementById('editProgram').value,
+            status: document.getElementById('editStatus').value,
+            gwa: document.getElementById('editGwa').value
+        };
+        
+        try {
+            const response = await fetch(`${API_BASE}/admin/dashboard/application/${id}/update`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Application updated successfully');
+                closeModal();
+                loadAllApplications();
+            } else {
+                alert(data.message || 'Failed to update application');
+            }
+        } catch (error) {
+            console.error('Error updating application:', error);
+            alert('Failed to update application');
+        }
+    }
+
+    async function submitReview(event, id) {
+        event.preventDefault();
+        
+        const status = document.getElementById('reviewStatus').value;
+        const notes = document.getElementById('reviewNotes').value;
+        
+        try {
+            const response = await fetch(`${API_BASE}/admin/dashboard/application/${id}/status`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status, notes })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Review submitted successfully');
+                closeModal();
+                loadAllApplications();
+                if (!currentAdmin.isAdministrator) {
+                    loadPendingReviews();
+                }
+            } else {
+                alert(data.message || 'Failed to submit review');
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            alert('Failed to submit review');
+        }
+    }
+
+    // Filter and Search Functions
+    function filterApplications(filter) {
+        currentFilter = filter;
+        currentPage = 1;
+        
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.classList.remove('active');
         });
         event.target.classList.add('active');
         
-        if (status === 'all') {
-            loadDashboardData();
-        } else {
-            window.location.href = `admin-applications.html?status=${status}`;
+        loadAllApplications();
+    }
+
+    function searchApplications() {
+        const searchInput = document.getElementById('searchInput');
+        currentSearch = searchInput.value.trim();
+        currentPage = 1;
+        loadAllApplications();
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        currentSearch = '';
+        currentPage = 1;
+        loadAllApplications();
+    }
+
+    function refreshApplications() {
+        loadAllApplications();
+        if (!currentAdmin.isAdministrator) {
+            loadPendingReviews();
+        }
+    }
+
+    // Debug function
+    async function debugApplications() {
+        try {
+            console.log('=== DEBUG: Checking applications API ===');
+            const response = await fetch(`${API_BASE}/admin/dashboard/debug/applications`, {
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            console.log('Debug API response:', data);
+            
+            if (data.debug_applications && data.debug_applications.length > 0) {
+                console.log('First application:', data.debug_applications[0]);
+                alert(`Found ${data.debug_applications.length} applications. Check console for details.`);
+            } else {
+                alert('No applications found in database');
+            }
+        } catch (error) {
+            console.error('Debug error:', error);
+            alert('Debug endpoint not available');
         }
     }
 
     // Utility functions
     function getInitials(name) {
-        if (!name || name === '-') return 'A';
+        if (!name) return 'A';
         return name.split(' ')
             .map(n => n.charAt(0))
             .join('')
@@ -793,34 +1374,24 @@
 
     function getStatusClass(status) {
         if (!status) return 'status-pending';
-        const statusLower = status.toLowerCase();
-        if (statusLower.includes('pending') || statusLower === 'draft' || statusLower === 'submitted') return 'status-pending';
-        if (statusLower.includes('review') || statusLower === 'under_review' || statusLower === 'in_review') return 'status-review';
-        if (statusLower.includes('approve') || statusLower === 'accepted') return 'status-approved';
-        if (statusLower.includes('decline') || statusLower.includes('reject') || statusLower === 'denied') return 'status-declined';
-        return 'status-pending';
+        
+        const statusMap = {
+            'draft': 'status-pending',
+            'submitted': 'status-pending',
+            'under_review': 'status-review',
+            'interview': 'status-review',
+            'approved': 'status-approved',
+            'declined': 'status-declined'
+        };
+        
+        return statusMap[status.toLowerCase()] || 'status-pending';
     }
 
     function formatStatus(status) {
         if (!status) return 'Pending';
         return status.split('_')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
-    }
-
-    function formatDate(dateStr) {
-        if (!dateStr) return 'Unknown';
-        try {
-            const date = new Date(dateStr);
-            if (isNaN(date.getTime())) return 'Invalid date';
-            return date.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric', 
-                year: 'numeric' 
-            });
-        } catch (e) {
-            return 'Invalid date';
-        }
     }
 
     function escapeHtml(text) {
@@ -830,31 +1401,16 @@
         return div.innerHTML;
     }
 
-    function handleSearch(event) {
-        if (event.key === 'Enter') {
-            const searchTerm = event.target.value.trim();
-            if (searchTerm) {
-                window.location.href = `admin-applications.html?search=${encodeURIComponent(searchTerm)}`;
-            }
-        }
+    function showError(message) {
+        alert(message);
     }
 
-    function viewApplication(id) {
-        if (id) {
-            window.location.href = `admin-applications.html?id=${id}&view=true`;
-        }
-    }
-
-    function reviewApplication(id) {
-        if (id) {
-            window.location.href = `admin-applications.html?id=${id}&review=true`;
-        }
+    function closeModal() {
+        document.getElementById('applicationModal').classList.remove('active');
     }
 
     async function logoutAdmin() {
         if (confirm('Are you sure you want to log out?')) {
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            
             try {
                 await fetch(`${API_BASE}/admin/logout`, {
                     method: 'POST',
@@ -862,11 +1418,18 @@
                 });
             } catch (error) {
                 console.error('Logout error:', error);
-            } finally {
-                window.location.href = 'admin-login.html';
             }
+            window.location.href = 'admin-login.html';
         }
     }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('applicationModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
 </script>
 </body>
 </html>

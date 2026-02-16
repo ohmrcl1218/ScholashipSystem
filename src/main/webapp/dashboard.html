@@ -233,12 +233,18 @@
             padding: 20px 15px;
             text-align: center;
             transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
         }
 
         .document-item:hover {
             border-color: #192064;
             background: #f0f7ff;
             transform: translateY(-3px);
+        }
+
+        .document-item.has-file:hover {
+            box-shadow: 0 4px 12px rgba(25, 32, 100, 0.15);
         }
 
         .document-icon {
@@ -288,6 +294,118 @@
             word-break: break-all;
         }
 
+        .view-document-hint {
+            font-size: 0.7rem;
+            color: #192064;
+            margin-top: 8px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .document-item.has-file:hover .view-document-hint {
+            opacity: 1;
+        }
+
+        /* Document Viewer Modal */
+        .document-viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .document-viewer-modal.active {
+            display: flex;
+        }
+
+        .document-viewer-container {
+            background: white;
+            border-radius: 12px;
+            max-width: 95vw;
+            max-height: 95vh;
+            width: 1200px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .document-viewer-header {
+            background: #192064;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .document-viewer-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .document-viewer-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .document-viewer-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .document-viewer-body {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .document-viewer-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .document-viewer-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 8px;
+        }
+
+        .document-viewer-loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .document-viewer-error {
+            text-align: center;
+            padding: 60px 20px;
+            color: #f44336;
+        }
+
         /* Interview Card */
         .interview-card {
             background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
@@ -332,87 +450,6 @@
             border-radius: 8px;
             color: #0d47a1;
             font-style: italic;
-        }
-
-        /* Timeline */
-        .timeline {
-            position: relative;
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px 0;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: #e0e0e0;
-            transform: translateX(-50%);
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 40px;
-            width: 50%;
-        }
-
-        .timeline-item:nth-child(odd) {
-            left: 0;
-            padding-right: 50px;
-        }
-
-        .timeline-item:nth-child(even) {
-            left: 50%;
-            padding-left: 50px;
-        }
-
-        .timeline-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-            border: 1px solid #f0f0f0;
-        }
-
-        .timeline-date {
-            font-weight: 600;
-            color: #192064;
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-
-        .timeline-desc {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .timeline-status {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px dashed #e0e0e0;
-        }
-
-        .timeline-dot {
-            position: absolute;
-            right: -10px;
-            top: 20px;
-            width: 20px;
-            height: 20px;
-            background: #192064;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .timeline-item:nth-child(even) .timeline-dot {
-            left: -10px;
-            right: auto;
         }
 
         /* Actions Grid */
@@ -705,26 +742,6 @@
                 flex-direction: column;
             }
 
-            .timeline::before {
-                left: 30px;
-            }
-
-            .timeline-item {
-                width: 100%;
-                left: 0 !important;
-                padding-left: 60px !important;
-                padding-right: 20px !important;
-            }
-
-            .timeline-item:nth-child(even) .timeline-dot {
-                left: 20px;
-            }
-
-            .timeline-dot {
-                left: 20px !important;
-                right: auto !important;
-            }
-
             .modal-container {
                 width: 100%;
                 height: 100%;
@@ -817,12 +834,6 @@
                     <div class="documents-grid" id="documentsGrid"></div>
                 </section>
 
-                <!-- Application Timeline - REAL timeline entries -->
-                <section class="application-section">
-                    <h2 class="section-title">Application Timeline</h2>
-                    <div class="timeline" id="timeline"></div>
-                </section>
-
                 <!-- Quick Actions - Dynamic based on application status -->
                 <section class="application-section">
                     <h2 class="section-title">Quick Actions</h2>
@@ -845,6 +856,22 @@
             <div class="modal-footer">
                 <button class="btn btn-back" onclick="closeModal()">Close</button>
                 <button id="modalActionBtn" class="btn btn-next" style="display: none;" onclick="handleModalAction()">Continue Application</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Viewer Modal -->
+    <div id="documentViewerModal" class="document-viewer-modal">
+        <div class="document-viewer-container">
+            <div class="document-viewer-header">
+                <h3 id="documentViewerTitle">Document Viewer</h3>
+                <button class="document-viewer-close" onclick="closeDocumentViewer()">✕</button>
+            </div>
+            <div class="document-viewer-body" id="documentViewerBody">
+                <div class="document-viewer-loading">
+                    <div class="spinner"></div>
+                    <p>Loading document...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -911,7 +938,6 @@
                     updatePersonalInfo(data.application);
                     updateAcademicInfo(data.application);
                     updateDocumentStatus(data.documentStatus);
-                    updateTimeline(data.timeline || []);
                     updateActionButtons(data.application, data.canEdit || false);
                     
                     // Show interview details ONLY if status is interview
@@ -1247,40 +1273,118 @@
 
         // Update document status with REAL document data
         function updateDocumentStatus(documentStatus) {
-            if (!documentStatus || !documentStatus.documents) return;
-            
             const progressBar = document.getElementById('documentProgressBar');
             const grid = document.getElementById('documentsGrid');
             
-            const verified = documentStatus.verified || 0;
-            const total = documentStatus.total || 10;
-            const percentage = documentStatus.completionPercentage || 0;
+            console.log('===== FRONTEND updateDocumentStatus CALLED =====');
+            console.log('Received documentStatus:', documentStatus);
+            
+            let verified = 0;
+            let pending = 0;
+            let missing = 0;
+            let total = 10;
+            let percentage = 0;
+            let documents = [];
+            
+            if (documentStatus) {
+                verified = documentStatus.verified || 0;
+                pending = documentStatus.pending || 0;
+                missing = documentStatus.missing || 0;
+                total = documentStatus.total || 10;
+                percentage = documentStatus.completionPercentage || 0;
+                
+                console.log('Stats from backend - Verified:', verified, 'Pending:', pending, 'Missing:', missing);
+            }
+            
+            // Check if backend provided formatted documents array
+            if (documentStatus && documentStatus.documents && Array.isArray(documentStatus.documents)) {
+                console.log('✅ Using backend-formatted documents array');
+                console.log('Documents array length:', documentStatus.documents.length);
+                documents = documentStatus.documents;
+            } else {
+                // ⚠️ WORKAROUND: Build documents from counts since backend didn't provide array
+                console.log('⚠️ Backend did not provide documents array - building from counts');
+                
+                const allDocs = [
+                    { name: 'Birth Certificate', icon: '📄' },
+                    { name: 'Grade 11 & 12 Report Card', icon: '📊' },
+                    { name: 'Certificate of Good Moral', icon: '✅' },
+                    { name: 'Certificate of Indigency', icon: '📋' },
+                    { name: 'Income Tax Return', icon: '💰' },
+                    { name: 'Voter\'s ID/Certification', icon: '🗳️' },
+                    { name: '2x2 ID Picture', icon: '📸' },
+                    { name: 'Proof of Enrollment', icon: '🎓' },
+                    { name: 'Health Certificate', icon: '🏥' },
+                    { name: 'Recommendation Letter', icon: '📝' }
+                ];
+                
+                // Use the counts to determine status
+                let verifiedCount = verified;
+                let pendingCount = pending;
+                let missingCount = missing;
+                
+                documents = allDocs.map((doc, index) => {
+                    let status, statusText;
+                    
+                    // Assign statuses based on counts
+                    if (verifiedCount > 0) {
+                        status = 'verified';
+                        statusText = 'Verified';
+                        verifiedCount--;
+                    } else if (pendingCount > 0) {
+                        status = 'pending';
+                        statusText = 'Pending';
+                        pendingCount--;
+                    } else {
+                        status = 'missing';
+                        statusText = 'Missing';
+                        missingCount--;
+                    }
+                    
+                    return {
+                        name: doc.name,
+                        icon: doc.icon,
+                        status: status,
+                        statusText: statusText,
+                        fileName: status !== 'missing' ? 'Document uploaded' : null
+                    };
+                });
+                
+                console.log('Built', documents.length, 'documents from counts');
+            }
+            
+            console.log('Final documents to display:', documents.length);
+            console.log('================================================');
             
             // Update progress bar with REAL data
             progressBar.innerHTML = `
                 <div style="margin-bottom: 30px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <span style="font-weight: 600; color: #192064;">Document Completion Progress</span>
-                        <span style="color: #192064; font-weight: 700; font-size: 1.2rem;">${verified}/${total}</span>
+                        <span style="color: #192064; font-weight: 700; font-size: 1.2rem;">${verified + pending}/${total}</span>
                     </div>
                     <div style="width: 100%; height: 12px; background: #e0e0e0; border-radius: 6px; overflow: hidden;">
                         <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #4caf50, #8bc34a); border-radius: 6px; transition: width 0.5s ease;"></div>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-top: 8px; color: #666; font-size: 0.9rem;">
                         <span>${verified} Verified</span>
-                        <span>${documentStatus.pending || 0} Pending</span>
-                        <span>${documentStatus.missing || 0} Missing</span>
+                        <span>${pending} Pending</span>
+                        <span>${missing} Missing</span>
                     </div>
                 </div>
             `;
             
-            // Update documents grid with REAL document status
+            // Update documents grid with document status
             let documentsHtml = '';
             
-            documentStatus.documents.forEach(doc => {
+            documents.forEach((doc, index) => {
                 const statusClass = `document-${doc.status}`;
+                const hasFile = doc.status !== 'missing';
+                const clickHandler = hasFile && doc.id ? `onclick="viewDocument(${doc.id}, '${doc.name.replace(/'/g, "\\'")}')"` : '';
+                const hasFileClass = hasFile ? 'has-file' : '';
+                
                 documentsHtml += `
-                    <div class="document-item">
+                    <div class="document-item ${hasFileClass}" ${clickHandler}>
                         <div class="document-icon">${doc.icon}</div>
                         <div class="document-name">${doc.name}</div>
                         <div class="document-status ${statusClass}">${doc.statusText}</div>
@@ -1289,6 +1393,7 @@
                                 ${doc.fileName.length > 20 ? doc.fileName.substring(0, 20) + '...' : doc.fileName}
                             </div>
                         ` : ''}
+                        ${hasFile ? '<div class="view-document-hint">👁️ Click to view</div>' : ''}
                     </div>
                 `;
             });
@@ -1296,43 +1401,72 @@
             grid.innerHTML = documentsHtml;
         }
 
-        // Update timeline with REAL timeline entries
-        function updateTimeline(timelineEntries) {
-            const timeline = document.getElementById('timeline');
+        // View document in modal
+        async function viewDocument(documentId, documentName) {
+            const modal = document.getElementById('documentViewerModal');
+            const title = document.getElementById('documentViewerTitle');
+            const body = document.getElementById('documentViewerBody');
             
-            if (!timelineEntries || timelineEntries.length === 0) {
-                timeline.innerHTML = `
-                    <div style="text-align: center; padding: 60px 20px; background: #f8faff; border-radius: 12px; color: #666;">
-                        <span style="font-size: 3rem; display: block; margin-bottom: 15px;">📅</span>
-                        <p style="font-size: 1.1rem;">No timeline entries yet.</p>
-                        <p style="margin-top: 10px; font-size: 0.95rem;">Your application activity will appear here.</p>
-                    </div>
-                `;
-                return;
-            }
+            title.textContent = documentName;
+            body.innerHTML = `
+                <div class="document-viewer-loading">
+                    <div class="spinner"></div>
+                    <p>Loading document...</p>
+                </div>
+            `;
             
-            let timelineHtml = '';
-            timelineEntries.forEach((entry, index) => {
-                const date = formatDate(entry.createdAt, true);
-                let description = entry.description || entry.action;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            try {
+                // Fetch document URL/path from backend
+                const response = await fetch(`${API_BASE}/documents/${documentId}/view`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
                 
-                timelineHtml += `
-                    <div class="timeline-item">
-                        <div class="timeline-content">
-                            <div class="timeline-date">${date}</div>
-                            <div class="timeline-desc">${description}</div>
-                            ${entry.statusBefore && entry.statusAfter ? `
-                                <div class="timeline-status">
-                                    Status: ${entry.statusBefore.replace('_', ' ')} → ${entry.statusAfter.replace('_', ' ')}
-                                </div>
-                            ` : ''}
+                if (!response.ok) {
+                    throw new Error('Failed to load document');
+                }
+                
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const contentType = response.headers.get('content-type');
+                
+                // Display based on content type
+                if (contentType && contentType.startsWith('image/')) {
+                    body.innerHTML = `<img src="${url}" class="document-viewer-image" alt="${documentName}">`;
+                } else if (contentType && contentType.includes('pdf')) {
+                    body.innerHTML = `<iframe src="${url}" class="document-viewer-frame"></iframe>`;
+                } else {
+                    // For other file types, show download option
+                    body.innerHTML = `
+                        <div style="text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 4rem; margin-bottom: 20px;">📄</div>
+                            <h3 style="color: #192064; margin-bottom: 15px;">${documentName}</h3>
+                            <p style="color: #666; margin-bottom: 30px;">This file type cannot be previewed in the browser.</p>
+                            <a href="${url}" download="${documentName}" style="display: inline-block; background: #192064; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: 600;">
+                                Download Document
+                            </a>
                         </div>
-                        <div class="timeline-dot"></div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading document:', error);
+                body.innerHTML = `
+                    <div class="document-viewer-error">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
+                        <h3>Failed to Load Document</h3>
+                        <p>The document could not be loaded. Please try again later.</p>
                     </div>
                 `;
-            });
-            
-            timeline.innerHTML = timelineHtml;
+            }
+        }
+
+        function closeDocumentViewer() {
+            const modal = document.getElementById('documentViewerModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
         // Update action buttons based on REAL application status
@@ -1381,17 +1515,6 @@
                 action: 'contactSupport()',
                 buttonText: 'Contact Us'
             });
-            
-            // Print Application - Show for submitted applications
-            if (status !== 'draft') {
-                actions.push({
-                    icon: '🖨️',
-                    title: 'Print Application',
-                    desc: 'Generate a PDF copy of your application.',
-                    action: 'printApplication()',
-                    buttonText: 'Print PDF'
-                });
-            }
             
             let actionsHtml = '';
             actions.forEach(action => {
@@ -1514,18 +1637,17 @@
             closeModal();
         }
 
-     // ============ FIXED ACTION FUNCTIONS WITH PROPER REDIRECTS ============
+        // ============ FIXED ACTION FUNCTIONS WITH PROPER REDIRECTS ============
+        
         function startNewApplication() {
             // Clear any existing flags
             sessionStorage.removeItem('continueApplication');
             sessionStorage.removeItem('uploadDocuments');
-            sessionStorage.removeItem('currentApplicationId');
             
             // Set flag for new application
             sessionStorage.setItem('newApplication', 'true');
-            sessionStorage.setItem('redirectFromDashboard', 'true');
             
-            // Use window.location.href with absolute path
+            // Use window.location.href with full path
             window.location.href = '/ScholarshipSystem/application.html';
         }
 
@@ -1538,17 +1660,11 @@
                 // Set flags for continuing application
                 sessionStorage.setItem('currentApplicationId', currentApplication.id);
                 sessionStorage.setItem('continueApplication', 'true');
-                sessionStorage.setItem('redirectFromDashboard', 'true');
-                
-                // Also store the full application data in sessionStorage as backup
-                sessionStorage.setItem('backupApplication', JSON.stringify(currentApplication));
                 
                 // Redirect to application form
                 window.location.href = '/ScholarshipSystem/application.html';
             } else {
                 console.error('No current application to continue');
-                // Fallback to new application
-                startNewApplication();
             }
         }
 
@@ -1561,7 +1677,6 @@
                 // Set flags for document upload
                 sessionStorage.setItem('currentApplicationId', currentApplication.id);
                 sessionStorage.setItem('uploadDocuments', 'true');
-                sessionStorage.setItem('redirectFromDashboard', 'true');
                 
                 // Redirect to application form with document section parameter
                 window.location.href = `/ScholarshipSystem/application.html?section=3&appId=${currentApplication.id}`;
@@ -1571,28 +1686,62 @@
             }
         }
 
-        // Simplified authentication check - don't block redirect
+        // Authentication check before redirect
+        async function checkAuthBeforeRedirect() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (!data.authenticated) {
+                    window.location.href = '/ScholarshipSystem/login.html';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/ScholarshipSystem/login.html';
+                return false;
+            }
+        }
+
+        // Safe wrapper functions with authentication check
         async function safeStartNewApplication() {
-            // Don't check auth here - let the application form handle it
-            startNewApplication();
+            const isAuthenticated = await checkAuthBeforeRedirect();
+            if (isAuthenticated) {
+                // Small delay to ensure session is valid
+                setTimeout(() => {
+                    startNewApplication();
+                }, 100);
+            }
         }
 
         async function safeContinueApplication() {
-            // Don't check auth here - let the application form handle it
-            continueApplication();
+            const isAuthenticated = await checkAuthBeforeRedirect();
+            if (isAuthenticated) {
+                setTimeout(() => {
+                    continueApplication();
+                }, 100);
+            }
         }
 
         async function safeUploadDocuments() {
-            // Don't check auth here - let the application form handle it
-            uploadDocuments();
+            const isAuthenticated = await checkAuthBeforeRedirect();
+            if (isAuthenticated) {
+                setTimeout(() => {
+                    uploadDocuments();
+                }, 100);
+            }
         }
         
         function contactSupport() {
             window.location.href = 'mailto:hirayafoundationph@gmail.com?subject=Scholarship Application Inquiry';
-        }
-
-        function printApplication() {
-            window.print();
         }
 
         // Utility Functions

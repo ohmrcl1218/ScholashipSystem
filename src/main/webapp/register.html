@@ -556,325 +556,245 @@
       </div>
       <div class="modal-buttons">
         <button class="modal-btn modal-btn-success" id="proceedToApplication">
-          Proceed to Application
+          Proceed to Dashboard
         </button>
       </div>
     </div>
   </div>
 
   <script>
-    const registerForm = document.getElementById('registerForm');
-    const beforeContinueModal = document.getElementById('beforeContinueModal');
-    const successModal = document.getElementById('successModal');
-    const beforeContinueCancel = document.getElementById('beforeContinueCancel');
-    const beforeContinueConfirm = document.getElementById('beforeContinueConfirm');
-    const proceedToApplication = document.getElementById('proceedToApplication');
+  const API_BASE = `${window.location.origin}/ScholarshipSystem/api`;
 
-    // Input fields
-    const firstNameInput = document.getElementById('regFirstName');
-    const lastNameInput = document.getElementById('regLastName');
-    const emailInput = document.getElementById('regEmail');
-    const phoneInput = document.getElementById('regPhone');
-    const passwordInput = document.getElementById('regPassword');
-    const confirmPasswordInput = document.getElementById('regConfirmPassword');
+  const registerForm         = document.getElementById('registerForm');
+  const beforeContinueModal  = document.getElementById('beforeContinueModal');
+  const successModal         = document.getElementById('successModal');
+  const beforeContinueCancel = document.getElementById('beforeContinueCancel');
+  const beforeContinueConfirm= document.getElementById('beforeContinueConfirm');
+  const proceedToDashboard   = document.getElementById('proceedToApplication');
 
-    let warningConfirmed = false;
-    let registrationSuccess = false;
+  const firstNameInput        = document.getElementById('regFirstName');
+  const lastNameInput         = document.getElementById('regLastName');
+  const emailInput            = document.getElementById('regEmail');
+  const phoneInput            = document.getElementById('regPhone');
+  const passwordInput         = document.getElementById('regPassword');
+  const confirmPasswordInput  = document.getElementById('regConfirmPassword');
+  const passwordRequirements  = document.getElementById('passwordRequirements');
 
-    // Auto-capitalize first letter of first name and last name
-    function capitalizeFirstLetter(input) {
-      input.addEventListener('input', function(e) {
-        const words = this.value.split(' ');
-        const capitalizedWords = words.map(word => {
-          if (word.length > 0) {
-            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-          }
-          return word;
-        });
-        this.value = capitalizedWords.join(' ');
+  let warningConfirmed = false;
+
+  // ── Auto-capitalize names ─────────────────────────────────────
+  function capitalizeFirstLetter(input) {
+      input.addEventListener('input', function() {
+          const words = this.value.split(' ');
+          this.value = words.map(w => w.length > 0
+              ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+              : w
+          ).join(' ');
       });
-    }
+  }
+  capitalizeFirstLetter(firstNameInput);
+  capitalizeFirstLetter(lastNameInput);
 
-    capitalizeFirstLetter(firstNameInput);
-    capitalizeFirstLetter(lastNameInput);
-
-    // Only allow numbers in phone input
-    phoneInput.addEventListener('input', function(e) {
+  // ── Phone: numbers only + validation ─────────────────────────
+  phoneInput.addEventListener('input', function() {
       this.value = this.value.replace(/[^0-9]/g, '');
-      
-      // Validate phone number length
       const phoneError = document.getElementById('phoneError');
       if (this.value.length > 0 && this.value.length !== 11) {
-        this.classList.add('invalid');
-        this.classList.remove('valid');
-        phoneError.textContent = 'Mobile number must be exactly 11 digits';
-        phoneError.classList.add('show');
+          this.classList.add('invalid'); this.classList.remove('valid');
+          phoneError.textContent = 'Mobile number must be exactly 11 digits';
+          phoneError.classList.add('show');
       } else if (this.value.length === 11) {
-        this.classList.add('valid');
-        this.classList.remove('invalid');
-        phoneError.classList.remove('show');
+          this.classList.add('valid'); this.classList.remove('invalid');
+          phoneError.classList.remove('show');
       } else {
-        this.classList.remove('invalid', 'valid');
-        phoneError.classList.remove('show');
+          this.classList.remove('invalid', 'valid');
+          phoneError.classList.remove('show');
       }
-    });
+  });
 
-    // Password validation
-    const passwordRequirements = document.getElementById('passwordRequirements');
-
-    passwordInput.addEventListener('focus', function() {
-      passwordRequirements.classList.add('show');
-    });
-
-    passwordInput.addEventListener('blur', function() {
-      if (this.value.length === 0) {
-        passwordRequirements.classList.remove('show');
+  // ── Password requirements ─────────────────────────────────────
+  passwordInput.addEventListener('focus', () => passwordRequirements.classList.add('show'));
+  passwordInput.addEventListener('blur',  function() {
+      if (!this.value.length) passwordRequirements.classList.remove('show');
+  });
+  passwordInput.addEventListener('input', function() {
+      const p = this.value;
+      const checks = {
+          'req-length':    p.length >= 8,
+          'req-uppercase': /[A-Z]/.test(p),
+          'req-lowercase': /[a-z]/.test(p),
+          'req-number':    /[0-9]/.test(p),
+          'req-special':   /[!@#$%^&*]/.test(p),
+      };
+      let allMet = true;
+      for (const [id, met] of Object.entries(checks)) {
+          document.getElementById(id).classList.toggle('met', met);
+          if (!met) allMet = false;
       }
-    });
-
-    passwordInput.addEventListener('input', function() {
-      const password = this.value;
-      
-      // Check each requirement
-      const hasLength = password.length >= 8;
-      const hasUppercase = /[A-Z]/.test(password);
-      const hasLowercase = /[a-z]/.test(password);
-      const hasNumber = /[0-9]/.test(password);
-      const hasSpecial = /[!@#$%^&*]/.test(password);
-
-      // Update requirement indicators
-      document.getElementById('req-length').classList.toggle('met', hasLength);
-      document.getElementById('req-uppercase').classList.toggle('met', hasUppercase);
-      document.getElementById('req-lowercase').classList.toggle('met', hasLowercase);
-      document.getElementById('req-number').classList.toggle('met', hasNumber);
-      document.getElementById('req-special').classList.toggle('met', hasSpecial);
-
-      // Update input border
-      const allMet = hasLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
-      if (password.length > 0) {
-        this.classList.toggle('valid', allMet);
-        this.classList.toggle('invalid', !allMet);
+      if (p.length > 0) {
+          this.classList.toggle('valid', allMet);
+          this.classList.toggle('invalid', !allMet);
       }
-    });
+  });
 
-    // Confirm password validation
-    confirmPasswordInput.addEventListener('input', function() {
-      const confirmPasswordError = document.getElementById('confirmPasswordError');
-      const password = passwordInput.value;
-      
+  // ── Confirm password ──────────────────────────────────────────
+  confirmPasswordInput.addEventListener('input', function() {
+      const err = document.getElementById('confirmPasswordError');
       if (this.value.length > 0) {
-        if (this.value !== password) {
-          this.classList.add('invalid');
-          this.classList.remove('valid');
-          confirmPasswordError.textContent = 'Passwords do not match';
-          confirmPasswordError.classList.add('show');
-        } else {
-          this.classList.add('valid');
-          this.classList.remove('invalid');
-          confirmPasswordError.classList.remove('show');
-        }
+          const match = this.value === passwordInput.value;
+          this.classList.toggle('valid', match);
+          this.classList.toggle('invalid', !match);
+          err.textContent = match ? '' : 'Passwords do not match';
+          err.classList.toggle('show', !match);
       } else {
-        this.classList.remove('invalid', 'valid');
-        confirmPasswordError.classList.remove('show');
+          this.classList.remove('invalid', 'valid');
+          err.classList.remove('show');
       }
-    });
+  });
 
-    // Email validation
-    emailInput.addEventListener('blur', function() {
-      const emailError = document.getElementById('emailError');
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      
-      if (this.value.length > 0 && !emailPattern.test(this.value)) {
-        this.classList.add('invalid');
-        this.classList.remove('valid');
-        emailError.textContent = 'Please enter a valid email address';
-        emailError.classList.add('show');
-      } else if (this.value.length > 0) {
-        this.classList.add('valid');
-        this.classList.remove('invalid');
-        emailError.classList.remove('show');
+  // ── Email validation ──────────────────────────────────────────
+  emailInput.addEventListener('blur', function() {
+      const err = document.getElementById('emailError');
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
+      if (this.value.length > 0) {
+          this.classList.toggle('valid', valid);
+          this.classList.toggle('invalid', !valid);
+          err.textContent = valid ? '' : 'Please enter a valid email address';
+          err.classList.toggle('show', !valid);
       }
-    });
+  });
 
-    // Show Before You Continue modal on form submit
-    registerForm.addEventListener('submit', function(e) {
-      e.preventDefault();
+  // ── Password strength check ───────────────────────────────────
+  function isPasswordValid(p) {
+      return p.length >= 8
+          && /[A-Z]/.test(p)
+          && /[a-z]/.test(p)
+          && /[0-9]/.test(p)
+          && /[!@#$%^&*]/.test(p);
+  }
 
-      // If warning not confirmed, show Before You Continue modal
-      if (!warningConfirmed) {
-        beforeContinueModal.classList.add('show');
-        return;
-      }
-
-      // Proceed with registration
-      processRegistration();
-    });
-
-    // Cancel button - close Before You Continue modal
-    beforeContinueCancel.addEventListener('click', function() {
-      beforeContinueModal.classList.remove('show');
-    });
-
-    // Confirm button - close Before You Continue modal and submit form
-    beforeContinueConfirm.addEventListener('click', function() {
-      warningConfirmed = true;
-      beforeContinueModal.classList.remove('show');
-      processRegistration();
-    });
-
-    // Proceed to Application button
-    proceedToApplication.addEventListener('click', function() {
-      // Redirect to application form
-      window.location.href = 'application.html';
-    });
-
-    // Close modals when clicking outside the box
-    beforeContinueModal.addEventListener('click', function(e) {
-      if (e.target === beforeContinueModal) {
-        beforeContinueModal.classList.remove('show');
-      }
-    });
-
-    successModal.addEventListener('click', function(e) {
-      if (e.target === successModal) {
-        // Don't close - user must click the button
-        return;
-      }
-    });
-
-    // Function to validate password strength
-    function isPasswordValid(password) {
-      const hasLength = password.length >= 8;
-      const hasUppercase = /[A-Z]/.test(password);
-      const hasLowercase = /[a-z]/.test(password);
-      const hasNumber = /[0-9]/.test(password);
-      const hasSpecial = /[!@#$%^&*]/.test(password);
-      
-      return hasLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
-    }
-
-    // Function to process registration
-    function processRegistration() {
-      const firstName = firstNameInput.value.trim();
-      const lastName = lastNameInput.value.trim();
-      const email = emailInput.value.trim();
-      const phone = phoneInput.value.trim();
-      const password = passwordInput.value;
+  // ── Client-side field validation ─────────────────────────────
+  function validateFields() {
+      const firstName       = firstNameInput.value.trim();
+      const lastName        = lastNameInput.value.trim();
+      const email           = emailInput.value.trim();
+      const phone           = phoneInput.value.trim();
+      const password        = passwordInput.value;
       const confirmPassword = confirmPasswordInput.value;
 
-      // Validate all fields
       if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
-        alert('Please fill in all fields!');
-        warningConfirmed = false;
-        return;
+          alert('Please fill in all fields.');
+          return false;
       }
-
-      // Validate email format
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(email)) {
-        alert('Please enter a valid email address!');
-        warningConfirmed = false;
-        return;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          alert('Please enter a valid email address.');
+          return false;
       }
-
-      // Validate phone number
       if (phone.length !== 11) {
-        alert('Mobile number must be exactly 11 digits!');
-        warningConfirmed = false;
-        return;
+          alert('Mobile number must be exactly 11 digits.');
+          return false;
       }
-
-      // Validate password strength
       if (!isPasswordValid(password)) {
-        alert('Password must meet all requirements:\n- At least 8 characters\n- One uppercase letter\n- One lowercase letter\n- One number\n- One special character (!@#$%^&*)');
-        warningConfirmed = false;
-        return;
+          alert('Password must meet all requirements:\n• At least 8 characters\n• One uppercase letter\n• One lowercase letter\n• One number\n• One special character (!@#$%^&*)');
+          return false;
       }
-
-      // Validate passwords match
       if (password !== confirmPassword) {
-        alert('Passwords do not match!');
-        warningConfirmed = false;
-        return;
+          alert('Passwords do not match.');
+          return false;
+      }
+      return true;
+  }
+
+  // ── SINGLE submit listener ────────────────────────────────────
+  registerForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Step 1: validate fields first — bail early if invalid
+      if (!validateFields()) return;
+
+      // Step 2: if warning not yet confirmed, show the modal and stop
+      if (!warningConfirmed) {
+          beforeContinueModal.classList.add('show');
+          return;
       }
 
-      // Store user data
+      // Step 3: all good — call the API
+      submitRegistration();
+  });
+
+  // ── Before Continue modal buttons ────────────────────────────
+  beforeContinueCancel.addEventListener('click', () => {
+      beforeContinueModal.classList.remove('show');
+  });
+
+  beforeContinueConfirm.addEventListener('click', () => {
+      warningConfirmed = true;
+      beforeContinueModal.classList.remove('show');
+      submitRegistration(); // proceed directly, no need to re-submit the form
+  });
+
+  // Close modal on backdrop click
+  beforeContinueModal.addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('show');
+  });
+
+  // ── Proceed to Dashboard button ───────────────────────────────
+  proceedToDashboard.addEventListener('click', () => {
+      window.location.href = '/ScholarshipSystem/dashboard.html';
+  });
+
+  // ── API call ──────────────────────────────────────────────────
+  async function submitRegistration() {
+      const registerBtn = document.getElementById('registerBtn');
+      registerBtn.disabled = true;
+      registerBtn.textContent = 'Registering...';
+
       const userData = {
-        firstName,
-        lastName,
-        email,
-        phone,
-        password
+          firstName: firstNameInput.value.trim(),
+          lastName:  lastNameInput.value.trim(),
+          email:     emailInput.value.trim(),
+          phone:     phoneInput.value.trim(),
+          password:  passwordInput.value
       };
 
-      console.log('User registered:', userData);
-      
-      // Store in sessionStorage to pre-fill application form
-      sessionStorage.setItem('userData', JSON.stringify(userData));
-      
-      // Show success modal
-      successModal.classList.add('show');
-      
-      // Reset warning confirmed for next registration
-      warningConfirmed = false;
-      
-      // Clear form
-      registerForm.reset();
-      
-      // Remove validation classes
-      const inputs = registerForm.querySelectorAll('input');
-      inputs.forEach(input => {
-        input.classList.remove('valid', 'invalid');
-      });
-      
-      // Hide password requirements
-      passwordRequirements.classList.remove('show');
-    }
-    
-    // Keep your existing fetch implementation commented out or modify it
-    
-    document.getElementById('registerForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        // Validate all fields first...
-        
-        // Prepare user data
-        const userData = {
-            firstName: firstNameInput.value.trim(),
-            lastName: lastNameInput.value.trim(),
-            email: emailInput.value.trim(),
-            phone: phoneInput.value.trim(),
-            password: passwordInput.value
-        };
-        
-        try {
-            const response = await fetch(`${window.location.origin}/ScholarshipSystem/api/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(userData)
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                sessionStorage.setItem('userData', JSON.stringify({
-                    userId: data.userId,
-                    userName: data.userName,
-                    email: data.email
-                }));
-                
-                // Show success modal instead of alert
-                successModal.classList.add('show');
-            } else {
-                alert('Registration failed: ' + data.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred during registration. Please try again.');
-        }
-    });
+      try {
+          const response = await fetch(`${API_BASE}/register`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(userData)
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+              sessionStorage.setItem('userData', JSON.stringify({
+                  userId:   data.userId,
+                  userName: data.userName,
+                  email:    data.email
+              }));
+
+              // Reset form
+              registerForm.reset();
+              document.querySelectorAll('#registerForm input')
+                  .forEach(i => i.classList.remove('valid', 'invalid'));
+              passwordRequirements.classList.remove('show');
+              warningConfirmed = false;
+
+              // Show success modal
+              successModal.classList.add('show');
+          } else {
+              alert('Registration failed: ' + (data.message || 'Please try again.'));
+              warningConfirmed = false;
+          }
+      } catch (error) {
+          console.error('Registration error:', error);
+          alert('An error occurred during registration. Please try again.');
+          warningConfirmed = false;
+      } finally {
+          registerBtn.disabled = false;
+          registerBtn.textContent = 'REGISTER';
+      }
+  }
    
   </script>
 </body>

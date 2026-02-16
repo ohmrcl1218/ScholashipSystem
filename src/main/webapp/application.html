@@ -2206,58 +2206,25 @@ async function saveDraft() {
         
         console.log('===== END CHECK =====\n');
     }
-
-    // Add a debug button for checking documents
-    function addDocumentDebugButton() {
-        const debugBtn = document.createElement('button');
-        debugBtn.textContent = '📄 CHECK DOCS';
-        debugBtn.style.cssText = `
-            position: fixed;
-            bottom: 80px;
-            left: 20px;
-            background: #4caf50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 9999;
-        `;
-        debugBtn.onclick = checkDocuments;
-        document.body.appendChild(debugBtn);
-    }
-
-    // Call this after DOM loads
-    setTimeout(addDocumentDebugButton, 2500);
     
-    // ========== PSGC API FUNCTIONS ==========
+ // ========== PSGC API FUNCTIONS - STORE NAMES, USE CODES FOR CASCADES ==========
     async function loadRegions() {
         try {
             const response = await fetch(`${PSGC_API}/regions/`);
             const regions = await response.json();
             
-            const regionSelect = document.getElementById('region');
-            const permRegionSelect = document.getElementById('permRegion');
-            
-            if (regionSelect) {
-                regionSelect.innerHTML = '<option value="">Select Region</option>';
+            ['region', 'permRegion'].forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                select.innerHTML = '<option value="">Select Region</option>';
                 regions.forEach(region => {
                     const option = document.createElement('option');
-                    option.value = region.code;
+                    option.value = region.name;          // ✅ STORE NAME
+                    option.dataset.code = region.code;   // ✅ KEEP CODE for API calls
                     option.textContent = region.name;
-                    regionSelect.appendChild(option);
+                    select.appendChild(option);
                 });
-            }
-            
-            if (permRegionSelect) {
-                permRegionSelect.innerHTML = '<option value="">Select Region</option>';
-                regions.forEach(region => {
-                    const option = document.createElement('option');
-                    option.value = region.code;
-                    option.textContent = region.name;
-                    permRegionSelect.appendChild(option);
-                });
-            }
+            });
         } catch (error) {
             console.error('Error loading regions:', error);
         }
@@ -2268,23 +2235,25 @@ async function saveDraft() {
             const response = await fetch(`${PSGC_API}/regions/${regionCode}/provinces/`);
             const provinces = await response.json();
             
-            const provinceSelect = document.getElementById(provinceSelectId);
-            if (!provinceSelect) return;
-            
-            provinceSelect.innerHTML = '<option value="">Select Province</option>';
+            const select = document.getElementById(provinceSelectId);
+            if (!select) return;
+            select.innerHTML = '<option value="">Select Province</option>';
             
             if (provinces.length === 0) {
+                // Metro Manila has no provinces — use region itself
                 const option = document.createElement('option');
-                option.value = regionCode;
-                option.textContent = 'Metro Manila';
+                option.value = 'Metro Manila';           // ✅ STORE NAME
+                option.dataset.code = regionCode;        // ✅ KEEP CODE
                 option.dataset.isRegion = 'true';
-                provinceSelect.appendChild(option);
+                option.textContent = 'Metro Manila';
+                select.appendChild(option);
             } else {
                 provinces.forEach(province => {
                     const option = document.createElement('option');
-                    option.value = province.code;
+                    option.value = province.name;        // ✅ STORE NAME
+                    option.dataset.code = province.code; // ✅ KEEP CODE
                     option.textContent = province.name;
-                    provinceSelect.appendChild(option);
+                    select.appendChild(option);
                 });
             }
         } catch (error) {
@@ -2294,26 +2263,23 @@ async function saveDraft() {
 
     async function loadMunicipalities(code, municipalitySelectId, isRegion = false) {
         try {
-            let url;
-            if (isRegion) {
-                url = `${PSGC_API}/regions/${code}/cities-municipalities/`;
-            } else {
-                url = `${PSGC_API}/provinces/${code}/cities-municipalities/`;
-            }
+            const url = isRegion
+                ? `${PSGC_API}/regions/${code}/cities-municipalities/`
+                : `${PSGC_API}/provinces/${code}/cities-municipalities/`;
             
             const response = await fetch(url);
             const municipalities = await response.json();
             
-            const municipalitySelect = document.getElementById(municipalitySelectId);
-            if (!municipalitySelect) return;
-            
-            municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+            const select = document.getElementById(municipalitySelectId);
+            if (!select) return;
+            select.innerHTML = '<option value="">Select Municipality</option>';
             
             municipalities.forEach(municipality => {
                 const option = document.createElement('option');
-                option.value = municipality.code;
+                option.value = municipality.name;        // ✅ STORE NAME
+                option.dataset.code = municipality.code; // ✅ KEEP CODE
                 option.textContent = municipality.name;
-                municipalitySelect.appendChild(option);
+                select.appendChild(option);
             });
         } catch (error) {
             console.error('Error loading municipalities:', error);
@@ -2325,16 +2291,16 @@ async function saveDraft() {
             const response = await fetch(`${PSGC_API}/cities-municipalities/${municipalityCode}/barangays/`);
             const barangays = await response.json();
             
-            const barangaySelect = document.getElementById(barangaySelectId);
-            if (!barangaySelect) return;
-            
-            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            const select = document.getElementById(barangaySelectId);
+            if (!select) return;
+            select.innerHTML = '<option value="">Select Barangay</option>';
             
             barangays.forEach(barangay => {
                 const option = document.createElement('option');
-                option.value = barangay.code;
+                option.value = barangay.name;        // ✅ STORE NAME
+                option.dataset.code = barangay.code; // ✅ KEEP CODE (not needed for cascade but good to have)
                 option.textContent = barangay.name;
-                barangaySelect.appendChild(option);
+                select.appendChild(option);
             });
         } catch (error) {
             console.error('Error loading barangays:', error);
@@ -2584,41 +2550,45 @@ async function saveDraft() {
     async function copyPresentToPermanent() {
         if (!this.checked) return;
         
-        const region = document.getElementById('region');
-        const province = document.getElementById('province');
+        const region       = document.getElementById('region');
+        const province     = document.getElementById('province');
         const municipality = document.getElementById('municipality');
-        const barangay = document.getElementById('barangay');
-        const permRegion = document.getElementById('permRegion');
-        const permProvince = document.getElementById('permProvince');
+        const barangay     = document.getElementById('barangay');
+
+        const permRegion       = document.getElementById('permRegion');
+        const permProvince     = document.getElementById('permProvince');
         const permMunicipality = document.getElementById('permMunicipality');
-        const permBarangay = document.getElementById('permBarangay');
-        const permHouseNumber = document.getElementById('permHouseNumber');
-        const permStreet = document.getElementById('permStreet');
-        const permZipCode = document.getElementById('permZipCode');
-        
+        const permBarangay     = document.getElementById('permBarangay');
+
+        // Copy the NAME value directly (it's now the name, not a code)
         if (permRegion) permRegion.value = region?.value || '';
-        
+
         if (region?.value) {
-            await loadProvinces(region.value, 'permProvince');
+            const regionCode = region.options[region.selectedIndex]?.dataset.code; // ✅ code for API
+            await loadProvinces(regionCode, 'permProvince');
             if (permProvince) permProvince.value = province?.value || '';
-            
+
             if (province?.value) {
-                const selectedOption = province.options[province.selectedIndex];
-                const isRegion = selectedOption?.dataset.isRegion === 'true';
-                
-                await loadMunicipalities(province.value, 'permMunicipality', isRegion);
+                const provSelected = province.options[province.selectedIndex];
+                const provCode     = provSelected?.dataset.code;               // ✅ code for API
+                const isRegion     = provSelected?.dataset.isRegion === 'true';
+                await loadMunicipalities(provCode, 'permMunicipality', isRegion);
                 if (permMunicipality) permMunicipality.value = municipality?.value || '';
-                
+
                 if (municipality?.value) {
-                    await loadBarangays(municipality.value, 'permBarangay');
+                    const munCode = municipality.options[municipality.selectedIndex]?.dataset.code; // ✅
+                    await loadBarangays(munCode, 'permBarangay');
                     if (permBarangay) permBarangay.value = barangay?.value || '';
                 }
             }
         }
-        
-        if (permHouseNumber) permHouseNumber.value = document.getElementById('houseNumber')?.value || '';
-        if (permStreet) permStreet.value = document.getElementById('street')?.value || '';
-        if (permZipCode) permZipCode.value = document.getElementById('zipCode')?.value || '';
+
+        if (document.getElementById('permHouseNumber'))
+            document.getElementById('permHouseNumber').value = document.getElementById('houseNumber')?.value || '';
+        if (document.getElementById('permStreet'))
+            document.getElementById('permStreet').value = document.getElementById('street')?.value || '';
+        if (document.getElementById('permZipCode'))
+            document.getElementById('permZipCode').value = document.getElementById('zipCode')?.value || '';
     }
 
     function copyJHSToSHS() {
@@ -2643,75 +2613,57 @@ async function saveDraft() {
         if (wordCount) wordCount.textContent = `Word count: ${words}`;
     }
 
-    // ========== PSGC EVENT HANDLERS ==========
+ // ========== PSGC EVENT HANDLERS - READ code FROM dataset, NOT value ==========
     function handleRegionChange() {
-        if (this.value) {
-            loadProvinces(this.value, 'province');
-            const province = document.getElementById('province');
-            const municipality = document.getElementById('municipality');
-            const barangay = document.getElementById('barangay');
-            
-            if (province) province.innerHTML = '<option value="">Loading...</option>';
-            if (municipality) municipality.innerHTML = '<option value="">Select Municipality</option>';
-            if (barangay) barangay.innerHTML = '<option value="">Select Barangay</option>';
-        }
+        if (!this.value) return;
+        const regionCode = this.options[this.selectedIndex].dataset.code; // ✅ use code for API
+        loadProvinces(regionCode, 'province');
+        document.getElementById('province').innerHTML    = '<option value="">Loading...</option>';
+        document.getElementById('municipality').innerHTML = '<option value="">Select Municipality</option>';
+        document.getElementById('barangay').innerHTML    = '<option value="">Select Barangay</option>';
     }
 
     function handleProvinceChange() {
-        if (this.value) {
-            const selectedOption = this.options[this.selectedIndex];
-            const isRegion = selectedOption?.dataset.isRegion === 'true';
-            loadMunicipalities(this.value, 'municipality', isRegion);
-            
-            const municipality = document.getElementById('municipality');
-            const barangay = document.getElementById('barangay');
-            
-            if (municipality) municipality.innerHTML = '<option value="">Loading...</option>';
-            if (barangay) barangay.innerHTML = '<option value="">Select Barangay</option>';
-        }
+        if (!this.value) return;
+        const selected  = this.options[this.selectedIndex];
+        const code      = selected.dataset.code;          // ✅ use code for API
+        const isRegion  = selected.dataset.isRegion === 'true';
+        loadMunicipalities(code, 'municipality', isRegion);
+        document.getElementById('municipality').innerHTML = '<option value="">Loading...</option>';
+        document.getElementById('barangay').innerHTML    = '<option value="">Select Barangay</option>';
     }
 
     function handleMunicipalityChange() {
-        if (this.value) {
-            loadBarangays(this.value, 'barangay');
-            const barangay = document.getElementById('barangay');
-            if (barangay) barangay.innerHTML = '<option value="">Loading...</option>';
-        }
+        if (!this.value) return;
+        const municipalityCode = this.options[this.selectedIndex].dataset.code; // ✅ use code for API
+        loadBarangays(municipalityCode, 'barangay');
+        document.getElementById('barangay').innerHTML = '<option value="">Loading...</option>';
     }
 
     function handlePermRegionChange() {
-        if (this.value) {
-            loadProvinces(this.value, 'permProvince');
-            const permProvince = document.getElementById('permProvince');
-            const permMunicipality = document.getElementById('permMunicipality');
-            const permBarangay = document.getElementById('permBarangay');
-            
-            if (permProvince) permProvince.innerHTML = '<option value="">Loading...</option>';
-            if (permMunicipality) permMunicipality.innerHTML = '<option value="">Select Municipality</option>';
-            if (permBarangay) permBarangay.innerHTML = '<option value="">Select Barangay</option>';
-        }
+        if (!this.value) return;
+        const regionCode = this.options[this.selectedIndex].dataset.code; // ✅ use code for API
+        loadProvinces(regionCode, 'permProvince');
+        document.getElementById('permProvince').innerHTML    = '<option value="">Loading...</option>';
+        document.getElementById('permMunicipality').innerHTML = '<option value="">Select Municipality</option>';
+        document.getElementById('permBarangay').innerHTML    = '<option value="">Select Barangay</option>';
     }
 
     function handlePermProvinceChange() {
-        if (this.value) {
-            const selectedOption = this.options[this.selectedIndex];
-            const isRegion = selectedOption?.dataset.isRegion === 'true';
-            loadMunicipalities(this.value, 'permMunicipality', isRegion);
-            
-            const permMunicipality = document.getElementById('permMunicipality');
-            const permBarangay = document.getElementById('permBarangay');
-            
-            if (permMunicipality) permMunicipality.innerHTML = '<option value="">Loading...</option>';
-            if (permBarangay) permBarangay.innerHTML = '<option value="">Select Barangay</option>';
-        }
+        if (!this.value) return;
+        const selected  = this.options[this.selectedIndex];
+        const code      = selected.dataset.code;          // ✅ use code for API
+        const isRegion  = selected.dataset.isRegion === 'true';
+        loadMunicipalities(code, 'permMunicipality', isRegion);
+        document.getElementById('permMunicipality').innerHTML = '<option value="">Loading...</option>';
+        document.getElementById('permBarangay').innerHTML    = '<option value="">Select Barangay</option>';
     }
 
     function handlePermMunicipalityChange() {
-        if (this.value) {
-            loadBarangays(this.value, 'permBarangay');
-            const permBarangay = document.getElementById('permBarangay');
-            if (permBarangay) permBarangay.innerHTML = '<option value="">Loading...</option>';
-        }
+        if (!this.value) return;
+        const municipalityCode = this.options[this.selectedIndex].dataset.code; // ✅ use code for API
+        loadBarangays(municipalityCode, 'permBarangay');
+        document.getElementById('permBarangay').innerHTML = '<option value="">Loading...</option>';
     }
 
     // ========== NAVIGATION ==========
